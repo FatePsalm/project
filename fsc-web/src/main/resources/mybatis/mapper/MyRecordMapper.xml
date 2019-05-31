@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fsc.fscweb.dao.MyRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.fsc.fscweb.entity.MyRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_name_id" property="userNameId" jdbcType="INTEGER" />
+    <result column="record_state" property="recordState" jdbcType="INTEGER" />
+    <result column="money_usable" property="moneyUsable" jdbcType="INTEGER" />
+    <result column="money_freeze" property="moneyFreeze" jdbcType="INTEGER" />
+    <result column="money_overall" property="moneyOverall" jdbcType="INTEGER" />
+    <result column="record_type" property="recordType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="money_number" property="moneyNumber" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_name_id, record_state, money_usable, money_freeze, money_overall, record_type, 
+    create_time, money_number
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fsc.fscweb.entity.MyRecordExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from my_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from my_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from my_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fsc.fscweb.entity.MyRecordExample" >
+    delete from my_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fsc.fscweb.entity.MyRecord" >
+    insert into my_record (id, user_name_id, record_state, 
+      money_usable, money_freeze, money_overall, 
+      record_type, create_time, money_number
+      )
+    values (#{id,jdbcType=INTEGER}, #{userNameId,jdbcType=INTEGER}, #{recordState,jdbcType=INTEGER}, 
+      #{moneyUsable,jdbcType=INTEGER}, #{moneyFreeze,jdbcType=INTEGER}, #{moneyOverall,jdbcType=INTEGER}, 
+      #{recordType,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{moneyNumber,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fsc.fscweb.entity.MyRecord" >
+    insert into my_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userNameId != null" >
+        user_name_id,
+      </if>
+      <if test="recordState != null" >
+        record_state,
+      </if>
+      <if test="moneyUsable != null" >
+        money_usable,
+      </if>
+      <if test="moneyFreeze != null" >
+        money_freeze,
+      </if>
+      <if test="moneyOverall != null" >
+        money_overall,
+      </if>
+      <if test="recordType != null" >
+        record_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="moneyNumber != null" >
+        money_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userNameId != null" >
+        #{userNameId,jdbcType=INTEGER},
+      </if>
+      <if test="recordState != null" >
+        #{recordState,jdbcType=INTEGER},
+      </if>
+      <if test="moneyUsable != null" >
+        #{moneyUsable,jdbcType=INTEGER},
+      </if>
+      <if test="moneyFreeze != null" >
+        #{moneyFreeze,jdbcType=INTEGER},
+      </if>
+      <if test="moneyOverall != null" >
+        #{moneyOverall,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null" >
+        #{recordType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moneyNumber != null" >
+        #{moneyNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fsc.fscweb.entity.MyRecordExample" resultType="java.lang.Integer" >
+    select count(*) from my_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update my_record
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userNameId != null" >
+        user_name_id = #{record.userNameId,jdbcType=INTEGER},
+      </if>
+      <if test="record.recordState != null" >
+        record_state = #{record.recordState,jdbcType=INTEGER},
+      </if>
+      <if test="record.moneyUsable != null" >
+        money_usable = #{record.moneyUsable,jdbcType=INTEGER},
+      </if>
+      <if test="record.moneyFreeze != null" >
+        money_freeze = #{record.moneyFreeze,jdbcType=INTEGER},
+      </if>
+      <if test="record.moneyOverall != null" >
+        money_overall = #{record.moneyOverall,jdbcType=INTEGER},
+      </if>
+      <if test="record.recordType != null" >
+        record_type = #{record.recordType,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moneyNumber != null" >
+        money_number = #{record.moneyNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update my_record
+    set id = #{record.id,jdbcType=INTEGER},
+      user_name_id = #{record.userNameId,jdbcType=INTEGER},
+      record_state = #{record.recordState,jdbcType=INTEGER},
+      money_usable = #{record.moneyUsable,jdbcType=INTEGER},
+      money_freeze = #{record.moneyFreeze,jdbcType=INTEGER},
+      money_overall = #{record.moneyOverall,jdbcType=INTEGER},
+      record_type = #{record.recordType,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      money_number = #{record.moneyNumber,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fsc.fscweb.entity.MyRecord" >
+    update my_record
+    <set >
+      <if test="userNameId != null" >
+        user_name_id = #{userNameId,jdbcType=INTEGER},
+      </if>
+      <if test="recordState != null" >
+        record_state = #{recordState,jdbcType=INTEGER},
+      </if>
+      <if test="moneyUsable != null" >
+        money_usable = #{moneyUsable,jdbcType=INTEGER},
+      </if>
+      <if test="moneyFreeze != null" >
+        money_freeze = #{moneyFreeze,jdbcType=INTEGER},
+      </if>
+      <if test="moneyOverall != null" >
+        money_overall = #{moneyOverall,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null" >
+        record_type = #{recordType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moneyNumber != null" >
+        money_number = #{moneyNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fsc.fscweb.entity.MyRecord" >
+    update my_record
+    set user_name_id = #{userNameId,jdbcType=INTEGER},
+      record_state = #{recordState,jdbcType=INTEGER},
+      money_usable = #{moneyUsable,jdbcType=INTEGER},
+      money_freeze = #{moneyFreeze,jdbcType=INTEGER},
+      money_overall = #{moneyOverall,jdbcType=INTEGER},
+      record_type = #{recordType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      money_number = #{moneyNumber,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

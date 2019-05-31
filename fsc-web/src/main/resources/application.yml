@@ -1,0 +1,126 @@
+spring:
+  profiles:
+    active: dev
+#正式环境--due
+#开发环境--dev
+---
+#数据源配置
+spring:
+  profiles: due
+  mail:
+    username: ifcmarslee@gmail.com
+    password: 84450111
+    host: smtp.gmail.com
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/fsc_data?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+    username: root
+    password: oEHhzRzOSzhRCTrp
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName:  org.gjt.mm.mysql.Driver # mysql驱动包
+    # 初始化大小，最小，最大
+    initialSize: 20
+    minIdle: 15
+    maxActive: 50
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: DKXOwRt3AlT2Q7xR
+mybatis:
+# 指定全局配置文件位置
+  config-location: classpath:mybatis/mybatis-config.xml
+# 指定sql映射文件位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+server:
+  context-path: /fsc
+  port: 8080
+---
+#数据源配置
+spring:
+  profiles: dev
+  mail:
+    username: 15389668116@163.com
+    password: HZtnEHPhJz8YC9bE
+    host: smtp.163.com
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/fsc_data?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+    username: root
+    password: 78555976129
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName:  org.gjt.mm.mysql.Driver # mysql驱动包
+    # 初始化大小，最小，最大
+    initialSize: 20
+    minIdle: 15
+    maxActive: 50
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: HZtnEHPhJz8YC9bE
+mybatis:
+# 指定全局配置文件位置
+  config-location: classpath:mybatis/mybatis-config.xml
+# 指定sql映射文件位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+server:
+  context-path: /fsc
+  port: 80
+---
+#jwt秘钥
+jwt:
+  secretKey: oQ4EdVgc7ILCqIbQEcV8hT3Pdr2ceM03t7EzC8kkO3igRt1NxI1ZEIk8r7lTwKc3OiuXo3lWObpDXFhZ1fYPV2D44xIueV1abre
+# 配置文件加密key
+jasypt:
+  encryptor:
+     password: eRyKfreWBVFqFsTMXujGD3crBqkZwyhdDUr6C1FRhp8RLQBLeB7c3crxxxDy9SDP
+#spring.mail.username=15389668116@163.com
+#spring.mail.password=HZtnEHPhJz8YC9bE
+#spring.mail.host=smtp.163.com
+#spring.mail.properties.mail.smtp.ssl.enable=true
+
+
+
+
+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fsc.fscweb.dao.PersonalCenterDao">
+    <!--List<Map<String,Object>> mySubscribe(UserName userName);-->
+    <select id="mySubscribe" resultType="map">
+    SELECT
+    s.id,
+    s.user_name_id as userNameId,
+    s.project_id as projectId,
+    s.money_type as moneyType,
+    s.subscribe_number as subscribeNumber,
+    s.money_number as moneyNumber,
+    date_format(s.create_time,'%Y/%m/%d %T')as createTime,
+    p.project_name as projectName
+    FROM `my_subscribe` s LEFT JOIN my_project p ON s.project_id=p.id
+    where user_name_id =#{id} ORDER BY create_time DESC
+  </select>
+    <!--List<Map> getAllTopUpAndWithdrawal(@Param("email") String email,@Param("type") int type,@Param("state") int state);-->
+    <select id="getAllTopUpAndWithdrawal" resultType="map">
+        SELECT
+        r.id,
+        r.user_name_id as userNameId ,
+        r.record_state as  recordState ,
+        r.money_usable as   moneyUsable ,
+        r.money_freeze as   moneyFreeze,
+        r.money_overall as  moneyOverall ,
+        r.record_type  as  recordType  ,
+        r.create_time  as   createTime ,
+        r.money_number as  moneyNumber ,
+        n.user_name  as  userName
+        FROM
+        my_record r
+        LEFT JOIN user_name n ON n.id = r.user_name_id
+        WHERE
+        r.record_state = #{state}
+        and
+        r.record_type =#{type}
+        <if test="email!=null and email!=''">
+            AND n.user_name LIKE  CONCAT ("%",#{email},"%")
+        </if>
+        ORDER BY
+        r.create_time DESC
+    </select>
+</mapper>

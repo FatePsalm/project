@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fsc.fscweb.dao.MyProjectDao" >
+  <!--void updateDays ();-->
+  <update id="updateDays">
+    update my_project set remaining_days = IF(remaining_days &lt; 1, 0, remaining_days -1)
+  </update>
+  <!--List<Map<String,Object>> participate();-->
+  <select id="participate" resultType="map">
+    SELECT
+    s.id,
+    s.project_id as projectId,
+    s.money_type as moneyType,
+    s.subscribe_number as subscribeNumber,
+    s.money_number as moneyNumber,
+    date_format(s.create_time, '%y-%m-%d %T') as  createTime,
+    u.user_name as userName
+    FROM
+    my_subscribe s LEFT JOIN user_name u ON s.user_name_id=u.id
+    WHERE s.project_id=#{id}
+    ORDER BY create_time DESC
+  </select>
+</mapper>
