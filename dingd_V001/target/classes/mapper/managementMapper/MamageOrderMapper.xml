@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.MamageOrderDao">
+    <!--/**
+    * 时间: 2018/5/7 11:14
+    * 功能描述:过户成功计算返利发送短信通知
+    * 根据建档车辆ID查询商家电话号码
+    */
+    public void rebate_SMS(Integer carId)-->
+    <select id="rebate_SMS" resultType="map">
+		SELECT
+        c.id,
+        c.create_person as createPerson,
+        c.check_type as checkType,
+        a.account,
+        t.retention_money as retentionMoney
+        FROM check_bill c LEFT JOIN t_car_basisinfo t ON c.id=t.check_bill_id
+        LEFT JOIN a_user a ON c.create_person=a.id
+        WHERE
+        c.check_type=2
+        and t.id=#{carId}
+	</select>
+    <!-- /** 管理端-拍卖管理-查找操作记录 */public AuctionOrderTimeEntity findOperating(AuctionOrderTimeEntity
+        auctionOrderTimeEntity) -->
+    <select id="findOperating" parameterType="cn.dingd.dd.common.entity.AuctionOrderTimeEntity"
+            resultType="cn.dingd.dd.common.entity.AuctionOrderTimeEntity">
+		SELECT
+		id as id ,
+		auction_order_id as auctionOrderId ,
+		person
+		as person ,
+		upd_time as updTime ,
+		create_time as createTime ,
+		remark as
+		remark ,
+		type as type ,
+		responsibility as responsibility ,
+		person_type as
+		personType ,
+		operating_state as operatingState,
+		typeOld
+		FROM
+		auction_order_time
+		WHERE
+		auction_order_id=#{auctionOrderId}
+		and
+		type=#{type}
+		and
+		operating_state=1
+	</select>
+    <!-- /** 管理端-拍卖管理-更新写入操作记录 */public Integer upOperating(AuctionOrderTimeEntity
+        auctionOrderTimeEntity) -->
+    <update id="upOperating" parameterType="cn.dingd.dd.common.entity.AuctionOrderTimeEntity">
+		update
+		auction_order_time
+		set operating_state=#{operatingState}
+		WHERE
+		auction_order_id=#{auctionOrderId}
+		and type=#{type}
+		and
+		operating_state=1
+	</update>
+    <!-- /** 管理端-拍卖管理-写入操作记录 */ public Integer addOperating(AuctionOrderTimeEntity
+        auctionOrderTimeEntity) -->
+    <insert id="addOperating" parameterType="cn.dingd.dd.common.entity.AuctionOrderTimeEntity">
+		INSERT INTO
+		auction_order_time (
+		auction_order_id,
+		person,
+		create_time,
+		remark,
+		type,
+		responsibility,
+		person_type,
+		operating_state,
+		typeOld
+		)
+		VALUES
+		( #{auctionOrderId} ,
+		#{person} ,
+		NOW(),
+		#{remark} ,
+		#{type}	,
+		#{responsibility} ,
+		#{personType} ,
+		#{operatingState},
+		#{typeOld}
+		)
+	</insert>
+    <!-- /**管理端-拍卖管理-根据ID查询并返回对象*/public int findAuctionOrderEntity(@Param("id")Integer
+        id); -->
+    <select id="findAuctionOrderEntity" resultType="cn.dingd.dd.common.entity.AuctionOrderEntity">
+		SELECT
+		id,
+		car_id
+		as carId,
+		order_state as orderState,
+		achieve_money as achieveMoney,
+		invoice as invoice,
+		invoice_money as invoiceMoney,
+		order_num as
+		orderNum,
+		a_user_id as auserId,
+		order_time as orderTime,
+		pay_time as
+		payTime,
+		abort_time as abortTime,
+		remarks as remarks,
+		auction_id as
+		auctionId,
+		total_money as totalMoney,
+		cancel_time as cancelTime,
+		server_money as serverMoney,
+		regist_fee as registFee
+		FROM
+		auction_order
+		WHERE
+		id=#{id}
+	</select>
+    <!-- /**管理端-拍卖管理-付款解除资金冻结 id-订单id,*/ public int RemoveMoney(@Param("id")Integer
+        id,@Param("money")Integer money ); -->
+    <update id="RemoveMoney">
+		UPDATE
+		auction_order o
+		LEFT JOIN capital_account c ON
+		o.a_user_id =
+		c.a_user_id
+		SET c.freeze = c.freeze -#{money}
+		WHERE
+		o.id
+		=#{id}
+		and
+		c.freeze &gt;= #{money}
+	</update>
+    <!-- /**管理端-拍卖管理-查询订单扣款时间 状态1-截止付款时间 2-生成时间*/ public Date FindAbortTime(int
+        id) -->
+    <select id="FindAbortTime" resultType="java.util.Date">
+        SELECT
+        <if test="state==1">
+            abort_time
+        </if>
+        <if test="state==2">
+            order_time
+        </if>
+        FROM
+        auction_order
+        WHERE
+        id=#{id}
+    </select>
+    <!-- /**管理端-拍卖管理-修改时间*/ public int UpdateOrderTime(AuctionOrderEntity auctionOrderEntity) -->
+    <update id="UpdateOrderTime" parameterType="cn.dingd.dd.common.entity.AuctionOrderEntity">
+		UPDATE
+		auction_order
+		SET
+		abort_time=#{abortTime}
+		WHERE
+		id=#{id}
+	</update>
+    <!-- /** 管理端-拍卖管理-写入图片信息 */ public int addRecordImg(List<RecordPictureEntity>
+        list); -->
+    <insert id="addRecordImg" parameterType="java.util.List">
+        INSERT INTO record_picture(
+        record_id ,
+        type_number ,
+        url
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (
+            #{item.recordId},
+            #{item.typeNumber},
+            #{item.url}
+            )
+        </foreach>
+    </insert>
+    <!-- /** 管理端-拍卖管理-创建档案 */ public int addRecord(RecordEntity recordEntity); -->
+    <insert id="addRecord" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.dingd.dd.common.entity.RecordEntity">
+		INSERT INTO record
+		(
+		region,
+		create_time,
+		car_id,
+		staff_id
+		)
+		VALUES (
+		#{region},
+		NOW(),
+		#{carId},
+		#{staffId}
+		)
+	</insert>
+    <!-- /** 管理端-拍卖管理-拍卖订单查询查询总条目数 */ public List<Map> FindOrderRowCount(@Param("checkQueryEntity")CheckQueryEntity
+        checkQueryEntity) -->
+    <select id="FindOrderRowCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        auction_order o
+        LEFT JOIN
+        t_car_basisinfo t
+        ON o.car_id
+        = t.id
+        LEFT JOIN a_user a ON
+        a.id=o.a_user_id
+        LEFT JOIN
+        record r ON
+        o.car_id=r.car_id
+        <if test="checkQueryEntity.orderState==6">
+            LEFT JOIN auction_order_time aot
+            ON
+            aot.auction_order_id=o.id
+        </if>
+        <where>
+            o.order_state=#{checkQueryEntity.orderState}
+            <!-- 订单状态 1-拍卖订单 2-已付款 3-已成交 4-已撤销 5-超时扣款 6-仲裁中 -->
+            <if
+                    test="checkQueryEntity.startTime!=null and checkQueryEntity.startTime!=''">
+                <if test="checkQueryEntity.orderState==1">
+                    and o.order_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==2">
+                    and o.pay_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==3">
+                    and r.create_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==4">
+                    and o.cancel_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==5">
+                    and o.abort_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==6">
+                    and aot.create_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+            </if>
+            <if
+                    test="checkQueryEntity.overTime!=null and checkQueryEntity.overTime!=''">
+                <if test="checkQueryEntity.orderState==1">
+                    and o.order_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==2">
+                    and o.pay_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==3">
+                    and r.create_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==4">
+                    and o.cancel_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==5">
+                    and o.abort_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==6">
+                    and aot.create_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+            </if>
+            <if
+                    test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+                AND
+                (
+                t.car_number like CONCAT
+                ("%",#{checkQueryEntity.retrieval},"%")
+                OR
+                o.order_num like CONCAT
+                ("%",#{checkQueryEntity.retrieval},"%")
+                OR
+                t.phone like CONCAT
+                ("%",
+                #{checkQueryEntity.retrieval}, "%" )
+                OR
+                t.title like CONCAT
+                ("%",
+                #{checkQueryEntity.retrieval}, "%" )
+                )
+            </if>
+        </where>
+    </select>
+    <!-- /** 管理端-拍卖管理-拍卖订单查询 */ public List<Map> FindOrder(CheckQueryEntity
+        checkQueryEntity,PageObject pageObject) -->
+    <select id="FindOrder" resultType="map" resultMap="resultFindOrder">
+        SELECT
+        o.id as oid,
+        o.order_state,
+        o.order_num,
+        t.car_number,
+        t.car_name,
+        t.cars,
+        t.car_model,
+        t.master,
+        t.phone,
+        a.u_name,
+        a.account,
+        o.achieve_money,
+        o.total_money,
+        <if test="checkQueryEntity.orderState==1 or checkQueryEntity.orderState==5">
+            o.order_time,
+        </if>
+        <if test="checkQueryEntity.orderState==2">
+            o.pay_time,
+        </if>
+        <if test="checkQueryEntity.orderState==3">
+            r.create_time as createTime,
+        </if>
+        <if test="checkQueryEntity.orderState==4">
+            o.cancel_time,
+            o.remarks,
+        </if>
+        <if test="checkQueryEntity.orderState==1 or checkQueryEntity.orderState==5">
+            o.abort_time,
+        </if>
+        <if test="checkQueryEntity.orderState==6">
+            aot.responsibility,
+            aot.remark,
+            aot.create_time as
+            AOTcreateTime,
+        </if>
+        t.id as tid,
+        a.id as aid
+        FROM
+        auction_order o
+        LEFT JOIN
+        t_car_basisinfo t
+        ON o.car_id = t.id
+        LEFT JOIN a_user a ON
+        a.id=o.a_user_id
+        LEFT JOIN
+        record r ON o.car_id=r.car_id
+        <if test="checkQueryEntity.orderState==6">
+            LEFT JOIN auction_order_time aot
+            ON
+            aot.auction_order_id=o.id
+        </if>
+        <where>
+            o.order_state=#{checkQueryEntity.orderState}
+            <if test="checkQueryEntity.orderState==6">
+                and aot.operating_state=1
+                and aot.type=6
+            </if>
+            <!-- 订单状态 1-拍卖订单 2-已付款 3-已成交 4-已撤销 5-超时扣款 6-仲裁中 -->
+            <if
+                    test="checkQueryEntity.startTime!=null and checkQueryEntity.startTime!=''">
+                <if test="checkQueryEntity.orderState==1">
+                    and o.order_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==2">
+                    and o.pay_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==3">
+                    and r.create_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==4">
+                    and o.cancel_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==5">
+                    and o.abort_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+                <if test="checkQueryEntity.orderState==6">
+                    and aot.create_time&gt;=#{checkQueryEntity.startTime}
+                </if>
+            </if>
+            <if
+                    test="checkQueryEntity.overTime!=null and checkQueryEntity.overTime!=''">
+                <if test="checkQueryEntity.orderState==1">
+                    and o.order_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==2">
+                    and o.pay_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==3">
+                    and r.create_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==4">
+                    and o.cancel_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==5">
+                    and o.abort_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+                <if test="checkQueryEntity.orderState==6">
+                    and aot.create_time&lt;=#{checkQueryEntity.overTime}
+                </if>
+            </if>
+            <if
+                    test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+                AND
+                (
+                t.car_number like CONCAT
+                ("%",#{checkQueryEntity.retrieval},"%")
+                OR
+                o.order_num like CONCAT
+                ("%",#{checkQueryEntity.retrieval},"%")
+                OR
+                t.phone like CONCAT
+                ("%",
+                #{checkQueryEntity.retrieval}, "%" )
+                OR
+                t.title like CONCAT
+                ("%",
+                #{checkQueryEntity.retrieval}, "%" )
+                )
+            </if>
+        </where>
+        <if test="checkQueryEntity.sort!=null and checkQueryEntity.sort!=''">
+            <!-- 建单时间排序 -->
+            <if test="checkQueryEntity.orderState==1">
+                ORDER BY o.order_time ${checkQueryEntity.sort}
+            </if>
+            <!-- 付款时间排序 -->
+            <if test="checkQueryEntity.orderState==2">
+                ORDER BY o.pay_time ${checkQueryEntity.sort}
+            </if>
+            <!-- 完成时间排序 -->
+            <if test="checkQueryEntity.orderState==3">
+                ORDER BY r.create_time ${checkQueryEntity.sort}
+            </if>
+            <!-- 下架时间排序 -->
+            <if test="checkQueryEntity.orderState==4">
+                ORDER BY o.cancel_time ${checkQueryEntity.sort}
+            </if>
+            <!-- 扣款时间排序 -->
+            <if test="checkQueryEntity.orderState==5">
+                ORDER BY o.abort_time ${checkQueryEntity.sort}
+            </if>
+            <!-- 仲裁时间排序 -->
+            <if test="checkQueryEntity.orderState==6">
+                ORDER BY aot.create_time ${checkQueryEntity.sort}
+            </if>
+        </if>
+        limit
+        #{pageObject.startIndex},#{pageObject.pageSize}
+    </select>
+    <resultMap type="map" id="resultFindOrder">
+        <result column="order_state" property="orderState"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="car_number" property="carNumber"/>
+        <result column="car_name" property="carName"/>
+        <result column="cars" property="cars"/>
+        <result column="car_model" property="carModel"/>
+        <result column="master" property="master"/>
+        <result column="phone" property="phone"/>
+        <result column="u_name" property="uName"/>
+        <result column="account" property="account"/>
+        <result column="achieve_money" property="achieveMoney"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="cancel_time" property="cancelTime"/>
+        <result column="remarks" property="remarks"/>
+        <result column="abort_time" property="abortTime"/>
+        <result column="total_money" property="totalMoney"/>
+        <result column="responsibility" property="AOTresponsibility"/>
+        <result column="remark" property="AOTremark"/>
+    </resultMap>
+</mapper> 

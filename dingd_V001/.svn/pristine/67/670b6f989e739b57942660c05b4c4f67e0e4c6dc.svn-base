@@ -1,0 +1,72 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import cn.dingd.dd.common.web.PageObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.dingd.dd.biz.backgroud.service.AUserService;
+import cn.dingd.dd.biz.backgroud.service.SjOderService;
+import cn.dingd.dd.biz.common.entity.Auser;
+import cn.dingd.dd.common.entity.CheckBillEntity;
+import cn.dingd.dd.common.util.CF;
+import cn.dingd.dd.common.web.JsonResult;
+
+/**
+ * @author 作者 Name:CaoGang
+ * @version 创建时间：2018年4月23日 下午1:53:31 类说明 商家管理
+ */
+@CrossOrigin
+@RestController
+@Controller
+@RequestMapping("/sj/")
+public class AUserController {
+	@Autowired
+	private AUserService aUserService;
+	@Autowired
+	private SjOderService sjOderService;
+	
+	/**启用--禁用*/
+	@RequestMapping("deleteByPrimaryKey")
+	public JsonResult deleteByPrimaryKey(Integer id) {
+		if (CF.isNum(id)) {
+			throw new NullPointerException("商家ID为NULL!");
+		}
+		if (CF.mysqlSave(aUserService.deleteByPrimaryKey(id))) {
+			throw new NullPointerException("保存失败!");
+		}
+		return new JsonResult("保存成功!");
+	}
+	/** 商家-查询所有 */
+	@RequestMapping("selectFind")
+	public JsonResult selectFind(Auser auser, PageObject pageObject) {
+		if (CF.isPage(pageObject))
+			throw  new NullPointerException("分页信息不正确!");
+        Map<String, Object> map = aUserService.selectFind(auser, pageObject);
+        return new JsonResult(map);
+
+	}
+	
+	/**商家信息**/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping("selectByPrimaryKey")
+	public JsonResult selectByPrimaryKey(Integer id) {
+		
+		if(id==null || id<=0){
+			throw new NullPointerException("id不能为空!");
+		}
+		Map map=new HashMap<>();
+ 		 List ls=aUserService.getAuserAddres(id);
+		 map.put("listAddrres",ls);
+	     List<CheckBillEntity> selectIdALL = sjOderService.selectIdALL(id);
+		 map.put("SjOrder", selectIdALL);
+		return  new JsonResult(map); 
+	}
+
+}

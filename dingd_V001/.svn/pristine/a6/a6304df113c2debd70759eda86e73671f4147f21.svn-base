@@ -1,0 +1,78 @@
+package cn.dingd.dd.biz.backgroud.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.dingd.dd.biz.common.entity.CheckBillExample;
+import cn.dingd.dd.common.entity.CheckBillEntity;
+
+public interface SjOderMapper {
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int countByExample(CheckBillExample example);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int deleteByExample(CheckBillExample example);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int deleteByPrimaryKey(Integer id);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int insert(CheckBillEntity record);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int insertSelective(CheckBillEntity record);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    List<CheckBillEntity> selectByExample(CheckBillExample example);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    CheckBillEntity selectByPrimaryKey(Integer id);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int updateByExampleSelective(@Param("record") CheckBillEntity record, @Param("example") CheckBillExample example);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int updateByExample(@Param("record") CheckBillEntity record, @Param("example") CheckBillExample example);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int updateByPrimaryKeySelective(CheckBillEntity record);
+
+    /**
+     *
+     * @mbggenerated 2018-04-26
+     */
+    int updateByPrimaryKey(CheckBillEntity record);
+    List<Map<String, Object>> selectFind(CheckBillEntity checkBillEntity);
+}

@@ -1,0 +1,16 @@
+package cn.dingd.dd.common.util;
+/**
+* @author 作者 Name:CaoGang
+* @version 创建时间：2018年4月18日 上午11:09:28
+* 类说明
+*/
+public class ConstantAttribute {
+	/**PC新建检测订单类型*/
+	public static int checkBill_PC=1;
+	/**检测APP新建检测订单类型*/
+	public static int checkBill_JC=2;
+	/**商家新建检测订单类型*/
+	public static int checkBill_SJ=3;
+	/**树形层级*/
+	public static int TreeLV=0;
+}

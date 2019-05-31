@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.temporary.dao.CarInfoDomDao">
+	  <!-- 查询车辆信息 -->
+  <select id="queryCarInfo" resultType="cn.dingd.dd.temporary.entity.CarInfoDom" resultMap="carInfoResultMap">
+      select m.*,d.id as pid,d.url,d.picture,d.cover from car_info_dom m left JOIN car_picture_dom d ON m.id=d.car_id where m.id=#{id} ORDER BY d.show_sort asc
+  </select>
+  
+  <resultMap type="cn.dingd.dd.temporary.entity.CarInfoDom" id="carInfoResultMap">
+          <id column="id" property="id"/>
+          <result column="car_cx" property="carCx"/>
+          <result column="up_time" property="upTime"/>
+          <result column="gh_num" property="ghNum"/>
+          <result column="xslc" property="xslc"/>
+          <result column="syxz" property="syxz"/>
+          <result column="car_color" property="carColor"/>
+          <result column="ldpz" property="ldpz"/>
+          <result column="ckzs" property="ckzs"/> 
+          <result column="money" property="money"/>
+          <result column="byqk" property="byqk"/>
+          <result column="create_time" property="createTime"/>
+       <collection property="carPictureDoms" ofType="cn.dingd.dd.temporary.entity.CarPictureDom" javaType="java.util.List" column="car_id" fetchType="lazy">
+          <id column="pid" property="id"/>
+          <result property="picture" column="picture"/>
+          <result property="url" column="url"/> 
+          <result property="cover" column="cover"/> 
+       </collection>
+     </resultMap>
+  
+  	  <!-- 查询车辆信息 -->
+  <select id="queryCarList" resultType="map" resultMap="resultCarInfo">
+      select m.*,d.id as pid,d.url,d.picture,d.cover from car_info_dom m left JOIN car_picture_dom d ON m.id=d.car_id  where d.cover=1 
+        limit #{pageObject.startIndex},#{pageObject.pageSize}
+  </select>
+  
+    <resultMap type="map" id="resultCarInfo">
+          <id column="id" property="id"/>
+          <result column="car_cx" property="carCx"/>
+          <result column="up_time" property="upTime"/>
+          <result column="gh_num" property="ghNum"/>
+          <result column="create_time" property="createTime"/>
+          <result column="car_color" property="carColor"/>
+     </resultMap>
+  
+  <select id="queryCarInfoParam" resultType="map">
+      select m.*,d.url,d.id as pid,d.picture,d.cover  from car_info_dom m left join  car_picture_dom d ON m.id=d.car_id where d.cover=1
+       <if test="money!=null and money>0">
+        and m.money&gt;=#{money}
+       </if>
+       <if test="moneyEnd!=null and moneyEnd>0">
+        and m.money&lt;=#{moneyEnd} 
+       </if>
+       <if test="carCx!=null and carCx!=''">
+        AND m.car_cx LIKE  CONCAT("%",#{carCx},"%")
+       </if>
+	   limit #{pageObject.startIndex},#{pageObject.pageSize}
+  </select>
+  
+  <update id="updCarInfo" parameterType="cn.dingd.dd.temporary.entity.CarInfoDom">  
+        update car_info_dom  
+            set car_info_dom.car_cx = #{carCx},   
+                car_info_dom.up_time = #{upTime},  
+                car_info_dom.gh_num = #{ghNum},  
+                car_info_dom.syxz = #{syxz},
+                car_info_dom.car_color = #{carColor},
+                car_info_dom.ldpz = #{ldpz},
+                car_info_dom.ckzs = #{ckzs},
+                car_info_dom.money = #{money},
+                car_info_dom.xslc = #{xslc}  
+         where car_info_dom.id = #{id}    
+  </update>
+  
+  <!-- 删除车辆信息 -->  
+	<delete id="deleteCarInfo" parameterType="java.lang.Integer">  
+	        delete   from car_info_dom where id=#{id} 
+	</delete> 
+	
+	<insert id="addCarInfo" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.dingd.dd.temporary.entity.CarInfoDom"> 
+
+        insert into car_info_dom (car_cx,  
+                                 up_time,  
+                                 gh_num,  
+                                 syxz,
+                                  car_color,  
+                                  ldpz,  
+                                  ckzs,  
+                                  money,    
+                                  xslc,
+                                  byqk
+                                 )  
+              values   (#{carCx},  
+                        #{upTime},  
+                        #{ghNum},  
+                        #{syxz},
+                        #{carColor},
+                        #{ldpz},
+                        #{ckzs},
+                        #{money},  
+                        #{xslc},
+                        #{byqk}
+                        )      
+   </insert> 
+	
+  <!-- 查询项目信息 -->
+  <select id="queryCarInfoPage" resultType="java.lang.Integer" >
+	select count(id) from car_info_dom
+	</select>
+	
+	
+   <delete id="deleteCarInfoList" parameterType="java.util.List">
+        DELETE from car_info_dom
+         where id in
+      <foreach item="id" collection="ids" open="(" close=")" separator=",">
+       #{id}
+      </foreach>
+     </delete>
+</mapper> 

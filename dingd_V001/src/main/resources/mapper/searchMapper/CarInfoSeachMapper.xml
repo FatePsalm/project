@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.search.dao.CarInfoSearchDao">
+	<!-- /** 管理端-拍卖管理-库存车辆查询 */public List<Map> FindStock(CheckQueryEntity checkQueryEntity, 
+		PageObject pageObject) -->
+	<select id="getCarList" resultType="map" resultMap="resultFindStock">
+		SELECT
+		t.id as tid,
+		t.car_state,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.car_model,
+		t.master,
+		t.phone,
+		t.retention_money,
+		t.create_time,
+		t.freezing_time,
+		t.remove_time
+		FROM
+		t_car_basisinfo t
+	</select>
+	<resultMap type="map" id="resultFindStock">
+		<result column="tid" property="carId" />
+		<result column="phone" property="phone" />
+		<result column="car_name" property="carName" />
+		<result column="car_model" property="carModel" />
+		<result column="cars" property="cars" />
+		<result column="master" property="master" />
+		<result column="car_number" property="carNumber" />
+		<result column="retention_money" property="retentionMoney" />
+		<result column="create_time" property="createTime" />
+		<result column="remove_time" property="removeTime" />
+		<result column="freezing_time" property="freezingTime" />
+		<result column="car_state" property="carState" />
+	</resultMap>
+</mapper> 

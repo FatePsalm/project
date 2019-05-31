@@ -1,0 +1,609 @@
+package cn.dingd.dd.biz.common.entity;
+
+import java.util.Date;
+import java.util.List;
+
+
+public class Auser {
+    /**
+     * 主键id
+     */
+    private Integer id;
+    /**
+     * 模糊查找
+     */
+    private String find;
+    /**
+     * 用户账号（电话号码）
+     */
+    private String account;
+
+    /**
+     * 用户名
+     */
+    private String nickname;
+
+    /**
+     * 姓名
+     */
+    private String uName;
+
+    /**
+     * 年龄
+     */
+    private Integer age;
+
+    /**
+     * 身份证号
+     */
+    private String card;
+
+    /**
+     * 密码
+     */
+    private String password;
+
+    /**
+     * 性别0-男 1-女
+     */
+    private Integer sex;
+
+    /**
+     * 手机号码
+     */
+    private String uPhone;
+
+    /**
+     * 注册时间
+     */
+    private Date registerTime;
+
+    /**
+     * 信誉度
+     */
+    private Integer credit;
+
+    /**
+     * 积分
+     */
+    private Integer integration;
+
+    /**
+     * 用户签名
+     */
+    private String sign;
+
+    /**
+     * 推荐人 
+     */
+    private String recommend;
+
+    /**
+     * 经销商ID
+     */
+    private String dealersId;
+
+    /**
+     * 名称
+     */
+    private String dealersName;
+
+    /**
+     * 营业执照编号
+     */
+    private String businessNum;
+
+    /**
+     * 法人
+     */
+    private String legalPerson;
+
+    /**
+     * 对公账号
+     */
+    private String broughtAccount;
+
+    /**
+     * 开户行
+     */
+    private String openingBank;
+
+    /**
+     * 执照照片
+     */
+    private String lcenseImg;
+
+    /**
+     * 买家序号
+     */
+    private String buyerNum;
+
+    /**
+     * 客户经理
+     */
+    private Integer staffId;
+
+    /**
+     * 头像
+     */
+    private String headImg;
+
+    /**
+     * 用户等级
+     */
+    private Integer grade;
+
+    /**
+     * 用户类型
+     */
+    private Integer type;
+
+    /**
+     * 是否有效
+     */
+    private Integer flag;
+
+    private List<MerchantSite> merchantSiteList;
+    
+    /**
+     * 主键id
+     * @return id 主键id
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * 主键id
+     * @param id 主键id
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     * 用户账号（电话号码）
+     * @return account 用户账号（电话号码）
+     */
+    public String getAccount() {
+        return account;
+    }
+
+    /**
+     * 用户账号（电话号码）
+     * @param account 用户账号（电话号码）
+     */
+    public void setAccount(String account) {
+        this.account = account == null ? null : account.trim();
+    }
+
+    /**
+     * 用户名
+     * @return nickname 用户名
+     */
+    public String getNickname() {
+        return nickname;
+    }
+
+    /**
+     * 用户名
+     * @param nickname 用户名
+     */
+    public void setNickname(String nickname) {
+        this.nickname = nickname == null ? null : nickname.trim();
+    }
+
+    /**
+     * 姓名
+     * @return u_name 姓名
+     */
+    public String getuName() {
+        return uName;
+    }
+
+    /**
+     * 姓名
+     * @param uName 姓名
+     */
+    public void setuName(String uName) {
+        this.uName = uName == null ? null : uName.trim();
+    }
+
+    /**
+     * 年龄
+     * @return age 年龄
+     */
+    public Integer getAge() {
+        return age;
+    }
+
+    /**
+     * 年龄
+     * @param age 年龄
+     */
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    /**
+     * 身份证号
+     * @return card 身份证号
+     */
+    public String getCard() {
+        return card;
+    }
+
+    /**
+     * 身份证号
+     * @param card 身份证号
+     */
+    public void setCard(String card) {
+        this.card = card == null ? null : card.trim();
+    }
+
+    /**
+     * 密码
+     * @return password 密码
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * 密码
+     * @param password 密码
+     */
+    public void setPassword(String password) {
+        this.password = password == null ? null : password.trim();
+    }
+
+    /**
+     * 性别0-男 1-女
+     * @return sex 性别0-男 1-女
+     */
+    public Integer getSex() {
+        return sex;
+    }
+
+    /**
+     * 性别0-男 1-女
+     * @param sex 性别0-男 1-女
+     */
+    public void setSex(Integer sex) {
+        this.sex = sex;
+    }
+
+    /**
+     * 手机号码
+     * @return u_phone 手机号码
+     */
+    public String getuPhone() {
+        return uPhone;
+    }
+
+    /**
+     * 手机号码
+     * @param uPhone 手机号码
+     */
+    public void setuPhone(String uPhone) {
+        this.uPhone = uPhone == null ? null : uPhone.trim();
+    }
+
+    /**
+     * 注册时间
+     * @return register_time 注册时间
+     */
+    public Date getRegisterTime() {
+        return registerTime;
+    }
+
+    /**
+     * 注册时间
+     * @param registerTime 注册时间
+     */
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
+    }
+
+    /**
+     * 信誉度
+     * @return credit 信誉度
+     */
+    public Integer getCredit() {
+        return credit;
+    }
+
+    /**
+     * 信誉度
+     * @param credit 信誉度
+     */
+    public void setCredit(Integer credit) {
+        this.credit = credit;
+    }
+
+    /**
+     * 积分
+     * @return integration 积分
+     */
+    public Integer getIntegration() {
+        return integration;
+    }
+
+    /**
+     * 积分
+     * @param integration 积分
+     */
+    public void setIntegration(Integer integration) {
+        this.integration = integration;
+    }
+
+    /**
+     * 用户签名
+     * @return sign 用户签名
+     */
+    public String getSign() {
+        return sign;
+    }
+
+    /**
+     * 用户签名
+     * @param sign 用户签名
+     */
+    public void setSign(String sign) {
+        this.sign = sign == null ? null : sign.trim();
+    }
+
+    /**
+     * 推荐人 
+     * @return recommend 推荐人 
+     */
+    public String getRecommend() {
+        return recommend;
+    }
+
+    /**
+     * 推荐人 
+     * @param recommend 推荐人 
+     */
+    public void setRecommend(String recommend) {
+        this.recommend = recommend == null ? null : recommend.trim();
+    }
+
+    /**
+     * 经销商ID
+     * @return dealers_id 经销商ID
+     */
+    public String getDealersId() {
+        return dealersId;
+    }
+
+    /**
+     * 经销商ID
+     * @param dealersId 经销商ID
+     */
+    public void setDealersId(String dealersId) {
+        this.dealersId = dealersId == null ? null : dealersId.trim();
+    }
+
+    /**
+     * 名称
+     * @return dealers_name 名称
+     */
+    public String getDealersName() {
+        return dealersName;
+    }
+
+    /**
+     * 名称
+     * @param dealersName 名称
+     */
+    public void setDealersName(String dealersName) {
+        this.dealersName = dealersName == null ? null : dealersName.trim();
+    }
+
+    /**
+     * 营业执照编号
+     * @return business_num 营业执照编号
+     */
+    public String getBusinessNum() {
+        return businessNum;
+    }
+
+    /**
+     * 营业执照编号
+     * @param businessNum 营业执照编号
+     */
+    public void setBusinessNum(String businessNum) {
+        this.businessNum = businessNum == null ? null : businessNum.trim();
+    }
+
+    /**
+     * 法人
+     * @return legal_person 法人
+     */
+    public String getLegalPerson() {
+        return legalPerson;
+    }
+
+    /**
+     * 法人
+     * @param legalPerson 法人
+     */
+    public void setLegalPerson(String legalPerson) {
+        this.legalPerson = legalPerson == null ? null : legalPerson.trim();
+    }
+
+    /**
+     * 对公账号
+     * @return brought_account 对公账号
+     */
+    public String getBroughtAccount() {
+        return broughtAccount;
+    }
+
+    /**
+     * 对公账号
+     * @param broughtAccount 对公账号
+     */
+    public void setBroughtAccount(String broughtAccount) {
+        this.broughtAccount = broughtAccount == null ? null : broughtAccount.trim();
+    }
+
+    /**
+     * 开户行
+     * @return opening_bank 开户行
+     */
+    public String getOpeningBank() {
+        return openingBank;
+    }
+
+    /**
+     * 开户行
+     * @param openingBank 开户行
+     */
+    public void setOpeningBank(String openingBank) {
+        this.openingBank = openingBank == null ? null : openingBank.trim();
+    }
+
+    /**
+     * 执照照片
+     * @return lcense_img 执照照片
+     */
+    public String getLcenseImg() {
+        return lcenseImg;
+    }
+
+    /**
+     * 执照照片
+     * @param lcenseImg 执照照片
+     */
+    public void setLcenseImg(String lcenseImg) {
+        this.lcenseImg = lcenseImg == null ? null : lcenseImg.trim();
+    }
+
+    /**
+     * 买家序号
+     * @return buyer_num 买家序号
+     */
+    public String getBuyerNum() {
+        return buyerNum;
+    }
+
+    /**
+     * 买家序号
+     * @param buyerNum 买家序号
+     */
+    public void setBuyerNum(String buyerNum) {
+        this.buyerNum = buyerNum == null ? null : buyerNum.trim();
+    }
+
+    /**
+     * 客户经理
+     * @return staff_id 客户经理
+     */
+    public Integer getStaffId() {
+        return staffId;
+    }
+
+    /**
+     * 客户经理
+     * @param staffId 客户经理
+     */
+    public void setStaffId(Integer staffId) {
+        this.staffId = staffId;
+    }
+
+    /**
+     * 头像
+     * @return head_img 头像
+     */
+    public String getHeadImg() {
+        return headImg;
+    }
+
+    /**
+     * 头像
+     * @param headImg 头像
+     */
+    public void setHeadImg(String headImg) {
+        this.headImg = headImg == null ? null : headImg.trim();
+    }
+
+    /**
+     * 用户等级
+     * @return grade 用户等级
+     */
+    public Integer getGrade() {
+        return grade;
+    }
+
+    /**
+     * 用户等级
+     * @param grade 用户等级
+     */
+    public void setGrade(Integer grade) {
+        this.grade = grade;
+    }
+
+    /**
+     * 用户类型
+     * @return type 用户类型
+     */
+    public Integer getType() {
+        return type;
+    }
+
+    /**
+     * 用户类型
+     * @param type 用户类型
+     */
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    /**
+     * 是否有效
+     * @return flag 是否有效
+     */
+    public Integer getFlag() {
+        return flag;
+    }
+
+    /**
+     * 是否有效
+     * @param flag 是否有效
+     */
+    public void setFlag(Integer flag) {
+        this.flag = flag;
+    }
+
+	public String getFind() {
+		return find;
+	}
+
+	public void setFind(String find) {
+		this.find = find;
+	}
+	
+
+	public List<MerchantSite> getMerchantSiteList() {
+		return merchantSiteList;
+	}
+
+	public void setMerchantSiteList(List<MerchantSite> merchantSiteList) {
+		this.merchantSiteList = merchantSiteList;
+	}
+
+	@Override
+	public String toString() {
+		return "Auser [id=" + id + ", find=" + find + ", account=" + account + ", nickname=" + nickname + ", uName="
+				+ uName + ", age=" + age + ", card=" + card + ", password=" + password + ", sex=" + sex + ", uPhone="
+				+ uPhone + ", registerTime=" + registerTime + ", credit=" + credit + ", integration=" + integration
+				+ ", sign=" + sign + ", recommend=" + recommend + ", dealersId=" + dealersId + ", dealersName="
+				+ dealersName + ", businessNum=" + businessNum + ", legalPerson=" + legalPerson + ", broughtAccount="
+				+ broughtAccount + ", openingBank=" + openingBank + ", lcenseImg=" + lcenseImg + ", buyerNum="
+				+ buyerNum + ", staffId=" + staffId + ", headImg=" + headImg + ", grade=" + grade + ", type=" + type
+				+ ", flag=" + flag + "]";
+	}
+    
+}

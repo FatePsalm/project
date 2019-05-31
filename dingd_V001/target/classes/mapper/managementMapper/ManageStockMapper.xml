@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.ManageStockDao">
+	<!-- /** 管理端-拍卖管理-库存车辆查询-查询条目数*/ public List<Map> getFindStockRowCount(@Param("checkQueryEntity")CheckQueryEntity 
+		checkQueryEntity) -->
+	<select id="getFindStockRowCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		t_car_basisinfo t
+		<where>
+			t.car_state=#{checkQueryEntity.carState}
+			<if
+				test="checkQueryEntity.createTimeStart!=null and checkQueryEntity.createTimeStart!=''">
+				and t.create_time&gt;=#{checkQueryEntity.createTimeStart}
+			</if>
+			<if
+				test="checkQueryEntity.createTimeOver!=null and checkQueryEntity.createTimeOver!=''">
+				and t.create_time&lt;=#{checkQueryEntity.createTimeOver}
+			</if>
+			<if
+				test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+				AND
+				(
+				t.car_number like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR
+				t.master like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR
+				t.phone like CONCAT
+				("%",
+				#{checkQueryEntity.retrieval}, "%" )
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /** 管理端-拍卖管理-库存车辆查询 */public List<Map> FindStock(CheckQueryEntity checkQueryEntity, 
+		PageObject pageObject) -->
+	<select id="FindStock" resultType="map" resultMap="resultFindStock">
+		SELECT
+		t.id as tid,
+		t.car_state,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.car_model,
+		t.master,
+		t.phone,
+		t.retention_money,
+		t.create_time,
+		t.freezing_time,
+		t.remove_time
+		FROM
+		t_car_basisinfo t
+		<where>
+			t.car_state=#{checkQueryEntity.carState}
+			<if
+				test="checkQueryEntity.createTimeStart!=null and checkQueryEntity.createTimeStart!=''">
+				and t.create_time&gt;=#{checkQueryEntity.createTimeStart}
+			</if>
+			<if
+				test="checkQueryEntity.createTimeOver!=null and checkQueryEntity.createTimeOver!=''">
+				and t.create_time&lt;=#{checkQueryEntity.createTimeOver}
+			</if>
+			<if
+				test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+				AND
+				(
+				t.car_number like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR
+				t.master like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR
+				t.phone like CONCAT
+				("%",
+				#{checkQueryEntity.retrieval}, "%" )
+				)
+			</if>
+		</where>
+		<!-- 上传时间排序 -->
+		<if
+			test="checkQueryEntity.createTimeSort!=null and checkQueryEntity.createTimeSort!=''">
+			ORDER BY t.create_time ${checkQueryEntity.createTimeSort}
+		</if>
+		<!-- 冻结时间排序 -->
+		<if
+			test="checkQueryEntity.freezingTimeSort!=null and checkQueryEntity.freezingTimeSort!=''">
+			ORDER BY t.freezing_time ${checkQueryEntity.freezingTimeSort}
+		</if>
+		<!-- 下架时间排序 -->
+		<if
+			test="checkQueryEntity.removeTimeSort!=null and checkQueryEntity.removeTimeSort!=''">
+			ORDER BY t.remove_time ${checkQueryEntity.removeTimeSort}
+		</if>
+		limit #{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<resultMap type="map" id="resultFindStock">
+		<result column="car_name" property="carName" />
+		<result column="car_model" property="carModel" />
+		<result column="master" property="master" />
+		<result column="car_number" property="carNumber" />
+		<result column="retention_money" property="retentionMoney" />
+		<result column="create_time" property="createTime" />
+		<result column="remove_time" property="removeTime" />
+		<result column="freezing_time" property="freezingTime" />
+		<result column="car_state" property="carState" />
+	</resultMap>
+</mapper> 

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.ManageSeckillingDao">
+	<!-- /**拍卖-发布管理-秒杀-添加秒杀车辆*/ -->
+	<insert id="addSeckillCar" parameterType="cn.dingd.dd.common.entity.SecondKillBill">
+		INSERT
+		INTO
+		seconds_kill
+		(
+		car_id,
+		car_money,
+		server_money,
+		start_time,
+		create_time
+		) VALUES(
+		#{carId},
+		#{carMoney},
+		#{serverMoney},
+		#{startTime},
+		now()
+		)
+	</insert>
+	<!-- /**拍卖-发布管理-添加车辆-查询库存车辆列表*/public List<Map> FindCars(AuctionCarEntity 
+		auctionCarEntity) t.car_state=1 and b.check_status=3 车库/检测完成 -->
+	<select id="FindCars" resultType="map" resultMap="resultFindCars">
+		SELECT
+		t.id as
+		tid,
+		b.id as bid,
+		t.create_time,
+		t.retention_money,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.car_model
+		FROM
+		t_car_basisinfo t
+		LEFT JOIN check_bill
+		b ON b.id = t.check_bill_id
+		WHERE
+		t.car_state=1
+		ORDER BY
+		t.create_time ASC
+	</select>
+	<resultMap type="map" id="resultFindCars">
+		<result column="retention_money" property="retentionMoney" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="car_state" property="carState" />
+		<result column="check_status" property="checkStatus" />
+		<result column="car_number" property="carNumber"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	<!-- /**拍卖-发布管理-秒杀页面—展示秒杀车辆*/public List<Map> getAllSeckillCars() -->
+	<select id="getAllSeckillCars" resultType="map" resultMap="resultGetAllSeckillCars">
+		SELECT
+		t.id as tid,
+		t.retention_money,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.`master`,
+		t.phone,
+		t.car_model,
+		t.car_state,
+		s.server_money,
+    	s.start_time
+		FROM
+		seconds_kill s
+		,t_car_basisinfo t
+		where s.car_id = t.id and  to_days(s.start_time) = to_days(now())
+		ORDER BY
+		s.start_time ASC
+	</select>
+	<resultMap type="map" id="resultGetAllSeckillCars">
+		<result column="retention_money" property="retentionMoney" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="car_number" property="carNumber"/>
+		<result column="car_state" property="carState"/>
+		<result column="server_money" property="serverMoney"/>
+		<result column="master" property="master"/>
+		<result column="phone" property="phone"/>
+	</resultMap>
+	<!-- 修改秒杀车辆服务费 -->
+	<update id="updateServerMoney">
+		update seconds_kill set server_money=#{serverMoney} where car_id=#{carId} 
+	</update>
+	<!-- 修改秒杀车价 -->
+	<update id="updateCarMoney">
+		update seconds_kill set car_money=#{carMoney} where car_id=#{carId} 
+	</update>
+	<!-- 根据车牌查找车辆 -->
+	<select id="findCarByCarNum" resultType="map" resultMap="resultFindCars">
+		SELECT
+		t.id as
+		tid,
+		b.id as bid,
+		b.create_time,
+		t.retention_money,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.car_model
+		FROM
+		t_car_basisinfo t
+		LEFT JOIN check_bill
+		b ON b.id = t.check_bill_id
+		WHERE
+		t.car_state=1 and b.check_status=3 and t.car_number like CONCAT("%",#{carNum},"%")
+	</select>
+	<!-- 获取当天数据库最后一辆车的秒杀时间 -->
+	<select id="getLastCarStartTime" resultType="map" resultMap="getLastTime">
+		select start_time from seconds_kill 
+		where start_time &gt; now()
+		order by start_time desc limit 1;
+	</select>
+	<resultMap type="map" id="getLastTime">
+		<result column="start_time" property="startTime"/>
+	</resultMap>
+</mapper> 

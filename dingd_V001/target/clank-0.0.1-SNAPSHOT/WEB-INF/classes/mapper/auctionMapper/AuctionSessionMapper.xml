@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.AuctionSessionDao">
+
+
+  <!-- 查询拍卖场次信息 -->
+  <select id="queryAuctionSession" resultType="cn.dingd.dd.common.entity.AuctionSessionEntity">
+      select id,
+      auction_num as auctionNum,
+	  auction_date as auctionDate,
+	  auction_start as auctionStart,
+	  auction_over as auctionOver,
+	  principal,
+	  auction_state as auctionState
+      from auction_session where auction_state=1  ORDER BY auction_start asc
+  </select>
+  
+  <!--  查询场次车辆 -->
+  <select id="queryAuctionCar" resultType="map" >
+	 select t.id,t.asking_price as askingPrice,t.remarks,t.re_time as reTime,t.mileage,t.effluent_standard as effluentStandard,s.id auctionId,t.car_state status,u.url,MAX(n.money) money,
+	 t.car_name as carname,t.cars as cars,t.car_model as carModel,t.car_number as carNumber,(CASE WHEN n.car_id=t.id  and n.a_user_id=#{userId} THEN 1 WHEN t.id is null then NULL ELSE 0  END) as isbid from
+	 t_car_basisinfo t LEFT JOIN car_picture u on t.id=u.car_id and u.img_type=1 and u.dd_dict_id=9  	 LEFT JOIN auction_car r  on r.car_id=t.id LEFT JOIN auction_session s 
+	 on r.auction_id=s.id LEFT JOIN bidding n on n.car_id=t.id and n.a_user_id=#{userId} where 1=1
+	 <if test="status!=null and status==2">
+	  and  s.auction_state&lt;=#{status} 
+	  and  t.car_state in(2,6)
+	  and date(s.auction_start)=date(#{dateStart})
+	 </if>
+	 <if test="status!=null and status==1">
+	  and  s.auction_state=#{status}
+	  and  t.car_state=6
+	  and date(s.auction_start)&gt;date(#{dateStart})
+	 </if>
+	 GROUP BY r.car_id  ORDER BY s.auction_start,r.sort asc
+	 limit #{pageObject.startIndex},#{pageObject.pageSize}
+  </select>
+  
+   <!--  查询场次车辆下的数量和开拍时间 -->
+  <select id="getAuctionCarTime" resultType="map" >
+    select count(a.id) carCount,time(s.auction_start)  hour from auction_car a LEFT JOIN auction_session s on a.auction_id=s.id where s.auction_state&lt;=#{status} and date(s.auction_start)=date(NOW()) GROUP BY time(s.auction_start) limit 1
+  </select>
+  
+  
+  	<!--插入竞价-->
+	<insert id="addBiddingEntity" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.BiddingEntity">  
+    insert into bidding(a_user_id,biding_time,money,auction_id,car_id,total_prire)    
+    values(#{auserId},#{bidingTime},#{money},#{auctionId},#{carId},#{totalPrire})  
+    </insert> 
+    
+    
+    <!--插入出价记录-->
+	<insert id="addAuctionRecord" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.AuctionRecordEntity">  
+    insert into auction_record (auction_id,a_user_id,auction_time,auction_range,auction_money,car_id)   
+    values (#{auctionId},#{auserId},#{auctionTime},#{auctionRange},#{auctionMoney},#{carId})  
+   </insert> 
+   
+ 
+  
+     <!-- 查询最大id -->
+	 <select id="getCustomerbase" resultType="float">
+	      select  customer_base from entrust   ORDER BY id asc limit 1
+	 </select>
+	 	  <!-- 查询车辆信息 -->
+  <select id="queryTCarinfo"  resultType="cn.dingd.dd.common.view.TCarBasisInfoEntity" resultMap="carbaInfoResultMap">
+    select s.*,p.url,p.dd_dict_id,p.img_type,s.carMoney from (select c.*,MAX(g.money) money,(CASE WHEN g.car_id=c.id   THEN 1 ELSE 0  END) as isbid,
+   COUNT(e.id) as rcount,(CASE WHEN g.car_id=c.id   THEN g.money ELSE 0  END) as carMoney
+    from t_car_basisinfo c  left JOIN  bidding g on c.id=g.car_id and g.a_user_id=#{userId} and g.auction_id=#{auctionId} 
+    left JOIN car_damage e on c.id=e.car_id  where c.id =#{carId}) s  left JOIN car_picture p on s.id=p.car_id
+  </select>
+  
+  <resultMap type="cn.dingd.dd.common.view.TCarBasisInfoEntity" id="carbaInfoResultMap">
+          <id column="id" property="id"/>
+          <result column="check_bill_id" property="checkBillId"/>
+          <result column="master_type" property="masterType"/>
+          <result column="master" property="master"/>
+          <result column="card" property="card"/>
+          <result column="check_bill_id" property="checkBillId"/>
+          <result column="t_address" property="tAddress"/>
+          <result column="phone" property="phone"/>
+          <result column="province" property="province"/>
+          <result column="city" property="city"/>
+          <result column="zone" property="zone"/>
+          <result column="detail" property="detail"/>
+          <result column="enterprise" property="enterprise"/>
+          <result column="etp_card" property="etpCard"/>
+          <result column="car_number" property="carNumber"/>
+          <result column="vin_number" property="vinNumber"/>
+          <result column="power_number" property="powerNumber"/>
+          <result column="car_type" property="carType"/>
+          <result column="car_use_type" property="carUseType"/>
+          <result column="re_time" property="reTime"/>
+          <result column="year_time" property="yearTime"/>
+          <result column="change_number" property="changeNumber"/>
+          <result column="change_time" property="changeTime"/>
+          <result column="change_money" property="changeMoney"/>
+          <result column="paper" property="paper"/>
+          <result column="car_name" property="carName"/>
+          <result column="cars" property="cars"/>
+          <result column="car_model" property="carModel"/>
+          <result column="power_type" property="powerType"/>
+          <result column="power_kw" property="powerKw"/>
+          <result column="motor_power" property="motorPower"/>
+          <result column="displacement" property="displacement"/>
+          <result column="turbo" property="turbo"/>
+          <result column="transmission" property="transmission"/>
+          <result column="skylight" property="skylight"/>
+          <result column="color" property="color"/>
+          <result column="key_s" property="keys"/>
+          <result column="manufacture" property="manufacture"/>
+          <result column="mileage" property="mileage"/>
+          <result column="consistent" property="consistent"/>
+          <result column="insurance_time" property="insuranceTime"/>
+          <result column="business" property="business"/>
+          <result column="b_money" property="bMoney"/>
+          <result column="b_over_time" property="bOverTime"/>
+          <result column="acoustics" property="acoustics"/>
+          <result column="acoustics_remark" property="acousticsRemark"/>
+          <result column="skylight_check" property="skylightCheck"/>
+          <result column="skylight_remark" property="skylightRemark"/>
+          <result column="door" property="door"/>
+          <result column="door_remark" property="doorRemark"/>
+          <result column="lighting" property="lighting"/>
+          <result column="lighting_remark" property="lightingRemark"/>
+          <result column="electric" property="electric"/>
+          <result column="electric_remark" property="electricRemark"/>
+          <result column="hot" property="hot"/>
+          <result column="hot_remark" property="hotRemark"/>
+          <result column="steering" property="steering"/>
+          <result column="steering_remark" property="steeringRemark"/>
+          <result column="safety" property="safety"/>
+          <result column="safety_remark" property="safetyRemark"/>
+          <result column="airbag" property="airbag"/>
+          <result column="airbag_remark" property="airbagRemark"/>
+          <result column="parking" property="parking"/>
+          <result column="parking_remark" property="parkingRemark"/>
+          <result column="booster" property="booster"/>
+          <result column="booster_remark" property="boosterRemark"/>
+          <result column="start" property="start"/>
+          <result column="start_remark" property="startRemark"/>
+          <result column="cooling" property="cooling"/>
+          <result column="cooling_remark" property="coolingRemark"/>
+          <result column="jack" property="jack"/>
+          <result column="jack_remark" property="jackRemark"/>
+          <result column="spare" property="spare"/>
+          <result column="spare_remark" property="spareRemark"/>
+          <result column="attrition" property="attrition"/>
+          <result column="attrition_remark" property="attritionRemark"/>
+          <result column="tools" property="tools"/>
+          <result column="tools_remark" property="toolsRemark"/>
+          <result column="extinguisher" property="extinguisher"/>
+          <result column="extinguisher_remark" property="extinguisherRemark"/>
+          <result column="placard" property="placard"/>
+          <result column="placard_remark" property="placardRemark"/>
+          <result column="stall" property="stall"/>
+          <result column="stall_remark" property="stallRemark"/>
+          <result column="speed" property="speed"/>
+          <result column="speed_remark" property="speedRemark"/>
+          <result column="burning" property="burning"/>
+          <result column="burning_remark" property="burningRemark"/>
+          <result column="damping" property="damping"/>
+          <result column="damping_remark" property="dampingRemark"/>
+          <result column="clutch" property="clutch"/>
+          <result column="clutch_remark" property="clutchRemark"/>
+          <result column="muffler" property="muffler"/>
+          <result column="muffler_remark" property="mufflerRemark"/>
+          <result column="pacard" property="pacard"/>
+          <result column="pacardRemark" property="pacardRemark"/>
+          <result column="pacardRemark" property="pacardRemark"/>
+          <result column="suspension" property="suspension"/>
+          <result column="suspension_remark" property="suspensionRemark"/>
+          <result column="synthesise" property="synthesise"/>
+          <result column="condition_id" property="conditionId"/>
+          <result column="maintenance" property="maintenance"/>
+          <result column="a_or_b" property="aOrB"/>
+          <result column="remarks" property="remarks"/>
+          <result column="effluent_standard" property="effluentStandard"/>
+          <result column="car_state" property="carState"/>
+          <result column="mortgage" property="mortgage"/>
+          <result column="priority_level" property="priorityLevel"/>
+          <result column="asking_price" property="askingPrice"/>
+          <result column="freezing_time" property="freezingTime"/>
+          <result column="retention_money" property="retentionMoney"/>
+          <!-- <result column="remove_time" property="removeRime"/> -->
+          <result column="title" property="title"/>
+          <result column="create_time" property="createTime"/>
+          <result column="mortgage_period" property="mortgagePeriod"/>
+          <result column="isbid" property="isbid"/>
+          <result column="dcount" property="dcount"/>
+          <result column="rcount" property="rcount"/>
+          <result column="pcount" property="pcount"/>
+          <result column="carMoney" property="carMoney"/>
+       <collection property="imgList" ofType="cn.dingd.dd.common.entity.CarPictureEntity" javaType="java.util.List" column="car_id" fetchType="lazy">
+          <result column="url" property="url"/>
+          <result column="dd_dict_id" property="ddDictId" /> 
+          <result column="img_type" property="imgType"/> 
+       </collection>
+  </resultMap>
+ 
+	 <!-- 根据场次查下下一辆需要拍卖的车辆 -->
+	 <select id="getTCarBasisinfo" resultType="Map">
+	   select o.id,o.retention_money retentionMoney,o.asking_price askingPrice,o.cars,o.car_model carModel,MAX(g.money) money,s.account from
+	   auction_car r LEFT JOIN t_car_basisinfo o on r.car_id=o.id LEFT JOIN bidding g on g.car_id=r.car_id and g.auction_id=#{asid} LEFT JOIN a_user s on g.a_user_id=s.id 
+	   where r.auction_id=#{asid} and o.car_state=#{status} GROUP BY r.car_id ORDER BY r.sort asc LIMIT 1
+	 </select>
+	 
+	  <!-- 查询场次状态 -->
+	 <select id="getAuctionId" resultType="Integer">
+	   select id from auction_session where auction_state=#{status} ORDER BY auction_start desc limit 1
+	 </select>
+	 
+     
+	  <!-- 更改场次 -->
+	 <update id="updAuctionOver" parameterType="cn.dingd.dd.common.entity.AuctionSessionEntity">  
+      update auction_session  
+      set auction_session.auction_state = #{status},
+      auction_session.auction_over = #{date}
+      where auction_session.id = #{asid}
+     </update>
+    
+     
+          <!-- 查询场次状态 -->
+	 <select id="getAuctionStatus" resultType="Integer">
+	   select auction_state from auction_session where auction_state=#{status} 
+	 </select>
+     
+     <!-- 根据id获取车辆信息 -->
+     <select id="getTCarBasisInfoID" resultType="cn.dingd.dd.common.view.TCarBasisInfoEntity"  resultMap="carbaInfoResultMap">
+	    select s.*,p.url,p.dd_dict_id,p.img_type from (select c.*,COUNT(CASE WHEN recessive>1 THEN recessive ELSE null  END) as rcount
+        from t_car_basisinfo c  left JOIN car_damage e on c.id=e.car_id where c.id =#{carId}) s  left JOIN car_picture p on s.id=p.car_id
+	 </select>
+	 
+	 <!-- 查询总条数 -->
+	 <select id="queryAuctionCarPage" resultType="Integer">
+	   select count(*) from (select t.id  from
+		 t_car_basisinfo t LEFT JOIN car_picture u on t.id=u.car_id and u.img_type=1 and u.dd_dict_id=9  	 LEFT JOIN auction_car r  on r.car_id=t.id LEFT JOIN auction_session s 
+		 on r.auction_id=s.id LEFT JOIN bidding n on n.car_id=t.id and n.a_user_id=#{userId} where 1=1
+		 <if test="status!=null and status==2">
+		  and  s.auction_state&lt;=#{status} 
+		  and  t.car_state in(2,6)
+		  and date(s.auction_start)=date(#{dateStart})
+		 </if>
+		 <if test="status!=null and status==1">
+		  and  s.auction_state=#{status}
+		  and  t.car_state=6
+		  and date(s.auction_start)&gt;date(#{dateStart})
+		 </if>
+		 GROUP BY r.car_id) a    
+	 </select>
+	 
+	 <!-- 拍卖展示,拍卖中的 -->
+	 <select id="showAuction" resultType="cn.dingd.dd.common.view.ShowAuctionDto">
+	  	select car_name carName,cars,car_model carModel,asking_price askingPrice,url from
+	  		 t_car_basisinfo t left join car_picture p 
+	  		 	on t.id = p.car_id and p.img_type=1 and p.dd_dict_id= 9 
+	  		 		where car_state = 2 ;
+	 </select>
+	 
+	 <!-- 拍卖展示，未开拍的第一辆车 -->
+	 <select id="getCarInfo" resultType="cn.dingd.dd.common.view.ShowAuctionDto">
+	  	select  car_name carName,cars,car_model carModel,asking_price askingPrice,url from 
+	  		t_car_basisinfo t left join car_picture p on t.id = p.car_id and p.img_type=1 and p.dd_dict_id= 9 
+	  			where t.id = (select car_id from auction_car 
+	  				where auction_id = (select id from auction_session where auction_start &gt; now() ORDER BY auction_start asc limit 1 ) ORDER BY sort asc limit 1);
+	 </select>
+</mapper> 

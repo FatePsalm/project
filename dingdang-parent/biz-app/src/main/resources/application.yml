@@ -1,0 +1,12 @@
+#数据源配置
+spring:
+  datasource:
+    url: jdbc:mysql://39.108.70.214:3306/ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+    username: DrootUser
+    password: X8!f&4!01JxmZTVf!!
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis:
+# 指定全局配置文件位置
+  config-location: classpath:mybatis/mybatis-config.xml
+# 指定sql映射文件位置
+  mapper-locations: classpath:mybatis/mapper/*.xml

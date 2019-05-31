@@ -1,0 +1,211 @@
+package cn.dingd.dd.search.service.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.common.entity.CheckQueryEntity;
+import cn.dingd.dd.common.service.CommonService;
+import cn.dingd.dd.common.web.JsonResult;
+import cn.dingd.dd.common.web.PageObject;
+import cn.dingd.dd.search.dao.CarInfoSearchDao;
+import cn.dingd.dd.search.service.CarInfoSearchService;
+
+/**
+ * @author ZC
+ * @date 上午10:20:56
+ */
+@Service
+public class CarInfoSearchImpl implements CarInfoSearchService {
+
+	private static Long number;
+
+	private static HttpSolrClient solrClinet = null;
+
+	private static String url = "http://192.168.84.129:8983/solr/core2";
+
+	@Autowired
+	private CarInfoSearchDao carInfoSearchDao;
+
+	@Autowired
+	private CommonService commonService;
+
+	@Override
+	public String importCarsToSolr() {
+		try {
+			// 查询需要导入solr中加solr索引的车辆列表数据
+			List<Map<Object, Object>> list = carInfoSearchDao.getCarList();
+			solrClinet = new HttpSolrClient.Builder(url).build();
+			// 把车辆信息写入索引库
+			for (Map<Object, Object> item : list) {
+				// 创建一个SolrInputDocument对象
+				SolrInputDocument document = new SolrInputDocument();
+				document.setField("id", item.get("carId"));
+				document.setField("phone", item.get("phone"));
+				document.setField("carName", item.get("carName"));
+				document.setField("carModel", item.get("carModel"));
+				document.setField("cars", item.get("cars"));
+				document.setField("master", item.get("master"));
+				document.setField("carNumber", item.get("carNumber"));
+				document.setField("retentionMoney", item.get("retentionMoney"));
+				document.setField("createTime", item.get("createTime"));
+				document.setField("removeTime", item.get("removeTime"));
+				document.setField("freezingTime", item.get("freezingTime"));
+				document.setField("carState", item.get("carState"));
+				// 写入索引库
+				solrClinet.add(document);
+			}
+			// 提交修改
+			solrClinet.commit();
+			// 关闭连接
+			solrClinet.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "fail 500";
+		}
+
+		return "导入成功！";
+	}
+
+	/**
+	 * 搜索车辆
+	 */
+	@Override
+	public JsonResult searchCar(CheckQueryEntity checkQueryEntity, PageObject pageObject) {
+		try {
+			// 创建查询对象
+			SolrQuery query = new SolrQuery();
+			// 设置分页
+			//int rowEverypage = pageObject.getPageSize();
+			//query.setStart((pageObject.getPageCurrent() - 1) * rowEverypage);
+			int rowEverypage = 10;
+			query.setStart( 0 * rowEverypage);
+			query.setRows(rowEverypage);
+			// 设置车辆状态
+			query.addFilterQuery("carState:"+checkQueryEntity.getCarState());
+			// 设置默认搜素域
+			//query.set("df","carKeywords");
+			if (checkQueryEntity.getRetrieval() ==null || checkQueryEntity.getRetrieval() == ""){
+				query.setQuery("*:*");
+			}else {
+				// 设置查询条件
+				query.set("q","carKeywords:"+"*"+checkQueryEntity.getRetrieval() + "*");
+			}
+			// 设置排序字段
+			if (checkQueryEntity.getCreateTimeSort()!=null) {
+				query.setSort("createTime", SolrQuery.ORDER.asc);
+			}
+			if (checkQueryEntity.getRemoveTimeSort()!=null) {
+				query.setSort("removeTime", SolrQuery.ORDER.asc);
+			}
+			if (checkQueryEntity.getFreezingTimeSort()!=null) {
+				query.setSort("freeTime", SolrQuery.ORDER.asc);
+			}
+			//设置区间查找
+			if (checkQueryEntity.getCreateTimeStart()!=null&&checkQueryEntity.getCreateTimeOver()!=null) {
+				Long createTimeStart = checkQueryEntity.getCreateTimeStart().getTime()-8*60*60*1000;
+				Date startDate = new Date(createTimeStart);
+				Long createTimeOver = checkQueryEntity.getCreateTimeOver().getTime()-8*60*60*1000;
+				Date overDate = new Date(createTimeOver);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");  
+				String quaryTime = "createTime:["+sdf.format(startDate)+" TO "+sdf.format(overDate)+"]";
+				query.addFilterQuery(quaryTime);
+			}
+			List<Map<Object, Object>> searchResult = getSearchResult(query);
+			// 查询流拍次数
+			Map<Object, Object> sunCar = commonService.statisticalCars();
+			for (Map<Object, Object> myMap : searchResult) {
+				Integer count = Integer.parseInt(myMap.get("carId").toString());
+				myMap.put("sunCars",Integer.parseInt(sunCar.get(count).toString()));
+			}
+			Map<String, Object> map = new HashMap<>();
+			// 添加库存车辆
+			map.put("list", searchResult);
+			// 计算查询结果总页数
+			int recordCount = (int) getFoundNun();
+			long pageCount = recordCount / rowEverypage;
+			if (recordCount % rowEverypage > 0) {
+				pageCount++;
+			}
+			// 封装返回前台数据
+			pageObject.setRowCount(recordCount);
+			map.put("pageObject", pageObject);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			return new JsonResult(new Exception("获取失败"));
+		}
+	}
+
+	private long getFoundNun() {
+		return number;
+	}
+
+	/**
+	 * 查询封装车辆信息
+	 * 
+	 * @param solrquery
+	 * @return
+	 */
+	public List<Map<Object, Object>> getSearchResult(SolrQuery solrquery) {
+		// 车辆列表
+		List<Map<Object, Object>> carList = new ArrayList<>();
+		try {
+			solrClinet = new HttpSolrClient.Builder(url).build();
+			// 根据查询条件查询索引库
+			QueryResponse resp = solrClinet.query(solrquery);
+			// 取查询结果
+			SolrDocumentList solrDocumentList = resp.getResults();
+			// 取查询结果总数量
+			number = solrDocumentList.getNumFound();
+			// 取车辆列表
+			for (SolrDocument solrDocument : solrDocumentList) {
+				/**
+				 * "id":"1", "phone":13880095885, "carName":"标致", 
+				 * "carModel":"2011款 两厢 1.4L
+				 * 手动驭乐版", 
+				 * "cars":"标致207",
+				 * "master":"周利勤", 
+				 * "carNumber":"川A9K0Q9",
+				 * "retentionMoney":26000, 
+				 * "createTime":"Thu Dec 21 05:43:51 UTC 2017",
+				 * "removeTime":"Thu Dec 21 05:43:51 UTC 2017", 
+				 * "freezingTime":"Thu Dec 21 05:43:51 UTC 2017", 
+				 * "carState":1,
+				 */
+				// 创建一商品对象
+				Object object = solrDocument.get("retentionMoney");
+				Map<Object, Object> item = new HashMap<>();
+				item.put("carId",  solrDocument.get("id"));
+				item.put("phone",  solrDocument.get("phone"));
+				item.put("carName",  solrDocument.get("carName"));
+				item.put("carModel", solrDocument.get("carModel"));
+				item.put("master",  solrDocument.get("master"));
+				item.put("carNumber",  solrDocument.get("carNumber"));
+				item.put("retentionMoney",  object);
+				item.put("createTime", solrDocument.get("createTime"));
+				item.put("removeTime", solrDocument.get("removeTime"));
+				item.put("freezingTime", solrDocument.get("freezingTime"));
+				item.put("carState",  solrDocument.get("carState"));
+				// 添加的车辆列表
+				carList.add(item);
+			}
+			solrClinet.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return carList;
+	}
+
+}

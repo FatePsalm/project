@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/cn/wh/warehouse/common/web/PageObject.java=UTF-8
+encoding//src/main/java/cn/wh/warehouse/project/entity/Project.java=UTF-8
+encoding//src/main/webapp/WEB-INF/pages/echarts/echarts.jsp=UTF-8
+encoding//src/test/java/TestProjectDao.java=UTF-8

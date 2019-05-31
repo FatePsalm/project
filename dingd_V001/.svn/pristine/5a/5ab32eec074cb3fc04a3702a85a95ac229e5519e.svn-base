@@ -1,0 +1,1057 @@
+package cn.dingd.dd.common.view;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import cn.dingd.dd.common.entity.CarPictureEntity;
+
+/**
+ * @author 作者 Name:CaoGang
+ * @version 创建时间：2017年10月23日 下午3:27:31 类说明 检测端车辆信息
+ */
+public class TCarBasisInfoEntity implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6924090872274961615L;
+
+	// 汽车基本信息ID
+	private int id;
+	// 检测单ID
+	private int checkBillId;
+	// 车主信息1(个人)2(企业)3(机构)
+	private int masterType;
+	// 车主/联系人
+	private String master;
+	// 身份证
+	private String card;
+	// 地址
+	private String tAddress;
+	// 联系方式
+	private String phone;
+	// 所在省份
+	private String province;
+	// 市
+	private String city;
+	// 区
+	private String zone;
+	// 详细地址
+	private String detail;
+	// 企业名称
+	private String enterprise;
+	// 营业执照/三合一
+	private String etpCard;
+	// 车牌号
+	private String carNumber;
+	// VIN码
+	private String vinNumber;
+	// 发动机号
+	private String powerNumber;
+	// 车辆类型
+	private String carType;
+	// 使用性质
+	private String carUseType;
+	// 注册日期
+	private Date reTime;
+	// 年审有效期
+	private Date yearTime;
+	// 过户次数
+	private int changeNumber;
+	// 上次过户日期
+	private Date changeTime;
+	// 上次过户价格
+	private Double changeMoney;
+	// 是否有过户票据
+	private int paper;
+	// 车型选择(品牌)
+	private String carName;
+	// 车型选择(车系)
+	private String cars;
+	// 车型选择(车型款式)
+	private String carModel;
+	// 动力类型
+	private String powerType;
+	// 发动机功率
+	private String powerKw;
+	// 电机功率
+	private String motorPower;
+	// 排量
+	private String displacement;
+	// 是否涡轮增压
+	private int turbo;
+	// 变速箱类型
+	private String transmission;
+	// 天窗类型
+	private String skylight;
+	// 车辆颜色
+	private String color;
+	// 钥匙数量
+	private int keys;
+	// 出厂日期
+	private Date manufacture;
+	// 行驶里程
+	private float mileage;
+	// 被保人是否与车主一致
+	private int consistent;
+	// 交强险到期时间
+	private Date insuranceTime;
+	// 商业险
+	private String business;
+	// 价格
+	private Double bMoney;
+	// 到期时间
+	private Date bOverTime;
+	// 音响
+	private String acoustics;
+	// 音响备注
+	private String acousticsRemark;
+	// 天窗装置
+	private String skylightCheck;
+	// 天窗装置备注
+	private String skylightRemark;
+	// 车门电动窗
+	private String door;
+	// 车门电动窗备注
+	private String doorRemark;
+	// 车内外照明
+	private String lighting;
+	// 车内外照明备注
+	private String lightingRemark;
+	// 电动座椅
+	private String electric;
+	// 电动座椅备注
+	private String electricRemark;
+	// 电加热座椅
+	private String hot;
+	// 电加热座椅备注
+	private String hotRemark;
+	// 方向盘多功能按键
+	private String steering;
+	// 方向盘多功能按键备注
+	private String steeringRemark;
+	// 安全带
+	private String safety;
+	// 安全带备注
+	private String safetyRemark;
+	// 安全气囊
+	private String airbag;
+	// 安全气囊备注
+	private String airbagRemark;
+	// 驻车系统
+	private String parking;
+	// 驻车系统备注
+	private String parkingRemark;
+	// 方向机助力系统
+	private String booster;
+	// 点火启动系统
+	private String start;
+	// 冷却空调管路系统
+	private String cooling;
+	// 千斤顶
+	private String jack;
+	// 备胎
+	private String spare;
+	// 备胎磨损情况
+	private String attrition;
+	// 工具
+	private String tools;
+	// 灭火器
+	private String extinguisher;
+	
+	// 变速箱是否有顿挫
+	private String stall;
+	// 发动机运转状况
+	private String speed;
+	// 发动机是否烧油
+	private String burning;
+	// 减震器是否漏油
+	private String damping;
+	// 离合器
+	private String clutch;
+	// 消声器
+	private String muffler;
+	// 四避震系统
+	private String suspension;
+
+	// 方向机助力系统备注
+	private String boosterRemark;
+	// 点火启动系统 备注
+	private String startRemark;
+	// 冷却空调管路系统 备注
+	private String coolingRemark;
+	// 千斤顶 备注
+	private String jackRemark;
+	// 备胎 备注
+	private String spareRemark;
+	// 备胎磨损情况 备注
+	private String attritionRemark;
+	// 工具 备注
+	private String toolsRemark;
+	// 灭火器 备注
+	private String extinguisherRemark;
+	// 警示牌
+	private String placard;
+	// 警示牌 备注
+	private String placardRemark;
+
+	// 变速箱是否有顿挫 备注
+	private String stallRemark;
+	// 发动机运转状况 备注
+	private String speedRemark;
+	// 发动机是否烧油 备注
+	private String burningRemark;
+	// 减震器是否漏油 备注
+	private String dampingRemark;
+	// 离合器 备注
+	private String clutchRemark;
+	// 消声器 备注
+	private String mufflerRemark;
+	// 四避震系统 备注
+	private String suspensionRemark;
+	// 综合评价重要损伤
+	private String synthesise;
+	// 综合评价综合车况评级
+	private int conditionId;
+	// 评价维护成本评价
+	private int maintenance;
+	// 选择发布端状态(A端/B端)
+	private int aOrB;
+	// 保留价格(万元)
+	private float retentionMoney;
+	// 备注
+	private String remarks;
+	// 排放标准
+	private String effluentStandard;
+	// 抵押
+	private int mortgage;
+	// 抵押周期
+	private String mortgagePeriod;
+	// 特写图片
+	private List<CarPictureEntity> imgList;
+	//显形数
+	private int dcount;
+	//隐形数
+	private int rcount;
+	//优先级
+	private int priorityLevel;
+	//起拍价
+	private float askingPrice;
+	//创建时间
+	private Date createTime;
+	//下架时间
+	private Date removeTime;
+	//标题
+	private String title;
+	//车辆状态1-车库2-拍卖中3-成交4-冻结5-下架
+	private int carState;
+	//冻结时间
+	private Date freezingTime;
+	//是否竞价
+	private int isbid;
+	//竞价人数
+	private int pcount;
+	//车辆价格
+	private float carMoney;
+	
+	//起拍价格
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getCheckBillId() {
+		return checkBillId;
+	}
+	public void setCheckBillId(int checkBillId) {
+		this.checkBillId = checkBillId;
+	}
+	public int getMasterType() {
+		return masterType;
+	}
+	public void setMasterType(int masterType) {
+		this.masterType = masterType;
+	}
+	public String getMaster() {
+		return master;
+	}
+	public void setMaster(String master) {
+		this.master = master;
+	}
+	public String getCard() {
+		return card;
+	}
+	public void setCard(String card) {
+		this.card = card;
+	}
+	public String gettAddress() {
+		return tAddress;
+	}
+	public void settAddress(String tAddress) {
+		this.tAddress = tAddress;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getZone() {
+		return zone;
+	}
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+	public String getDetail() {
+		return detail;
+	}
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+	public String getEnterprise() {
+		return enterprise;
+	}
+	public void setEnterprise(String enterprise) {
+		this.enterprise = enterprise;
+	}
+	public String getEtpCard() {
+		return etpCard;
+	}
+	public void setEtpCard(String etpCard) {
+		this.etpCard = etpCard;
+	}
+	public String getCarNumber() {
+		return carNumber;
+	}
+	public void setCarNumber(String carNumber) {
+		this.carNumber = carNumber;
+	}
+	public String getVinNumber() {
+		return vinNumber;
+	}
+	public void setVinNumber(String vinNumber) {
+		this.vinNumber = vinNumber;
+	}
+	public String getPowerNumber() {
+		return powerNumber;
+	}
+	public void setPowerNumber(String powerNumber) {
+		this.powerNumber = powerNumber;
+	}
+	public String getCarType() {
+		return carType;
+	}
+	public void setCarType(String carType) {
+		this.carType = carType;
+	}
+	public String getCarUseType() {
+		return carUseType;
+	}
+	public void setCarUseType(String carUseType) {
+		this.carUseType = carUseType;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Date getReTime() {
+		return reTime;
+	}
+	public void setReTime(Date reTime) {
+		this.reTime = reTime;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Date getYearTime() {
+		return yearTime;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public void setYearTime(Date yearTime) {
+		this.yearTime = yearTime;
+	}
+	public int getChangeNumber() {
+		return changeNumber;
+	}
+	public void setChangeNumber(int changeNumber) {
+		this.changeNumber = changeNumber;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd")  
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")  
+	public Date getChangeTime() {
+		return changeTime;
+	}
+	
+	public void setChangeTime(Date changeTime) {
+		this.changeTime = changeTime;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Double getChangeMoney() {
+		return changeMoney;
+	}
+	public void setChangeMoney(Double changeMoney) {
+		this.changeMoney = changeMoney;
+	}
+	public int getPaper() {
+		return paper;
+	}
+	public void setPaper(int paper) {
+		this.paper = paper;
+	}
+	public String getCarName() {
+		return carName;
+	}
+	public void setCarName(String carName) {
+		this.carName = carName;
+	}
+	public String getCars() {
+		return cars;
+	}
+	public void setCars(String cars) {
+		this.cars = cars;
+	}
+	public String getCarModel() {
+		return carModel;
+	}
+	public void setCarModel(String carModel) {
+		this.carModel = carModel;
+	}
+	public String getPowerType() {
+		return powerType;
+	}
+	public void setPowerType(String powerType) {
+		this.powerType = powerType;
+	}
+	public String getPowerKw() {
+		return powerKw;
+	}
+	public void setPowerKw(String powerKw) {
+		this.powerKw = powerKw;
+	}
+	public String getMotorPower() {
+		return motorPower;
+	}
+	public void setMotorPower(String motorPower) {
+		this.motorPower = motorPower;
+	}
+	public String getDisplacement() {
+		return displacement;
+	}
+	public void setDisplacement(String displacement) {
+		this.displacement = displacement;
+	}
+	public int getTurbo() {
+		return turbo;
+	}
+	public void setTurbo(int turbo) {
+		this.turbo = turbo;
+	}
+	public String getTransmission() {
+		return transmission;
+	}
+	public void setTransmission(String transmission) {
+		this.transmission = transmission;
+	}
+	public String getSkylight() {
+		return skylight;
+	}
+	public void setSkylight(String skylight) {
+		this.skylight = skylight;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	public int getKeys() {
+		return keys;
+	}
+	public void setKeys(int keys) {
+		this.keys = keys;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd")  
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")  
+	public Date getManufacture() {
+		return manufacture;
+	}
+
+	public void setManufacture(Date manufacture) {
+		this.manufacture = manufacture;
+	}
+
+	public float getMileage() {
+		return mileage;
+	}
+	public void setMileage(float mileage) {
+		this.mileage = mileage;
+	}
+	public int getConsistent() {
+		return consistent;
+	}
+	public void setConsistent(int consistent) {
+		this.consistent = consistent;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd")  
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")  
+	public Date getInsuranceTime() {
+		return insuranceTime;
+	}
+
+	public void setInsuranceTime(Date insuranceTime) {
+		this.insuranceTime = insuranceTime;
+	}
+	public String getBusiness() {
+		return business;
+	}
+	public void setBusiness(String business) {
+		this.business = business;
+	}
+	public Double getbMoney() {
+		return bMoney;
+	}
+	public void setbMoney(Double bMoney) {
+		this.bMoney = bMoney;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd")  
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")  
+	public Date getbOverTime() {
+		return bOverTime;
+	}
+
+	public void setbOverTime(Date bOverTime) {
+		this.bOverTime = bOverTime;
+	}
+
+	public String getAcousticsRemark() {
+		return acousticsRemark;
+	}
+	public void setAcousticsRemark(String acousticsRemark) {
+		this.acousticsRemark = acousticsRemark;
+	}
+
+	public String getSkylightRemark() {
+		return skylightRemark;
+	}
+	public void setSkylightRemark(String skylightRemark) {
+		this.skylightRemark = skylightRemark;
+	}
+
+	public String getDoorRemark() {
+		return doorRemark;
+	}
+	public void setDoorRemark(String doorRemark) {
+		this.doorRemark = doorRemark;
+	}
+
+	public String getLightingRemark() {
+		return lightingRemark;
+	}
+	public void setLightingRemark(String lightingRemark) {
+		this.lightingRemark = lightingRemark;
+	}
+
+	public String getElectricRemark() {
+		return electricRemark;
+	}
+	public void setElectricRemark(String electricRemark) {
+		this.electricRemark = electricRemark;
+	}
+
+	public String getHotRemark() {
+		return hotRemark;
+	}
+	public void setHotRemark(String hotRemark) {
+		this.hotRemark = hotRemark;
+	}
+
+	public String getSteeringRemark() {
+		return steeringRemark;
+	}
+	public void setSteeringRemark(String steeringRemark) {
+		this.steeringRemark = steeringRemark;
+	}
+
+	public String getSafetyRemark() {
+		return safetyRemark;
+	}
+	public void setSafetyRemark(String safetyRemark) {
+		this.safetyRemark = safetyRemark;
+	}
+
+	public String getAirbagRemark() {
+		return airbagRemark;
+	}
+	public void setAirbagRemark(String airbagRemark) {
+		this.airbagRemark = airbagRemark;
+	}
+
+	public String getParkingRemark() {
+		return parkingRemark;
+	}
+	public void setParkingRemark(String parkingRemark) {
+		this.parkingRemark = parkingRemark;
+	}
+
+	public String getBoosterRemark() {
+		return boosterRemark;
+	}
+	public void setBoosterRemark(String boosterRemark) {
+		this.boosterRemark = boosterRemark;
+	}
+	public String getStartRemark() {
+		return startRemark;
+	}
+	public void setStartRemark(String startRemark) {
+		this.startRemark = startRemark;
+	}
+	public String getCoolingRemark() {
+		return coolingRemark;
+	}
+	public void setCoolingRemark(String coolingRemark) {
+		this.coolingRemark = coolingRemark;
+	}
+	public String getJackRemark() {
+		return jackRemark;
+	}
+	public void setJackRemark(String jackRemark) {
+		this.jackRemark = jackRemark;
+	}
+	public String getSpareRemark() {
+		return spareRemark;
+	}
+	public void setSpareRemark(String spareRemark) {
+		this.spareRemark = spareRemark;
+	}
+	public String getAttritionRemark() {
+		return attritionRemark;
+	}
+	public void setAttritionRemark(String attritionRemark) {
+		this.attritionRemark = attritionRemark;
+	}
+	public String getToolsRemark() {
+		return toolsRemark;
+	}
+	public void setToolsRemark(String toolsRemark) {
+		this.toolsRemark = toolsRemark;
+	}
+	public String getExtinguisherRemark() {
+		return extinguisherRemark;
+	}
+	public void setExtinguisherRemark(String extinguisherRemark) {
+		this.extinguisherRemark = extinguisherRemark;
+	}
+
+	public String getStallRemark() {
+		return stallRemark;
+	}
+	public void setStallRemark(String stallRemark) {
+		this.stallRemark = stallRemark;
+	}
+	public String getSpeedRemark() {
+		return speedRemark;
+	}
+	public void setSpeedRemark(String speedRemark) {
+		this.speedRemark = speedRemark;
+	}
+	public String getBurningRemark() {
+		return burningRemark;
+	}
+	public void setBurningRemark(String burningRemark) {
+		this.burningRemark = burningRemark;
+	}
+	public String getDampingRemark() {
+		return dampingRemark;
+	}
+	public void setDampingRemark(String dampingRemark) {
+		this.dampingRemark = dampingRemark;
+	}
+	public String getClutchRemark() {
+		return clutchRemark;
+	}
+	public void setClutchRemark(String clutchRemark) {
+		this.clutchRemark = clutchRemark;
+	}
+	public String getMufflerRemark() {
+		return mufflerRemark;
+	}
+	public void setMufflerRemark(String mufflerRemark) {
+		this.mufflerRemark = mufflerRemark;
+	}
+	public String getSuspensionRemark() {
+		return suspensionRemark;
+	}
+	public void setSuspensionRemark(String suspensionRemark) {
+		this.suspensionRemark = suspensionRemark;
+	}
+	public String getSynthesise() {
+		return synthesise;
+	}
+	public void setSynthesise(String synthesise) {
+		this.synthesise = synthesise;
+	}
+	public int getConditionId() {
+		return conditionId;
+	}
+	public void setConditionId(int conditionId) {
+		this.conditionId = conditionId;
+	}
+	public int getMaintenance() {
+		return maintenance;
+	}
+	public void setMaintenance(int maintenance) {
+		this.maintenance = maintenance;
+	}
+	public int getaOrB() {
+		return aOrB;
+	}
+	public void setaOrB(int aOrB) {
+		this.aOrB = aOrB;
+	}
+
+	public float getRetentionMoney() {
+		return retentionMoney;
+	}
+	public void setRetentionMoney(float retentionMoney) {
+		this.retentionMoney = retentionMoney;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	public String getEffluentStandard() {
+		return effluentStandard;
+	}
+	public void setEffluentStandard(String effluentStandard) {
+		this.effluentStandard = effluentStandard;
+	}
+	public int getMortgage() {
+		return mortgage;
+	}
+	public void setMortgage(int mortgage) {
+		this.mortgage = mortgage;
+	}
+	public String getMortgagePeriod() {
+		return mortgagePeriod;
+	}
+	public void setMortgagePeriod(String mortgagePeriod) {
+		this.mortgagePeriod = mortgagePeriod;
+	}
+
+	public List<CarPictureEntity> getImgList() {
+		return imgList;
+	}
+	public void setImgList(List<CarPictureEntity> imgList) {
+		this.imgList = imgList;
+	}
+	public int getDcount() {
+		return dcount;
+	}
+	public void setDcount(int dcount) {
+		this.dcount = dcount;
+	}
+	public int getRcount() {
+		return rcount;
+	}
+	public void setRcount(int rcount) {
+		this.rcount = rcount;
+	}
+	public int getPriorityLevel() {
+		return priorityLevel;
+	}
+	public void setPriorityLevel(int priorityLevel) {
+		this.priorityLevel = priorityLevel;
+	}
+	public float getAskingPrice() {
+		return askingPrice;
+	}
+	public void setAskingPrice(float askingPrice) {
+		this.askingPrice = askingPrice;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Date getCreateTime() {
+		return createTime;
+	}
+	
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Date getRemoveTime() {
+		return removeTime;
+	}
+	
+	public void setRemoveTime(Date removeTime) {
+		this.removeTime = removeTime;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public int getCarState() {
+		return carState;
+	}
+	public void setCarState(int carState) {
+		this.carState = carState;
+	}
+	
+	public int getIsbid() {
+		return isbid;
+	}
+	public void setIsbid(int isbid) {
+		this.isbid = isbid;
+	}
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")  
+	public Date getFreezingTime() {
+		return freezingTime;
+	}
+
+	public void setFreezingTime(Date freezingTime) {
+		this.freezingTime = freezingTime;
+	}
+	public String getPlacardRemark() {
+		return placardRemark;
+	}
+	public void setPlacardRemark(String placardRemark) {
+		this.placardRemark = placardRemark;
+	}
+
+	public String getPlacard() {
+		return placard;
+	}
+	public void setPlacard(String placard) {
+		this.placard = placard;
+	}
+	public String getAcoustics() {
+		return acoustics;
+	}
+	public void setAcoustics(String acoustics) {
+		this.acoustics = acoustics;
+	}
+	public String getSkylightCheck() {
+		return skylightCheck;
+	}
+	public void setSkylightCheck(String skylightCheck) {
+		this.skylightCheck = skylightCheck;
+	}
+	public String getDoor() {
+		return door;
+	}
+	public void setDoor(String door) {
+		this.door = door;
+	}
+	public String getLighting() {
+		return lighting;
+	}
+	public void setLighting(String lighting) {
+		this.lighting = lighting;
+	}
+	public String getElectric() {
+		return electric;
+	}
+	public void setElectric(String electric) {
+		this.electric = electric;
+	}
+	public String getHot() {
+		return hot;
+	}
+	public void setHot(String hot) {
+		this.hot = hot;
+	}
+	public String getSteering() {
+		return steering;
+	}
+	public void setSteering(String steering) {
+		this.steering = steering;
+	}
+	public String getSafety() {
+		return safety;
+	}
+	public void setSafety(String safety) {
+		this.safety = safety;
+	}
+	public String getAirbag() {
+		return airbag;
+	}
+	public void setAirbag(String airbag) {
+		this.airbag = airbag;
+	}
+	public String getParking() {
+		return parking;
+	}
+	public void setParking(String parking) {
+		this.parking = parking;
+	}
+	public String getBooster() {
+		return booster;
+	}
+	public void setBooster(String booster) {
+		this.booster = booster;
+	}
+	public String getStart() {
+		return start;
+	}
+	public void setStart(String start) {
+		this.start = start;
+	}
+	public String getCooling() {
+		return cooling;
+	}
+	public void setCooling(String cooling) {
+		this.cooling = cooling;
+	}
+	public String getJack() {
+		return jack;
+	}
+	public void setJack(String jack) {
+		this.jack = jack;
+	}
+	public String getSpare() {
+		return spare;
+	}
+	public void setSpare(String spare) {
+		this.spare = spare;
+	}
+	public String getAttrition() {
+		return attrition;
+	}
+	public void setAttrition(String attrition) {
+		this.attrition = attrition;
+	}
+	public String getTools() {
+		return tools;
+	}
+	public void setTools(String tools) {
+		this.tools = tools;
+	}
+	public String getExtinguisher() {
+		return extinguisher;
+	}
+	public void setExtinguisher(String extinguisher) {
+		this.extinguisher = extinguisher;
+	}
+
+	public String getStall() {
+		return stall;
+	}
+	public void setStall(String stall) {
+		this.stall = stall;
+	}
+	public String getSpeed() {
+		return speed;
+	}
+	public void setSpeed(String speed) {
+		this.speed = speed;
+	}
+	public String getBurning() {
+		return burning;
+	}
+	public void setBurning(String burning) {
+		this.burning = burning;
+	}
+	public String getDamping() {
+		return damping;
+	}
+	public void setDamping(String damping) {
+		this.damping = damping;
+	}
+	public String getClutch() {
+		return clutch;
+	}
+	public void setClutch(String clutch) {
+		this.clutch = clutch;
+	}
+	public String getMuffler() {
+		return muffler;
+	}
+	public void setMuffler(String muffler) {
+		this.muffler = muffler;
+	}
+	public String getSuspension() {
+		return suspension;
+	}
+	public void setSuspension(String suspension) {
+		this.suspension = suspension;
+	}
+   
+	public float getCarMoney() {
+		return carMoney;
+	}
+	public void setCarMoney(float carMoney) {
+		this.carMoney = carMoney;
+	}
+	public int getPcount() {
+		return pcount;
+	}
+	public void setPcount(int pcount) {
+		this.pcount = pcount;
+	}
+	@Override
+	public String toString() {
+		return "TCarBasisInfoEntity [id=" + id + ", checkBillId=" + checkBillId + ", masterType=" + masterType
+				+ ", master=" + master + ", card=" + card + ", tAddress=" + tAddress + ", phone=" + phone
+				+ ", province=" + province + ", city=" + city + ", zone=" + zone + ", detail=" + detail
+				+ ", enterprise=" + enterprise + ", etpCard=" + etpCard + ", carNumber=" + carNumber + ", vinNumber="
+				+ vinNumber + ", powerNumber=" + powerNumber + ", carType=" + carType + ", carUseType=" + carUseType
+				+ ", reTime=" + reTime + ", yearTime=" + yearTime + ", changeNumber=" + changeNumber + ", changeTime="
+				+ changeTime + ", changeMoney=" + changeMoney + ", paper=" + paper + ", carName=" + carName + ", cars="
+				+ cars + ", carModel=" + carModel + ", powerType=" + powerType + ", powerKw=" + powerKw
+				+ ", motorPower=" + motorPower + ", displacement=" + displacement + ", turbo=" + turbo
+				+ ", transmission=" + transmission + ", skylight=" + skylight + ", color=" + color + ", keys=" + keys
+				+ ", manufacture=" + manufacture + ", mileage=" + mileage + ", consistent=" + consistent
+				+ ", insuranceTime=" + insuranceTime + ", business=" + business + ", bMoney=" + bMoney + ", bOverTime="
+				+ bOverTime + ", acoustics=" + acoustics + ", acousticsRemark=" + acousticsRemark + ", skylightCheck="
+				+ skylightCheck + ", skylightRemark=" + skylightRemark + ", door=" + door + ", doorRemark=" + doorRemark
+				+ ", lighting=" + lighting + ", lightingRemark=" + lightingRemark + ", electric=" + electric
+				+ ", electricRemark=" + electricRemark + ", hot=" + hot + ", hotRemark=" + hotRemark + ", steering="
+				+ steering + ", steeringRemark=" + steeringRemark + ", safety=" + safety + ", safetyRemark="
+				+ safetyRemark + ", airbag=" + airbag + ", airbagRemark=" + airbagRemark + ", parking=" + parking
+				+ ", parkingRemark=" + parkingRemark + ", booster=" + booster + ", start=" + start + ", cooling="
+				+ cooling + ", jack=" + jack + ", spare=" + spare + ", attrition=" + attrition + ", tools=" + tools
+				+ ", extinguisher=" + extinguisher + ", stall=" + stall + ", speed=" + speed + ", burning=" + burning
+				+ ", damping=" + damping + ", clutch=" + clutch + ", muffler=" + muffler + ", suspension=" + suspension
+				+ ", boosterRemark=" + boosterRemark + ", startRemark=" + startRemark + ", coolingRemark="
+				+ coolingRemark + ", jackRemark=" + jackRemark + ", spareRemark=" + spareRemark + ", attritionRemark="
+				+ attritionRemark + ", toolsRemark=" + toolsRemark + ", extinguisherRemark=" + extinguisherRemark
+				+ ", placard=" + placard + ", placardRemark=" + placardRemark + ", stallRemark=" + stallRemark
+				+ ", speedRemark=" + speedRemark + ", burningRemark=" + burningRemark + ", dampingRemark="
+				+ dampingRemark + ", clutchRemark=" + clutchRemark + ", mufflerRemark=" + mufflerRemark
+				+ ", suspensionRemark=" + suspensionRemark + ", synthesise=" + synthesise + ", conditionId="
+				+ conditionId + ", maintenance=" + maintenance + ", aOrB=" + aOrB + ", retentionMoney=" + retentionMoney
+				+ ", remarks=" + remarks + ", effluentStandard=" + effluentStandard + ", mortgage=" + mortgage
+				+ ", mortgagePeriod=" + mortgagePeriod + ", imgList=" + imgList + ", dcount=" + dcount + ", rcount="
+				+ rcount + ", priorityLevel=" + priorityLevel + ", askingPrice=" + askingPrice + ", createTime="
+				+ createTime + ", removeTime=" + removeTime + ", title=" + title + ", carState=" + carState
+				+ ", freezingTime=" + freezingTime + ", isbid=" + isbid + ", pcount=" + pcount + ", carMoney="
+				+ carMoney + "]";
+	}
+	
+	
+	
+	
+	
+}

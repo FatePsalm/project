@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.biz.backgroud.dao.DictionaryDao">
+    <!--public int insert(DdDictEntity record)-->
+    <insert id="insert">
+	INSERT INTO dd_dict
+        (
+        dict_name,
+        dict_value,
+        dict_order,
+        dict_desc,
+        code,
+        status,
+        parent_id
+        )
+        VALUES
+        (
+        #{dictName},
+        #{dictValue},
+        #{dictOrder},
+        #{dictDesc},
+        #{code},
+        1,
+        #{parentId}
+        )
+	</insert>
+    <!-- public List<DdDictEntity> selectFull(DdDictEntity ddDictEntity) -->
+    <select id="selectFull"
+            resultType="cn.dingd.dd.biz.common.entity.DdDictEntity">
+        SELECT
+        id,
+        dict_name as dictName,
+        dict_value as dictValue,
+        dict_order as
+        dictOrder,
+        code,
+        dict_desc as dictDesc,
+        status as
+        status,
+        parent_id as
+        parentId
+        FROM dd_dict
+        <where>
+            <if test="find!=null and find!=''">
+                dict_name like CONCAT
+                ("%",#{find},"%")
+                OR dict_value like
+                CONCAT
+                ("%",#{find},"%")
+                OR parent_id like CONCAT
+                ("%",#{find},"%")
+            </if>
+        </where>
+    </select>
+    <!-- public int deleteByPrimaryKey(Integer id) -->
+    <update id="deleteByPrimaryKey">
+		UPDATE dd_dict ud,
+		( SELECT id, CASE `status` WHEN 1
+		THEN 2 ELSE 1 END AS `status` FROM
+		dd_dict WHERE id = #{id} ) sd
+		SET
+		ud.`status` = sd.`status`
+		WHERE
+		ud.id = sd.id
+	</update>
+    <!-- public DdDictEntity selectByPrimaryKey(Integer id) -->
+    <select id="selectByPrimaryKey"
+            resultType="cn.dingd.dd.biz.common.entity.DdDictEntity">
+		SELECT
+		id,
+		dict_name as dictName,
+		dict_value as dictValue,
+		dict_order as dictOrder,
+		code,
+		dict_desc as dictDesc,
+		status as
+		status,
+		parent_id as parentId
+		FROM dd_dict
+		where
+		id=#{id}
+	</select>
+    <!-- public List<DictInfoEntity> selectAll();/查询数据字典 -->
+    <select id="selectAll"
+            resultType="cn.dingd.dd.biz.common.entity.DdDictEntity">
+		SELECT
+		id,
+		dict_name as dictName,
+		dict_value as dictValue,
+		dict_order as dictOrder,
+		code,
+		dict_desc as dictDesc,
+		status as
+		status,
+		parent_id as parentId
+		FROM dd_dict
+		where
+		parent_id is not null
+	</select>
+    <!-- public int updateByPrimaryKey(DdDictEntity record) -->
+    <update id="updateByPrimaryKey">
+        UPDATE
+        dd_dict
+        Set
+        <if test="dictName!=null and dictName!=''">
+            dict_name=#{dictName} ,
+        </if>
+        <if test="dictValue!=null and dictValue!=''">
+            dict_value=#{dictValue},
+        </if>
+        <if test="dictOrder!=null and dictOrder!=''">
+            dict_order=#{dictOrder},
+        </if>
+        <if test="code!=null and code!=''">
+            code=#{code},
+        </if>
+        <if test="dictDesc!=null and dictDesc!=''">
+            dict_desc=#{dictDesc},
+        </if>
+        <if test="status!=null and status!=''">
+            status=#{status},
+        </if>
+        <if test="parentId!=null and parentId!=''">
+            parent_id =#{parentId}
+        </if>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+</mapper> 	

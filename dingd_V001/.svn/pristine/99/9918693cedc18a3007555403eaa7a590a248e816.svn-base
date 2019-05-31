@@ -1,0 +1,105 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.dingd.dd.biz.backgroud.service.RoleManageService;
+import cn.dingd.dd.biz.common.view.RoleView;
+import cn.dingd.dd.common.util.StringUtils;
+import cn.dingd.dd.common.web.JsonResult;
+
+/**
+* @author ZC
+* @date 2018年4月23日上午11:27:20
+* 角色管理控制器
+*/
+@RestController
+@RequestMapping("roleManage")
+public class RoleManageController {
+	
+	@Autowired
+	private RoleManageService roleManageService;
+	
+	/**
+	 * 获取角色列表
+	 * @param quaryParam
+	 * @return
+	 */
+	@RequestMapping("roleList")
+	public JsonResult roleList(String quaryParam) {
+		try {
+			return new JsonResult(roleManageService.roles(quaryParam));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult("获取角色信息失败");
+		}
+	}
+	
+	/**
+	 * 新增角色
+	 * @param quaryParam
+	 * @return
+	 */
+	@RequestMapping("addRole")
+	public JsonResult addRole(RoleView role) {
+		try {
+			if (!StringUtils.isNotNullApp(role.getRoleName())) {
+				return new JsonResult(new Exception("角色名为空"));
+			}
+			if (!StringUtils.isNotNullApp(role.getRoleDesc())) {
+				return new JsonResult(new Exception("角色描述为空"));
+			}
+			if (roleManageService.roleIsExist(role.getRoleName())) {
+				return new JsonResult(new Exception("该角色名已存在"));
+			}
+			roleManageService.addRole(role);
+			return new JsonResult("添加成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult("添加失败");
+		}
+	}
+	
+	/**
+	 * 编辑角色
+	 * @param quaryParam
+	 * @return
+	 */
+	@RequestMapping("updateRole")
+	public JsonResult updateRole(RoleView role) {
+		try {
+			if (StringUtils.isNotNullApp(role.getRoleName())) {
+				return new JsonResult(new Exception("角色名为空"));
+			}
+			if (StringUtils.isNotNullApp(role.getRoleDesc())) {
+				return new JsonResult(new Exception("角色描述为空"));
+			}
+			if (roleManageService.roleIsExist(role.getRoleName())) {
+				return new JsonResult(new Exception("该角色名已存在"));
+			}
+			roleManageService.updateRole(role);
+			return new JsonResult("添加成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult("添加失败");
+		}
+	}
+	
+	/**
+	 * 获取所有菜单
+	 * @return
+	 */
+	@RequestMapping("menuList")
+	public JsonResult menuList() {
+		try {
+			return new JsonResult(roleManageService.menuList());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult("获取信息失败");
+		}
+	}
+	
+	
+	
+}

@@ -1,0 +1,43 @@
+package cn.dingd.dd.biz.backgroud.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.dingd.dd.biz.common.entity.AccountRole;
+import cn.dingd.dd.biz.common.entity.AccountRoleExample;
+import cn.dingd.dd.biz.common.view.AccountRoleView;
+
+public interface AccountRoleMapper {
+    int countByExample(AccountRoleExample example);
+
+    int deleteByExample(AccountRoleExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(AccountRole record);
+
+    int insertSelective(AccountRole record);
+
+    List<AccountRole> selectByExample(AccountRoleExample example);
+
+    AccountRole selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") AccountRole record, @Param("example") AccountRoleExample example);
+
+    int updateByExample(@Param("record") AccountRole record, @Param("example") AccountRoleExample example);
+
+    int updateByPrimaryKeySelective(AccountRole record);
+
+    int updateByPrimaryKey(AccountRole record);
+
+	int addAccountRoles(List<AccountRole> accountRoles);
+	
+	/**
+	 * 账号角色对象关系
+	 * @return
+	 */
+	List<AccountRoleView> accountRoleMap();
+	
+	List<Integer> selectRolesByStaff(Integer staffId);
+}

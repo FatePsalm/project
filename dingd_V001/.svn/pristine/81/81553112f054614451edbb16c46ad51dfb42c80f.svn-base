@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.DetectOrderDao">
+<!-- /**根据检测订单查询是否重复提交信息*/detectUpload -->
+	<select id="detectUpload" resultType="int">
+	SELECT COUNT(*) FROM t_car_basisinfo WHERE check_bill_id=#{checkBillId}
+	</select>
+	<!-- /**更改检测单状态*/ setCheckState -->
+	<update id="setCheckState">
+		update check_bill
+		set check_status = #{checkStatus}
+		<if test="checkStatus==3">
+		,over_time=NOW()
+		</if>
+		where id = #{id}
+	</update>
+	<!-- * 上传特写图片和其他证件图片 uploadImg -->
+	<insert id="uploadImg" parameterType="java.util.List">
+		INSERT INTO car_picture(
+		car_id ,
+		priture ,
+		show_srot ,
+		url ,
+		cover ,
+		create_time ,
+		img_type ,
+		dd_dict_id
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.carId},
+			#{item.priture},
+			#{item.showSrot},
+			#{item.url},
+			#{item.cover},
+			NOW(),
+			#{item.imgType},
+			#{item.ddDictId}
+			)
+		</foreach>
+	</insert>
+	<!-- 根据检测单号查询对应的检测单id -->
+	<select id="getcheckBillId" resultType="cn.dingd.dd.entity.CheckBillEntity">
+		SELECT id FROM check_bill
+		WHERE check_account=#{checkBillId}
+	</select>
+	<!-- 根据检测单号查询对应的carId getCarId -->
+	<select id="getCarId" resultType="int">
+		SELECT id FROM t_car_basisinfo
+		WHERE check_bill_id=#{checkBillId}
+	</select>
+	<!-- 插入损伤信息 -->
+	<insert id="UploadCarDamage" parameterType="java.util.List">
+		INSERT INTO car_damage(
+		car_id,
+		damage_type,
+		type_number,
+		dominant,
+		recessive,
+		car_describe,
+		xy,
+		img_url,
+		img_remark)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.carId},
+			#{item.damageType},
+			#{item.typeNumber},
+			#{item.dominant},
+			#{item.recessive},
+			#{item.carDescribe},
+			#{item.xy},
+			#{item.imgUrl},
+			#{item.imgRemark})
+		</foreach>
+	</insert>
+	<!-- // 上传检测端车辆基本信息 -->
+	<insert id="addTCarInfo" useGeneratedKeys="true" keyProperty="id"   parameterType="cn.dingd.dd.entity.TCarBasisInfoEntity">
+		INSERT INTO
+		t_car_basisinfo (
+		check_bill_id,
+		master_type,
+		master,
+		card,
+		t_address,
+		phone,
+		province,
+		city,
+		zone,
+		detail,
+		enterprise,
+		etp_card,
+		car_number,
+		vin_number,
+		power_number,
+		car_type,
+		car_use_type,
+		re_time,
+		year_time,
+		change_number,
+		change_time,
+		change_money,
+		paper,
+		car_name,
+		cars,
+		car_model,
+		power_type,
+		power_kw,
+		motor_power,
+		displacement,
+		turbo,
+		transmission,
+		skylight,
+		color,
+		key_s,
+		manufacture,
+		mileage,
+		consistent,
+		insurance_time,
+		business,
+		b_money,
+		b_over_time,
+		acoustics,
+		acoustics_remark,
+		skylight_check,
+		skylight_remark,
+		door,
+		door_remark,
+		lighting,
+		lighting_remark,
+		electric,
+		electric_remark,
+		hot,
+		hot_remark,
+		steering,
+		steering_remark,
+		safety,
+		safety_remark,
+		airbag,
+		airbag_remark,
+		parking,
+		parking_remark,
+		synthesise,
+		condition_id,
+		maintenance,
+		a_or_b,
+		retention_money,
+		remarks,
+		effluent_standard,
+		booster,
+		start,
+		cooling,
+		jack,
+		spare,
+		attrition,
+		tools,
+		extinguisher,
+		placard,
+		stall,
+		speed,
+		burning,
+		damping,
+		clutch,
+		muffler,
+		suspension,
+		booster_remark,
+		start_remark,
+		cooling_remark,
+		jack_remark,
+		spare_remark,
+		attrition_remark,
+		tools_remark,
+		extinguisher_remark,
+		placard_remark,
+		stall_remark,
+		speed_remark,
+		burning_remark,
+		damping_remark,
+		clutch_remark,
+		muffler_remark,
+		suspension_remark,
+		priority_level,
+		asking_price,
+		create_time,
+		title
+		)
+		VALUES
+		(
+		#{checkBillId},
+		#{masterType},
+		#{master},
+		#{card},
+		#{tAddress},
+		#{phone},
+		#{province},
+		#{city},
+		#{zone},
+		#{detail},
+		#{enterprise},
+		#{etpCard},
+		#{carNumber},
+		#{vinNumber},
+		#{powerNumber},
+		#{carType},
+		#{carUseType},
+		#{reTime},
+		#{yearTime},
+		#{changeNumber},
+		#{changeTime},
+		#{changeMoney},
+		#{paper},
+		#{carName},
+		#{cars},
+		#{carModel},
+		#{powerType},
+		#{powerKw},
+		#{motorPower},
+		#{displacement},
+		#{turbo},
+		#{transmission},
+		#{skylight},
+		#{color},
+		#{keys},
+		#{manufacture},
+		#{mileage},
+		#{consistent},
+		#{insuranceTime},
+		#{business},
+		#{bMoney},
+		#{bOverTime},
+		#{acoustics},
+		#{acousticsRemark},
+		#{skylightCheck},
+		#{skylightRemark},
+		#{door},
+		#{doorRemark},
+		#{lighting},
+		#{lightingRemark},
+		#{electric},
+		#{electricRemark},
+		#{hot},
+		#{hotRemark},
+		#{steering},
+		#{steeringRemark},
+		#{safety},
+		#{safetyRemark},
+		#{airbag},
+		#{airbagRemark},
+		#{parking},
+		#{parkingRemark},
+		#{synthesise},
+		#{conditionId},
+		#{maintenance},
+		#{aOrB},
+		#{retentionMoney},
+		#{remarks},
+		#{effluentStandard},
+		#{booster},
+		#{start},
+		#{cooling},
+		#{jack},
+		#{spare},
+		#{attrition},
+		#{tools},
+		#{extinguisher},
+		#{placard},
+		#{stall},
+		#{speed},
+		#{burning},
+		#{damping},
+		#{clutch},
+		#{muffler},
+		#{suspension},
+		#{boosterRemark},
+		#{startRemark},
+		#{coolingRemark},
+		#{jackRemark},
+		#{spareRemark},
+		#{attritionRemark},
+		#{toolsRemark},
+		#{extinguisherRemark},
+		#{placardRemark},
+		#{stallRemark},
+		#{speedRemark},
+		#{burningRemark},
+		#{dampingRemark},
+		#{clutchRemark},
+		#{mufflerRemark},
+		#{suspensionRemark},
+		#{priorityLevel},
+		#{askingPrice},
+		NOW(),
+		#{title}
+		)
+	</insert>
+	<!-- 查询我的检测单 -->
+	<select id="MyDetectOrder" resultType="cn.dingd.dd.entity.CheckBillEntity">
+		SELECT
+		b. id ,
+		b. create_time as createTime ,
+		b. allotus_time as
+		allotusTime ,
+		b. response_time as responseTime ,
+		b. check_status as
+		checkStatus ,
+		b. upload_time as uploadTime ,
+		b. check_account as
+		checkAccount ,
+		b. person ,
+		b. telephone ,
+		b. create_person as
+		create_person ,
+		b. address ,
+		b. province ,
+		b. city ,
+		b. area ,
+		b. cars ,
+		b. car_name as carName ,
+		b. car_model as carModel ,
+		b. car_type as carType ,
+		b.
+		car_create_time as carCreateTime ,
+		b. car_number as carNumber ,
+		b.
+		appointment_time as appointmentTime
+		FROM check_bill b
+		LEFT JOIN
+		staff_info s on
+		b.staff_id=s.id WHERE
+		s.id=#{staffInfo.id} and
+		b.check_status=#{checkStatus}
+		<!-- limit #{pageObject.startIndex},#{pageObject.pageSize} -->
+	</select>
+	<!-- /** 我的订单中心修改订单时间 */ -->
+	<update id="UpdateTime" parameterType="cn.dingd.dd.entity.CheckBillEntity">
+		update check_bill
+		set
+		appointment_time = #{appointmentTime}
+		where id = #{id}
+	</update>
+	<!-- /** 返回所有的车辆品牌 */ -->
+	<select id="CarInfoAll" resultType="cn.dingd.dd.entity.CarBrandsInfoEntity">
+		SELECT id,brands_Head as
+		brandsHead ,brands_Id as brandsId,brands_Name
+		as brandsName,Logo_Imge
+		as LogoImge
+		from
+		car_brands
+		<where>
+			<if
+				test="carBrandsInfoEntity.brandsName!=null and carBrandsInfoEntity.brandsName!=''">
+				brands_Name like CONCAT
+				("%",#{carBrandsInfoEntity.brandsName},"%")
+			</if>
+		</where>
+	</select>
+	<!-- /** 根据品牌ID查询车系列信息 */ -->
+	<select id="FindCarSeriesInfo" resultType="cn.dingd.dd.entity.CarSeriesInfoEntity">
+		SELECT
+		id,
+		series_id AS
+		seriesId,
+		brands_id AS brandsId,
+		series_name AS seriesName,
+		guide_money
+		AS guideMoney,
+		series_img AS seriesImg
+		FROM car_series WHERE
+		brands_id=#{brandsId};
+	</select>
+	<!-- /** 根据车辆ID查询车型款式信息 */ -->
+	<select id="FindCarModelInfo" resultType="cn.dingd.dd.entity.CarModelInfoEntity">
+		SELECT
+		*
+		FROM car_models
+		WHERE C3=#{seriesId};
+	</select>
+	<!-- /** 根据车辆ID获取配置*/ -->
+	<select id="FindCarIDInfo" resultType="cn.dingd.dd.entity.CarModelInfoEntity">
+		SELECT
+		*
+		FROM car_models
+		WHERE C1=#{C1};
+	</select>
+
+
+</mapper> 

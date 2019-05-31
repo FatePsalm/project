@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- shiro工厂bean配置 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- shiro的核心安全接口 -->
+		<property name="securityManager" ref="securityManager" />
+		<!-- 要求登录时的连接 -->
+		<property name="loginUrl" value="/Login/unauthorized"></property>
+		<!-- 登录成功后要跳转的连接(此处已经在登录中处理了) -->
+		<!-- <property name="successUrl" value="/index.jsp"></property> -->
+		<!-- 访问未对其授权的资源时,要跳转的连接 <property name="unauthorizedUrl" value="/default.html"></property> -->
+		<!-- shiro连接约束配置 -->
+		<property name="filters">
+			<map>
+				<entry key="login" value-ref="login" />
+			</map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				<!-- 对静态资源设置允许匿名访问. -->
+				/images/** = anon
+				/libs/** = anon
+				/js/** = anon
+				/css/** = anon
+				/static/** = anon
+				/bootstrap/** = anon
+				/jquery/** = anon
+				<!-- 微信回调 -->
+				/PayOrder/wx_notify_url = anon
+				<!-- 支付宝回调 -->
+				/PayOrder/zfb_notify_url = anon
+				<!-- 退出 -->
+				/Login/logout = logout
+				<!-- 登录控制器 -->
+				/Login/**=anon
+				<!-- 注册控制器 -->
+				/Registration/**=anon
+				<!-- 剩余其他路径，必须认证通过才可以访问 -->
+				/**=anon
+			</value>
+		</property>
+	</bean>
+	<!-- 自定义认证过滤器代替authc过滤器 -->
+	<bean id="login" class="cn.dingd.dd.common.shiro.fileter.LoginFilter" />
+	<!-- 会话Session ID生成器 -->
+	<bean id="sessionIdGenerator"
+		class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator" />
+	<!-- 会话Cookie模板 -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!--cookie的name，默认jsessionid -->
+		<constructor-arg value="dingdang" />
+		<property name="httpOnly" value="true" />
+		<!--cookie的有效时间 ,单位为秒，该有效时间为5年 -->
+		<property name="maxAge" value="157680000" />
+		<!-- 配置存储Session Cookie的domain为 一级域名 <property name="domain" value=".dingdang.com"/> -->
+	</bean>
+	<!-- 回话管理器 -->
+	<bean id="sessionManager"
+		class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 相隔多久检查一次session的有效性 -->
+		<property name="sessionValidationInterval" value="1800000" />
+		<!-- session 有效时间为七天（毫秒单位） -->
+		<property name="globalSessionTimeout" value="604800000" />
+		<property name="sessionDAO" ref="shiroSessionDao" />
+		<!-- 间隔多少时间检查，不配置是60分钟 -->
+		<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />
+		<!-- 是否开启 检测，默认开启 -->
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<!-- 是否删除无效的，默认也是开启 -->
+		<property name="deleteInvalidSessions" value="true" />
+		<!-- 会话Cookie模板 -->
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+	</bean>
+	<!-- session存储的实现 -->
+	<!-- <bean id="shiroSessionDao" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO" 
+		/> -->
+	<bean id="shiroSessionDao" class="cn.dingd.dd.common.shiro.session.CustomShiroSessionDao">
+		<property name="shiroSessionRepository" ref="shiroSessionManager" />
+	</bean>
+	<bean id="redisManager" class="cn.dingd.dd.common.util.RedisClient"></bean>
+	<bean id="shiroSessionManager" class="cn.dingd.dd.common.shiro.session.JedisShiroSessionRepository">
+		<property name="redisManager" ref="redisManager" />
+	</bean>
+	<!-- 缓存管理器 -->
+	<!-- <bean id="shiroCacheManager" class="org.apache.shiro.cache.MemoryConstrainedCacheManager" 
+		/> -->
+	<bean id="shiroCacheManager" class="cn.dingd.dd.common.shiro.cache.JedisShiroCacheManager">
+		<property name="redisManager" ref="redisManager" />
+	</bean>
+	<bean id="customShiroCacheManager" class="cn.dingd.dd.common.shiro.cache.CustomShiroCacheManager">
+		<property name="shrioCacheManager" ref="shiroCacheManager" />
+	</bean>
+
+	<!-- 会话验证调度器 -->
+	<bean id="sessionValidationScheduler"
+		class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+		<!-- 间隔多少时间检查，不配置是60分钟 <property name="interval" value="${session.validate.timespan}"/> -->
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+	<!-- 配置shiro安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="sessionManager" ref="sessionManager"></property>
+		<property name="cacheManager" ref="customShiroCacheManager" />
+		<property name="authenticator" ref="authenticator"></property>
+		<property name="realms">
+			<list>
+				<ref bean="bizBackGround" />
+				<ref bean="BackGroundRealm" />
+				<ref bean="AUserRealm" />
+				<ref bean="StaffRealm" />
+				<ref bean="SMSRealm" />
+			</list>
+		</property>
+	</bean>
+	<!-- 多realm验证策略,atLeastOneSuccessfulStrategy为一个realm验证通过就成功，返回所有验证成功的信息 -->
+	<!-- 配置使用自定义认证器，可以实现多Realm认证，并且可以指定特定Realm处理特定类型的验证 -->
+	<bean id="authenticator" class="cn.dingd.dd.common.shiro.token.UserModularRealmAuthenticator">
+		<!-- 配置认证策略，只要有一个Realm认证成功即可，并且返回所有认证成功信息 -->
+		<property name="authenticationStrategy">
+			<bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>
+		</property>
+	</bean>
+	<!-- 自定义Realm -->
+	<bean id="StaffRealm" class="cn.dingd.dd.common.shiro.realm.StaffRealm">
+		<!-- 配置凭证算法匹配器 -->
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<property name="hashIterations" value="1024" />
+			</bean>
+		</property>
+	</bean>
+	<!-- 自定义Realm -->
+	<bean id="bizBackGround" class="cn.dingd.dd.common.shiro.realm.BizBackGroundRealm">
+		<!-- 配置凭证算法匹配器 -->
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<property name="hashIterations" value="1024" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="SMSRealm" class="cn.dingd.dd.common.shiro.realm.SMSRealm">
+		<!-- 配置凭证算法匹配器 -->
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<property name="hashIterations" value="1024" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="AUserRealm" class="cn.dingd.dd.common.shiro.realm.AUserRealm">
+		<!-- 配置凭证算法匹配器 -->
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<property name="hashIterations" value="1024" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="BackGroundRealm" class="cn.dingd.dd.common.shiro.realm.BackGroundRealm">
+		<!-- 配置凭证算法匹配器 -->
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<property name="hashIterations" value="1024" />
+			</bean>
+		</property>
+	</bean>
+	<!--Shiro生命周期处理器 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!--启用shiro注解权限检查 -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor" />
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+</beans>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.TrackingDao">
+	<!-- /**专员跟踪*/ public List<Map<String, Object>> Tracking() -->
+	<select id="Tracking" resultType="map">
+		SELECT
+		s.id as sid,
+		t.id as tid,
+		b.id as bid,
+		p.id as pid,
+		t.car_state as carState,
+		p.url,
+		c.sort,
+		t.car_number as carNumber,
+		t.title,
+		b.person,
+		b.telephone,
+		t.retention_money as retentionMoney
+		FROM
+		auction_session s LEFT JOIN auction_car c ON s.id=c.auction_id
+		LEFT
+		JOIN t_car_basisinfo t ON c.car_id=t.id
+		LEFT JOIN check_bill b ON
+		t.check_bill_id=b.id
+		LEFT JOIN car_picture p ON t.id=p.car_id and
+		p.img_type=1 and
+		p.dd_dict_id=9
+		WHERE
+		s.auction_state=2
+		and(
+		t.car_state=2
+		or
+		t.car_state=6)
+		ORDER BY
+		c.sort
+		asc
+	</select>
+</mapper> 

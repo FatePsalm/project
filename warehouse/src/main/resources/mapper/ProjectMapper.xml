@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+      <mapper namespace="cn.wh.warehouse.project.dao.ProjectDao">
+      <select id="getSumCost" resultType="java.lang.Double">
+      	select sum(cost) as cost from system_wx w
+		<where>
+		        <if test="project.start_time!=null and project.start_time!=''">
+		             w.maintain_time&gt;=#{project.start_time}
+		        </if>
+		        <if test="project.end_time!=null and project.end_time!=''">
+		          and  w.maintain_time&lt;=#{project.end_time}
+		        </if>
+		        <if test="project.type!=null and project.type!=''">
+		          and w.type like CONCAT ("%",#{project.type},"%")
+		        </if>
+		        <if test="project.send_people!=null and project.send_people!=''">
+		          and w.send_people like CONCAT ("%",#{project.send_people},"%")
+		        </if>
+		        <if test="project.school!=null and project.school!=''">
+		          and w.school like CONCAT ("%",#{project.school},"%")
+		        </if>
+		        <if test="project.result!=3">
+            	  and w.result=#{project.result}
+     		    </if>
+		      </where>
+      </select>
+      <!-- 获得记录总数 -->
+	  <select id="getRowCount" resultType="java.lang.Integer">
+	        select count(*) from system_wx w
+	       <where>
+		        <if test="project.start_time!=null and project.start_time!=''">
+		             w.maintain_time&gt;=#{project.start_time}
+		        </if>
+		        <if test="project.end_time!=null and project.end_time!=''">
+		          and  w.maintain_time&lt;=#{project.end_time}
+		        </if>
+		        <if test="project.type!=null and project.type!=''">
+		          and w.type like CONCAT ("%",#{project.type},"%")
+		        </if>
+		        <if test="project.send_people!=null and project.send_people!=''">
+		          and w.send_people like CONCAT ("%",#{project.send_people},"%")
+		        </if>
+		        <if test="project.school!=null and project.school!=''">
+		          and w.school like CONCAT ("%",#{project.school},"%")
+		        </if>
+		        <if test="project.result!=3">
+            	  and w.result=#{project.result}
+     		    </if>
+		      </where>
+	  </select>
+      <!-- 修改项目信息 -->
+	  <update id="UpdateProject" parameterType="cn.wh.warehouse.project.entity.Project">
+	    update system_wx
+	    set 
+		maintain_time=#{maintain_time},
+		type=#{type},
+		number=#{number},
+		unit=#{unit},
+		malfunction=#{malfunction},
+		keyId=#{keyId},
+		cost=#{cost},
+		send_people=#{send_people},
+		result=#{result},
+		result_time=#{result_time},
+		name=#{name},
+		school=#{school},
+		school_name=#{school_name},
+		school_time=#{school_time},
+		school_teachr=#{school_teachr},
+		school_phone=#{school_phone},
+		user=#{user},
+		updateUser=#{updateUser},
+		updateUser_time=#{updateUser_time},
+		remark=#{remark}
+		where id=#{id};
+	  </update>
+      <!-- 查询所有用户 -->
+      <select id="findPageObjects" resultType="cn.wh.warehouse.project.entity.Project">
+	      select * from system_wx w
+		      <where>
+		        <if test="project.start_time!=null and project.start_time!=''">
+		             w.maintain_time&gt;=#{project.start_time}
+		        </if>
+		        <if test="project.end_time!=null and project.end_time!=''">
+		          and  w.maintain_time&lt;=#{project.end_time}
+		        </if>
+		        <if test="project.type!=null and project.type!=''">
+		          and w.type like CONCAT ("%",#{project.type},"%")
+		        </if>
+		        <if test="project.send_people!=null and project.send_people!=''">
+		          and w.send_people like CONCAT ("%",#{project.send_people},"%")
+		        </if>
+		        <if test="project.school!=null and project.school!=''">
+		          and w.school like CONCAT ("%",#{project.school},"%")
+		        </if>
+		        <if test="project.result!=3">
+            	  and w.result=#{project.result}
+     		    </if>
+		      </where>
+	      ORDER BY w.maintain_time DESC
+	      
+         limit #{pageObject.startIndex},#{pageObject.pageSize};
+      </select>
+      <!-- 根据ID查找对应的数据 -->
+      <select id="FindById" parameterType="cn.wh.warehouse.project.entity.Project" resultType="cn.wh.warehouse.project.entity.Project">
+      	select * from system_wx where id=#{id};
+      </select>
+      <!-- 插入项目信息 -->
+	  <insert id="saveObject" 
+	   parameterType="cn.wh.warehouse.project.entity.Project">
+	   
+	      INSERT INTO system_wx
+	      (
+	      id,
+	      maintain_time,
+	      type,
+	      number,
+	      unit,
+	      malfunction,
+	      keyId,
+	      cost,
+	      send_people,
+	      result,
+	      result_time,
+		  name,
+		  school,
+		  school_name,
+		  school_time,
+		  school_teachr,
+		  school_phone,
+		  user,
+		  updateUser,
+		  updateUser_time,
+		  remark
+	      )
+	      values(
+		  #{id},
+	      #{maintain_time},
+	      #{type},
+	      #{number},
+	      #{unit},
+	      #{malfunction},
+	      #{keyId},
+	      #{cost},
+	      #{send_people},
+	      #{result},
+	      #{result_time},
+		  #{name},
+		  #{school},
+		  #{school_name},
+		  #{school_time},
+		  #{school_teachr},
+		  #{school_phone},
+		  #{user},
+		  #{updateUser},
+		  #{updateUser_time},
+		  #{remark}
+		  )
+	  </insert>
+      
+      </mapper>
+      
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      

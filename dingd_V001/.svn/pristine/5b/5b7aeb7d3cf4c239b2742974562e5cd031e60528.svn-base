@@ -1,0 +1,143 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.dingd.dd.biz.backgroud.service.ConfigurationInfoService;
+import cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity;
+import cn.dingd.dd.common.util.StringUtils;
+import cn.dingd.dd.common.web.JsonResult;
+
+/**
+ * 配置项
+ * @author XCD
+ *
+ */
+@CrossOrigin
+@RestController
+@RequestMapping("configurationInfo")
+public class ConfigurationInfoController {
+
+	@Resource
+	private ConfigurationInfoService configurationInfoService;
+   /**
+    * 添加配置项信息
+    * @param configurationInfoEntity
+    * @return
+    */
+	@RequestMapping("addConfigurationInfo")
+	@ResponseBody
+	public JsonResult addConfigurationInfo(ConfigurationInfoEntity configurationInfoEntity){
+		
+		if(configurationInfoEntity.getAccountId()<=0){
+			return new JsonResult(new Exception("添加人不能为空！"),1003);
+		}
+		if(!StringUtils.isNotNullStr(configurationInfoEntity.getConfKey())){
+			return new JsonResult(new Exception("键不能为空！"),1004);
+		}
+		if(!StringUtils.isNotNullStr(configurationInfoEntity.getConfValue())){
+			return new JsonResult(new Exception("值不能为空！"),1006);
+		}
+	    try {
+			if(configurationInfoService.addConfiguration(configurationInfoEntity)!=1){
+				return new JsonResult(new Exception("添加失败"),1005);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("添加失败"),1005);
+		}
+		return new JsonResult();
+	}
+	
+	/**
+	 * 修改配置项信息
+	 * @return
+	 */
+	@RequestMapping("updConfigurationInfo")
+	@ResponseBody
+	public JsonResult updConfigurationInfo(ConfigurationInfoEntity configurationInfoEntity){
+		
+		if(configurationInfoEntity.getUpdAccountId()<=0){
+			return new JsonResult(new Exception("修改人不能为空！"),1004);
+		}
+		if(!StringUtils.isNotNullStr(configurationInfoEntity.getConfKey())){
+			return new JsonResult(new Exception("键不能为空！"),1003);
+		}
+		if(!StringUtils.isNotNullStr(configurationInfoEntity.getConfValue())){
+			return new JsonResult(new Exception("值不能为空！"),1006);
+		}
+		
+		try {
+			if(configurationInfoService.updConfiguration(configurationInfoEntity)!=1){
+				return new JsonResult(new Exception("修改失败！"),1005);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("修改失败！"),1005);
+		}
+		
+		return new JsonResult();
+	}
+	/**
+	 * 是否禁用
+	 * @param id
+	 * @param status
+	 * @return
+	 */
+	@RequestMapping("setConfiguraInfo")
+	@ResponseBody
+	public JsonResult setConfiguraInfo(int id,int status){
+		
+		if(id<=0){
+			return new JsonResult(new Exception("id不能为空！"),1003);
+		}
+		if(status<0){
+			return new JsonResult(new Exception("状态信息不能为空！"),1004);
+		}
+		try {
+			if(configurationInfoService.setConfiguration(id, status)!=1){
+				return new JsonResult(new Exception("修改失败！"),1005);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("修改失败！"),1005);
+		}
+		return new JsonResult();
+	}
+	
+	/**
+	 * 获取配置项
+	 * @return
+	 */
+	@RequestMapping("queryConfiguraInfo")
+	@ResponseBody
+	public JsonResult queryConfiguraInfo(){
+		
+		try {
+			return new JsonResult(configurationInfoService.queryConfigurationInfos());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败！"),1003);
+		}
+	}
+	/**
+	 * 获取一个编辑信息
+	 * @return
+	 */
+	@RequestMapping("getConfiguraInfo")
+	@ResponseBody
+	public JsonResult getConfiguraInfo(int id){
+		
+		try {
+			return  new JsonResult(configurationInfoService.getConfiguration(id));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败！"),1003);
+		}
+	}
+	
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.CarPictureDomDao">
+	  <!-- 查询图片 -->
+  <select id="queryCarPictureDom" resultType="cn.dingd.dd.entity.CarPictureDom">
+      select *  from car_picture_dom 
+  </select>
+  <!-- 删除图片 -->  
+	<delete id="delCarPictureDom" parameterType="java.lang.Integer">  
+	        delete   from car_picture_dom where id=#{id} 
+	</delete> 
+	<!-- 插入车辆 -->
+	<insert id="addCarPicture"   parameterType="java.util.List">  
+    insert into car_picture_dom (add_time,url,car_id,picture,cover,show_sort)   
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.addTime},#{item.url},#{item.carId},#{item.picture},#{item.cover},#{item.showSort})  
+    </foreach> 
+   </insert>  
+   
+	<!-- 更新图片 -->
+	<insert id="updCarPicture" useGeneratedKeys="true" keyProperty="id" >  
+    insert into car_picture_dom (add_time,url,car_id,picture,cover,show_sort)   
+    values (#{addTime},#{url},#{carId},#{picture},#{cover},#{showSort})  
+    </insert> 
+   
+   
+	 <!-- 根据车辆id删除图片 -->  
+	<delete id="delCarPictureDomParam" parameterType="java.lang.Integer">  
+	        delete  from car_picture_dom where car_id=#{carInfoId} 
+	</delete> 
+	<!-- 更新是否为封面 -->
+	<update id="updCover" parameterType="int">  
+      update car_picture_dom  
+      set car_picture_dom.cover = 
+      CASE
+	  WHEN car_picture_dom.id = #{id}  then 1
+      else 0 
+	  END
+      where car_picture_dom.car_id=#{carId}
+  </update>
+	
+</mapper> 

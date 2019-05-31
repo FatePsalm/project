@@ -1,0 +1,32 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import cn.dingd.dd.biz.backgroud.service.SjOderService;
+import cn.dingd.dd.common.entity.CheckBillEntity;
+import cn.dingd.dd.common.web.JsonResult;
+
+/**
+ * 
+ * 作者:CG
+ * 时间:2018年4月26日
+ * 作用:商家订单
+ */
+
+public class SjOderController {
+	@Autowired
+	private SjOderService sjOderService;
+	/**
+	 * 时间: 2018/4/27 16:32
+	 * 功能描述:查询商家端订单
+	 */
+	@RequestMapping("selectFind")
+	public JsonResult selectFind(CheckBillEntity checkBillEntity) {
+		List<Map<String, Object>> selectFind = sjOderService.selectFind(checkBillEntity);
+		return new JsonResult();
+	}
+}

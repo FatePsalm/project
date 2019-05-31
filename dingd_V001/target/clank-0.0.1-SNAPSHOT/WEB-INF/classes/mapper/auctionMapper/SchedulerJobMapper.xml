@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.SchedulerJobDao">
+<!-- 插入一条job -->
+	<insert id="insertJob" parameterType="cn.dingd.dd.common.entity.SchedulerJob">
+		INSERT INTO schedule_job
+		(
+		job_name,
+		job_type,
+		trigger_time,
+		create_time,
+		job_status,
+		host
+		)
+		values(
+		#{jobName},
+		#{type},
+		#{triggerTime},
+		#{createTime},
+		#{status},
+		#{host},
+		)
+	</insert>
+<!-- 更新job的状态 -->
+	<update id="updateJob">
+		update schedule_job set job_status=#{type} where jobName=#{jobName}
+	</update>
+<!-- 获取所有任务 -->
+	<select id="getAll" resultType="cn.dingd.dd.common.entity.SchedulerJob">
+		select 
+		id,
+		job_name jobName,
+		job_type type,
+		trigger_time triggerTime,
+		create_time createTime,
+		job_status status,
+		host
+		from scheduler_job where job_status = 1
+	</select>
+</mapper> 

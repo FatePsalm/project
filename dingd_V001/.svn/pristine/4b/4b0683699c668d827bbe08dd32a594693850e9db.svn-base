@@ -1,0 +1,161 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import cn.dingd.dd.biz.backgroud.dao.SjOderMapper;
+import cn.dingd.dd.biz.backgroud.service.SjOderService;
+import cn.dingd.dd.biz.common.entity.CheckBillExample;
+import cn.dingd.dd.common.entity.AUserEntity;
+import cn.dingd.dd.common.entity.CheckBillEntity;
+import cn.dingd.dd.common.entity.StaffInfoEntity;
+import cn.dingd.dd.common.util.ConstantAttribute;
+import cn.dingd.dd.common.util.EX;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class SjOderServiceImpl implements SjOderService {
+    @Autowired
+    private SjOderMapper sjOderMapper;
+   public List<CheckBillEntity> selectIdALL(Integer id){
+       List<CheckBillEntity> checkBillEntities = null;
+       try {
+           checkBillEntities = sjOderMapper.selectIdALL(id);
+       } catch (Exception e) {
+           e.printStackTrace();
+           EX.mysqlE();
+       }
+       return checkBillEntities;
+    }
+    /**
+     * 时间: 2018/4/28 15:13
+     * 功能描述:把Map封装入创建人电话和姓名
+     */
+    public void checkMap(Map<String, Object> stringObjectMap) throws Exception {
+        if (stringObjectMap!=null) {
+            Integer checkType = (Integer) stringObjectMap.get("checkType");
+            if (checkType == ConstantAttribute.checkBill_PC || checkType == ConstantAttribute.checkBill_JC) {
+                StaffInfoEntity createPerson = sjOderMapper.selectStaffId((Integer) stringObjectMap.get("createPerson"));
+                if (createPerson!=null){
+                    stringObjectMap.put("UserName", createPerson.getuName());
+                    stringObjectMap.put("UserPhone", createPerson.getuPhone());
+                }
+            } else if (checkType == ConstantAttribute.checkBill_SJ) {
+                AUserEntity createPerson = sjOderMapper.selectAuseId((Integer) stringObjectMap.get("createPerson"));
+                if (createPerson!=null){
+                    stringObjectMap.put("UserName", createPerson.getuName());
+                    stringObjectMap.put("UserPhone", createPerson.getuPhone());
+                }
+            }
+        }
+    }
+
+    /**
+     * 时间: 2018/4/28 14:28
+     * 功能描述:根据ID查询检测订单详细
+     */
+    @Override
+    public Map<String, Object> selectId(Integer id) {
+        Map<String, Object> stringObjectMap = null;
+        try {
+            stringObjectMap = sjOderMapper.selectId(id);
+            checkMap(stringObjectMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            EX.mysqlE();
+        }
+        return stringObjectMap;
+    }
+
+    /**
+     * 时间: 2018/4/28 15:12
+     * 功能描述:获取订单列表
+     */
+    public List<Map<String, Object>> selectFind(CheckBillEntity checkBillEntity) {
+        Page<Object> page = PageHelper.startPage(5, 1);
+        List<Map<String, Object>> selectFind = null;
+        try {
+            selectFind = sjOderMapper.selectFind(checkBillEntity);
+            if (selectFind != null) {
+                for (Map<String, Object> index : selectFind
+                        ) {
+                    checkMap(index);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            EX.mysqlE();
+        }
+        return selectFind;
+    }
+
+    @Override
+    public int countByExample(CheckBillExample example) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int deleteByExample(CheckBillExample example) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int insert(CheckBillEntity record) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int insertSelective(CheckBillEntity record) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public List<CheckBillEntity> selectByExample(CheckBillExample example) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBillEntity selectByPrimaryKey(Integer id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int updateByExampleSelective(CheckBillEntity record, CheckBillExample example) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int updateByExample(CheckBillEntity record, CheckBillExample example) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(CheckBillEntity record) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKey(CheckBillEntity record) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+}

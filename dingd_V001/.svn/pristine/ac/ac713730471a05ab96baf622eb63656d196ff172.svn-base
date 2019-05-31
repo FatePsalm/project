@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.ManagementDao">
+	<!-- /**根据查询条件查询条目数*/public int getRowCount(CheckQueryEntity checkQueryEntity) -->
+	<select id="getRowCount" resultType="java.lang.Integer">
+		SELECT
+		count( * )
+		FROM
+		check_bill c
+		LEFT
+		JOIN staff_info s ON
+		c.staff_id=s.id
+		LEFT JOIN
+		t_car_basisinfo t ON
+		t.check_bill_id=c.id
+		<where>
+			c.check_status=#{checkQueryEntity.checkStatus}
+			<if test="checkQueryEntity.checkStatus==2">
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+			<if test="checkQueryEntity.checkStatus==3">
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR t.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+			<if test="checkQueryEntity.checkStatus==2">
+				or c.check_status=1
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	<!-- /** 查询检测师 */List<StaffInfoEntity> FindDetect -->
+	<select id="FindDetect" resultType="cn.dingd.dd.entity.StaffInfoEntity">
+		SELECT
+		id,
+		u_name as uName
+		FROM
+		staff_info
+		WHERE
+		u_state=1 and u_duty=1
+	</select>
+	<!-- /**检测PC新建订单*/ NewOrderPc(CheckBillEntity checkBillEntity) -->
+	<insert id="NewOrderPc" parameterType="cn.dingd.dd.entity.CheckBillEntity"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO check_bill
+		(
+		check_account ,
+		check_status ,
+		person ,
+		gender ,
+		telephone ,
+		create_person
+		,
+		stores ,
+		address ,
+		province ,
+		city ,
+		area ,
+		cars
+		,
+		car_name ,
+		car_model ,
+		car_type ,
+		car_number ,
+		car_create_time ,
+		retention_money ,
+		create_time ,
+		appointment_time ,
+		cancel_time ,
+		allotus_time ,
+		response_time ,
+		upload_time ,
+		over_time ,
+		remark
+		)
+		VALUES(
+		#{checkAccount},
+		#{checkStatus},
+		#{person},
+		#{gender},
+		#{telephone},
+		#{createPerson},
+		#{stores},
+		#{address},
+		#{province},
+		#{city},
+		#{area},
+		#{cars},
+		#{carName},
+		#{carModel},
+		#{carType},
+		#{carNumber},
+		#{carCreateTime},
+		#{retentionMoney},
+		NOW(),
+		#{appointmentTime},
+		#{cancelTime},
+		#{allotusTime},
+		#{responseTime},
+		#{uploadTime},
+		#{overTime},
+		#{remark}
+		)
+	</insert>
+
+	<!-- /**管理端-检测订单-查询 * CheckQueryEntity前段页面需要查询的条件 * PageObject 分页信息 * */ 
+		FindPageObjects -->
+	<select id="FindPageObjects" resultType="map" resultMap="resultFindPageObjects">
+		SELECT
+		c.check_account,
+		<if test="checkQueryEntity.checkStatus==2">
+			c.car_number,
+		</if>
+		<if test="checkQueryEntity.checkStatus==3">
+			t.car_number,
+		</if>
+		s.u_name,
+		c.stores,
+		c.person,
+		c.telephone,
+		c.create_time,
+		c.appointment_time,
+		c.cancel_time,
+		c.over_time
+		FROM
+		check_bill c
+		LEFT
+		JOIN
+		staff_info s ON
+		c.staff_id=s.id
+		LEFT
+		JOIN
+		t_car_basisinfo t ON
+		t.check_bill_id=c.id
+		<where>
+			c.check_status=#{checkQueryEntity.checkStatus}
+			<if test="checkQueryEntity.checkStatus==2">
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+			<if test="checkQueryEntity.checkStatus==3">
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR t.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+			<if test="checkQueryEntity.checkStatus==2">
+				or c.check_status=1
+				<if
+					test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+					AND (c.check_account like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.telephone like CONCAT
+					("%",#{checkQueryEntity.retrieval},"%")
+					OR c.car_number like CONCAT
+					("%", #{checkQueryEntity.retrieval}, "%" )
+					)
+				</if>
+			</if>
+		</where>
+		<!-- 注入的时候需要使用$符号 -->
+		<!-- 新建订单时间排序 -->
+		<if
+			test="checkQueryEntity.createTime!=null and checkQueryEntity.createTime!=''">
+			ORDER BY c.create_time ${checkQueryEntity.createTime}
+		</if>
+		<!-- 预约时间排序 -->
+		<if
+			test="checkQueryEntity.appointmentTime!=null and checkQueryEntity.appointmentTime!=''">
+			ORDER BY c.appointment_time ${checkQueryEntity.appointmentTime}
+		</if>
+		<!-- 订单取消时间排序 -->
+		<if
+			test="checkQueryEntity.cancelTime!=null and checkQueryEntity.cancelTime!=''">
+			ORDER BY c.cancel_time ${checkQueryEntity.cancelTime}
+		</if>
+		<!-- 结束时间排序 -->
+		<if
+			test="checkQueryEntity.overTimeSort!=null and checkQueryEntity.overTimeSort!=''">
+			ORDER BY c.over_time ${checkQueryEntity.overTimeSort}
+		</if>
+		limit #{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<resultMap type="map" id="resultFindPageObjects">
+		<id column="id" property="id" />
+		<result column="check_account" property="checkAccount" />
+		<result column="u_name" property="uName" />
+		<result column="create_time" property="createTime" />
+		<result column="appointment_time" property="appointmentTime" />
+		<result column="cancel_time" property="cancelTime" />
+		<result column="create_time" property="createTime" />
+		<result column="over_time" property="overTime" />
+		<result column="car_number" property="CarNumber" />
+	</resultMap>
+
+	<!-- /**检测APP新建订单*/NewOrder -->
+	<insert id="NewOrder" parameterType="cn.dingd.dd.entity.CheckBillEntity"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO check_bill
+		(
+		check_account ,
+		check_status ,
+		person ,
+		gender ,
+		telephone ,
+		create_person
+		,
+		stores ,
+		address ,
+		province ,
+		city ,
+		area ,
+		cars ,
+		car_name ,
+		car_model ,
+		car_type ,
+		car_number ,
+		car_create_time ,
+		retention_money ,
+		create_time ,
+		appointment_time ,
+		cancel_time ,
+		allotus_time ,
+		response_time ,
+		upload_time ,
+		over_time ,
+		remark,
+		staff_id
+		)
+		VALUES(
+		#{checkAccount},
+		#{checkStatus},
+		#{person},
+		#{gender},
+		#{telephone},
+		#{createPerson},
+		#{stores},
+		#{address},
+		#{province},
+		#{city},
+		#{area},
+		#{cars},
+		#{carName},
+		#{carModel},
+		#{carType},
+		#{carNumber},
+		#{carCreateTime},
+		#{retentionMoney},
+		NOW(),
+		NOW(),
+		#{cancelTime},
+		#{allotusTime},
+		#{responseTime},
+		#{uploadTime},
+		#{overTime},
+		#{remark},
+		#{staffId}
+		)
+	</insert>
+	<!-- /**根据电话查询对应的员工*/ -->
+	<select id="GetStaff" resultType="int">
+		SELECT id FROM staff_info WHERE
+		u_phone=#{staffInfoEntity}
+	</select>
+</mapper> 

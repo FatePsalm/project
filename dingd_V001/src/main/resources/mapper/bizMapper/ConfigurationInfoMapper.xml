@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.dingd.dd.biz.backgroud.dao.ConfigurationInfoMapper" >
+  
+  <select id="queryConfigurationInfos"  resultType="cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity" >
+    select
+    id,
+	conf_key as confKey,
+	conf_value as confValue,
+	create_time as createTime,
+	conf_desc as confDesc,
+	upd_time as updTime,
+	upd_account_id as updAccountId,
+	account_id as accountId,
+	status
+    from configuration_info 
+    limit #{pageObject.startIndex},#{pageObject.pageSize}
+  </select>
+  <select id="getConfiguration"  parameterType="java.lang.Integer"  resultType="cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity">
+    select 
+    id,
+	conf_key as confKey,
+	conf_value as confValue,
+	create_time as createTime,
+	conf_desc as confDesc,
+	upd_time as updTime,
+	upd_account_id as updAccountId,
+	account_id as accountId,
+	status
+    from configuration_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="addConfiguration" parameterType="cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity" >
+    insert into configuration_info (
+	conf_key,
+	conf_value,
+	create_time,
+	conf_desc,	
+	account_id,
+	status
+	)
+    values (#{confKey,jdbcType=VARCHAR}, #{confValue,jdbcType=VARCHAR}, 
+      #{NOW()}, #{confDesc,jdbcType=VARCHAR}, #{accountId,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+
+
+  <update id="updConfiguration" parameterType="cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity" >
+    update configuration_info
+    set conf_key=#{confKey},
+	conf_value=#{confValue},
+	conf_desc=#{confDesc},	
+	upd_account_id=#{updAccountId}
+   where id=#{id}
+  </update>
+  
+  
+  <update id="setConfiguration"  parameterType="java.lang.Integer" >
+    update
+    configuration_info
+    set status=#{status}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

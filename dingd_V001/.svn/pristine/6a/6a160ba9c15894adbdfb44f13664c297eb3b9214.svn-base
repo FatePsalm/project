@@ -1,0 +1,46 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.dingd.dd.biz.backgroud.service.AUserService;
+import cn.dingd.dd.biz.common.entity.Auser;
+import cn.dingd.dd.common.util.CF;
+import cn.dingd.dd.common.web.JsonResult;
+
+/**
+ * @author 作者 Name:CaoGang
+ * @version 创建时间：2018年4月23日 下午1:53:31 类说明 商家管理
+ */
+@CrossOrigin
+@RestController
+@Controller
+@RequestMapping("/sj/")
+public class AUserController {
+	@Autowired
+	private AUserService aUserService;
+	/**启用--禁用*/
+	@RequestMapping("deleteByPrimaryKey")
+	public JsonResult deleteByPrimaryKey(Integer id) {
+		if (CF.isNum(id)) {
+			throw new NullPointerException("商家ID为NULL!");
+		}
+		if (CF.mysqlSave(aUserService.deleteByPrimaryKey(id))) {
+			throw new NullPointerException("保存失败!");
+		}
+		return new JsonResult("保存成功!");
+	}
+	/** 商家-查询所有 */
+	@RequestMapping("selectFind")
+	public JsonResult selectFind(Auser auser) {
+		 List<Map<String, Object>> selectFind = aUserService.selectFind(auser);
+		return new JsonResult(selectFind);
+
+	}
+}

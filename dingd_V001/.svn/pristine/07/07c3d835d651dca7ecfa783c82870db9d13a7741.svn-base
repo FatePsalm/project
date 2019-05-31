@@ -1,0 +1,40 @@
+package cn.dingd.dd.biz.backgroud.dao;
+
+import cn.dingd.dd.biz.common.entity.OrganizationInfo;
+import cn.dingd.dd.biz.common.entity.OrganizationInfoExample;
+import cn.dingd.dd.common.entity.StaffInfoEntity;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface OrganizationInfoMapper {
+    int deleteHead(Integer id);
+    int updateHead(@Param("id") Integer id,@Param("list") List<Integer> list);
+    List<StaffInfoEntity> selectHeadRight(Integer id);
+
+    List<StaffInfoEntity> selectHead(StaffInfoEntity staffInfoEntity);
+
+    int countByExample(OrganizationInfoExample example);
+
+    int deleteByExample(OrganizationInfoExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(OrganizationInfo record);
+
+    int insertSelective(OrganizationInfo record);
+
+    List<OrganizationInfo> selectByExample(OrganizationInfoExample example);
+
+    OrganizationInfo selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") OrganizationInfo record, @Param("example") OrganizationInfoExample example);
+
+    int updateByExample(@Param("record") OrganizationInfo record, @Param("example") OrganizationInfoExample example);
+
+    int updateByPrimaryKeySelective(OrganizationInfo record);
+
+    int updateByPrimaryKey(OrganizationInfo record);
+
+    List<OrganizationInfo> selectTree();
+}

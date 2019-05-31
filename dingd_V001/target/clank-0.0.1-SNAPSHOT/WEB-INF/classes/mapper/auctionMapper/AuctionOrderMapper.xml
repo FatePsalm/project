@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.AuctionOrderDao">
+	<!--插入拍卖订单-->
+	<insert id="addAuctionOrder" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.AuctionOrderEntity">  
+    insert into auction_order (car_id,auction_id,order_num,order_state,achieve_money,invoice,invoice_money,a_user_id,total_money,abort_time,server_money,regist_fee)   
+    values (#{carId},#{auctionId},#{orderNum},#{orderState},#{achieveMoney},#{invoice},#{invoiceMoney},#{auserId},#{totalMoney},#{abortTime},#{serverMoney},#{registFee})  
+   </insert> 
+	
+	<!--修改拍卖订单-->
+	<update id="updAuctionOrder" parameterType="cn.dingd.dd.common.entity.AuctionOrderEntity">  
+      update auction_order  
+      set auction_order.order_state = #{orderState},auction_order.pay_time = #{payTime}
+      where auction_order.id=#{id}
+   </update>
+
+      <!-- 查询最大id -->
+  <select id="getIdentMax" resultType="String">
+      select  m_number from auction_order   ORDER BY id asc limit 1
+  </select>
+  
+      <!-- 查询我的订单 -->
+  <select id="queryAuctionOrder" resultType="map">
+      select t.id,t.car_name as carName,t.cars,t.car_model as carModel,t.car_number as carNumer,r.order_num as orderNum,r.total_money as totalMoney,p.url,r.order_state status from 
+      t_car_basisinfo t LEFT JOIN auction_order r on t.id=r.car_id LEFT JOIN car_picture p on t.id=p.car_id and p.img_type=1 and p.dd_dict_id=9 where r.a_user_id=#{userId}  and r.order_state &lt;&gt;4 
+      ORDER BY r.order_time desc
+      limit #{pageObject.startIndex},#{pageObject.pageSize}
+  </select>
+  
+      <!-- 查询订单 -->
+  <select id="getAuctionOrder" resultType="cn.dingd.dd.common.entity.AuctionOrderEntity">
+      select  * from auction_order where  order_state=#{status}  ORDER BY id asc 
+  </select>
+  
+  <!-- 查询需要修改的拍卖订单 -->
+  <select id="geAuctionOrderEntityId" resultType="cn.dingd.dd.common.entity.AuctionOrderEntity">
+      select  r.id,r.order_num as orderNum,r.total_money as totalMoney,r.order_state status,r.pay_time payTime,r.order_time orderTime from auction_order r where  r.id=#{id}
+  </select>
+  
+  <!-- 获取总条数 -->
+  <select id="getAuctionOrderPage" resultType="java.lang.Integer">
+      select count(t.id) count from 
+      t_car_basisinfo t LEFT JOIN auction_order r on t.id=r.car_id LEFT JOIN car_picture p on t.id=p.car_id and p.img_type=1 and p.dd_dict_id=9 where r.a_user_id=#{userId}  and r.order_state &lt;&gt;4 
+  </select>
+  
+ 
+  
+  
+</mapper> 

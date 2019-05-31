@@ -1,0 +1,27 @@
+jdbc.driver=com.mysql.jdbc.Driver
+ServerStatus=2
+#jdbc.url=jdbc:mysql:///ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+#jdbc.username=root
+#jdbc.password=LPwsh6KHZtf1yApX
+#bd
+jdbc.url=jdbc:mysql://192.168.1.8:3306/ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+jdbc.username=myLocal
+jdbc.password=exVSjlUIXwunZ1EH!!
+#ceshifuwu
+#jdbc.url=jdbc:mysql://127.0.0.1:3306/ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+#jdbc.username=root
+#jdbc.password=xL^2FTrDsE%RDYsv!!
+#web
+#jdbc.url=jdbc:mysql://127.0.0.1:3306/ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+#jdbc.username=root
+#jdbc.password=uJ(EH[irxzZ@hDG=
+#jdbc.url=jdbc:mysql://39.108.70.214:3306/ddapp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true
+#jdbc.username=DrootUser
+#jdbc.password=X8!f&4!01JxmZTVf!!
+jdbc.initialSize=5
+jdbc.maxActive=50
+jdbc.minIdle=0
+jdbc.maxWait=60000
+jdbc.druid.filters=
+jdbc.timeBetweenLogStatsMillis=60000
+salt = e1$dYHxW*OdEiUOu

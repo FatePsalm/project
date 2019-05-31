@@ -1,0 +1,134 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import cn.dingd.dd.biz.backgroud.service.AccountInfoService;
+import cn.dingd.dd.biz.common.view.AccountInfoView;
+import cn.dingd.dd.common.util.NumberUtil;
+import cn.dingd.dd.common.util.StringUtils;
+import cn.dingd.dd.common.web.JsonResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+/**
+ * 
+ * @author zoucong
+ * 账号管理类
+ */
+@RestController
+@RequestMapping("/accountManage")
+public class AccountManageController {
+	@Autowired
+	private AccountInfoService accountInfoService;
+	
+	/**
+	 * 新增账号
+	 * @param accountInfo 账号id
+	 * @param roleId	账号权限
+	 * @param oringinID	数据范围
+	 * @return
+	 */
+	@RequestMapping("addAccount")
+	public JsonResult addAccount(AccountInfoView accountInfo) {
+		try {
+			try {
+				checkAccountInfo(accountInfo);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new JsonResult(e);
+			}
+			accountInfoService.addAccount(accountInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("添加失败"));
+		}
+		return new JsonResult("添加成功!");
+	}
+	
+	/**
+	 * 账号信息列表
+	 * @return
+	 */
+	@RequestMapping("accounts")
+	public JsonResult getAccounts(String quaryParam) {
+		try {
+			return new JsonResult(accountInfoService.getAllAccounts(quaryParam));
+		}catch (Exception e) {
+			return new JsonResult(new Exception("数据获取失败"));
+		}
+	}
+	
+	/**
+	 * 编辑账号信息
+	 * @param accountInfo
+	 * @return
+	 */
+	@RequestMapping("updateAccount")
+	public JsonResult updateAccount(AccountInfoView accountInfo) {
+		try {
+			try {
+				checkAccountInfo(accountInfo);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new JsonResult(e);
+			}
+			accountInfoService.updateAccount(accountInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("修改失败"));
+		}
+		return new JsonResult("添加成功");
+	}
+	
+	/**
+	 * 禁用或者启用账户信息
+	 * @param accountInfo
+	 * @return
+	 */
+	@RequestMapping("disableorEnableAccount")
+	public JsonResult disableorEnableAccount(Integer accountId,Integer flag) {
+		try {
+			accountInfoService.disableorEnableAccount(accountId,flag);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("失败"));
+		}
+		return new JsonResult("修改成功");
+	}
+	
+	/**
+	 * 获取某个账号的信息
+	 * @param accountInfo
+	 * @return
+	 */
+	@RequestMapping("account")
+	public JsonResult getAccountByAccountId(Integer accountId) {
+		try {
+			return new JsonResult(accountInfoService.getAccountByAccountId(accountId));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("失败"));
+		}
+	}
+	
+	/**
+	 * 检测账号信息
+	 * @param accountInfo
+	 * @throws Exception
+	 */
+	public void checkAccountInfo(AccountInfoView accountInfo) throws Exception {
+		if (!StringUtils.isNumberOrLetter(accountInfo.getAccount())) {
+			throw new Exception("账号为字母或数字");
+		}
+		if (!StringUtils.isNumberAndLetter(accountInfo.getPassword())) {
+			throw new Exception("密码为字母数字组合");
+		}
+		if (!NumberUtil.isPhone(accountInfo.getPhone())) {
+			throw new Exception("电话号码格式错误");
+		}
+		if (!StringUtils.isNotNullApp(accountInfo.getRoleName())&&accountInfo.getRoleName().split(",").length>1) {
+			throw new Exception("角色不能为空");
+		}
+		if (accountInfoService.AccountIsExist(accountInfo.getAccount())) {
+			throw new Exception("账号已存在");
+		}
+	}
+}

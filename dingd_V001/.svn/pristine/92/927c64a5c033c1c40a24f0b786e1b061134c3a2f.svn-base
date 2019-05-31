@@ -1,0 +1,64 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.biz.backgroud.dao.ConfigurationInfoMapper;
+import cn.dingd.dd.biz.backgroud.service.ConfigurationInfoService;
+import cn.dingd.dd.biz.common.entity.ConfigurationInfoEntity;
+/**
+ * 配置项service
+ * @author XCD
+ *
+ */
+@Service
+public class ConfigurationInfoServiceImpl implements ConfigurationInfoService {
+
+	@Resource
+	private ConfigurationInfoMapper configurationInfoMapper;
+	
+	/**
+	 * 添加配置项
+	 */
+	@Override
+	public Integer addConfiguration(ConfigurationInfoEntity configurationInfoEntity)throws Exception {
+		return   configurationInfoMapper.addConfiguration(configurationInfoEntity);
+		
+	}
+
+	/**
+	 * 修改配置项
+	 */
+	@Override
+	public Integer updConfiguration(ConfigurationInfoEntity configurationInfoEntity)throws Exception {
+		return   configurationInfoMapper.updConfiguration(configurationInfoEntity);
+	}
+
+	/**
+	 * 获取配置项
+	 */
+	@Override
+	public ConfigurationInfoEntity getConfiguration(int id)throws Exception {
+		return configurationInfoMapper.getConfiguration(id);
+	}
+	/**
+	 * 更改状态
+	 */
+	@Override
+	public Integer setConfiguration(int id, int status)throws Exception {
+		return configurationInfoMapper.setConfiguration(id, status);
+	}
+
+	/**
+	 * 获取所有有效配置项
+	 */
+	@Override
+	public List<ConfigurationInfoEntity> queryConfigurationInfos() throws Exception{
+	
+		return configurationInfoMapper.queryConfigurationInfos();
+	}
+
+}

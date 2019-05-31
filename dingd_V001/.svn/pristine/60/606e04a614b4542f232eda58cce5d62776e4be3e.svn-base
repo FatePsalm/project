@@ -1,0 +1,32 @@
+package cn.dingd.dd.biz.common.view;
+
+/**
+ * 
+ * @author zoucong
+ * 账号角色数据传输对象
+ */
+public class AccountRoleView {
+	//账号id
+	private Integer accountId; 
+	
+	//角色名称
+	private String roleName;
+
+	public Integer getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(Integer accountId) {
+		this.accountId = accountId;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	
+	
+}

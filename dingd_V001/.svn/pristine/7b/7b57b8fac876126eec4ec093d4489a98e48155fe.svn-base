@@ -1,0 +1,197 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="basePath" value="${pageContext.request.contextPath}"></c:set>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>List</title>
+	<link rel="stylesheet" href="${basePath}/css/test/swiper.min.css">
+	<link rel="stylesheet" href="${basePath}/css/test/common.css">
+	<link rel="stylesheet" href="${basePath}/css/test/list.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+</head>
+<body>
+	<header class="clearfix">
+		<div class="float-l">叮当快搜系统</div>
+		<div class="float-r login-out">退出</div>	
+	</header>	
+	 <div id="content">
+	 	<div class="search clearfix">
+	 		<input class="search-words" placeholder="搜索关键字">
+	 		<input class="min-price" placeholder="￥最小价格">
+	 		<input class="max-price" placeholder="￥最大价格">
+	 		<span class="float-l search-btn">搜索</span>
+	 	</div>      
+       <div class="img-list">
+	 		<ul class="clearfix">
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 			<li>
+	 				<img src="images/car.png" alt="">
+	 			</li>
+	 		</ul>
+	 	</div>
+	 </div>
+	<script src="${basePath}/js/test/swiper.min.js"></script>
+	<script src="${basePath}/js/test/jquery-2.1.0.min.js"></script>
+	<script src="${basePath}/js/test/common.js"></script>
+	<script src="${basePath}/js/test/list.js"></script>
+</body>
+</html>

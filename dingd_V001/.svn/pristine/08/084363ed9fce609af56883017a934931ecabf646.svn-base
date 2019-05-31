@@ -1,0 +1,35 @@
+package cn.dingd.dd.biz.backgroud.service;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.dingd.dd.biz.common.entity.OrganizationInfo;
+import cn.dingd.dd.biz.common.entity.OrganizationInfoExample;
+
+public interface OrganizationInfoService {
+    int countByExample(OrganizationInfoExample example);
+
+    int deleteByExample(OrganizationInfoExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(OrganizationInfo record);
+
+    int insertSelective(OrganizationInfo record);
+
+    List<OrganizationInfo> selectByExample(OrganizationInfoExample example);
+
+    OrganizationInfo selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") OrganizationInfo record, @Param("example") OrganizationInfoExample example);
+
+    int updateByExample(@Param("record") OrganizationInfo record, @Param("example") OrganizationInfoExample example);
+
+    int updateByPrimaryKeySelective(OrganizationInfo record);
+
+    int updateByPrimaryKey(OrganizationInfo record);
+    List<OrganizationInfo> selectTree();
+    List<OrganizationInfo> selectFull(OrganizationInfo or);
+    
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+      <mapper namespace="cn.wh.warehouse.echarts.dao.EchartsDao">
+      <!-- 查询统计维修件 -->
+      <select id="getSendPeople" resultType="cn.wh.warehouse.echarts.entity.SendPeople">
+      	select send_people name,count(*)  as value from system_wx group by send_people;
+      </select>
+      <select id="getCount" resultType="Integer">
+      	select count(*) as value from system_wx ;
+      </select>
+      </mapper>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      

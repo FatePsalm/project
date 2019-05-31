@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.TCarBasisInfoDao">
+     <!-- 获取车辆的其他图片 -->
+     <select id="getRestsPicture" resultType="map">
+      select r.id,c.dict_name name,r.show_srot,r.car_id carId,r.img_type imgType,r.dd_dict_id ddDictId,r.url,r.priture from car_picture r left JOIN dd_dict  c on r.dd_dict_id=c.dict_value and r.img_type=c.code  where  r.car_id=#{carId} and  r.img_type in(2,7) group by priture
+     </select>
+     
+       <!-- 获取车辆出价数 -->
+      <select id="getCarInfoCount" resultType="Integer">
+	   select count(CASE WHEN x.car_id=p.id and x.a_user_id&lt;&gt;#{userId} THEN x.a_user_id WHEN x.id is null then NULL ELSE 0 END) count from t_car_basisinfo p RIGHT JOIN bidding x on p.id=x.car_id and x.auction_id=#{auctionId}  where p.id =#{carId} 
+	 </select>
+	
+	 <!-- 查询车辆状态 -->
+	 <select id="getAuctionCarStatus" resultType="Integer">
+	   select car_state from t_car_basisinfo where id=#{carId} 
+	 </select>
+	 
+	  
+	 <!-- 更改车辆状态 -->
+	 <update id="setCarStatus" parameterType="cn.dingd.dd.common.entity.TCarBasisInfoEntity">  
+      update t_car_basisinfo  
+      set t_car_basisinfo.car_state = #{status}
+      where t_car_basisinfo.id=#{carId}
+     </update>
+     
+
+	  <!-- 获取车辆信息-->
+	  <select id="getTCarBasisInfoEntityId" resultType="cn.dingd.dd.common.entity.TCarBasisInfoEntity">
+	      select t.car_state,t.id from t_car_basisinfo t where id=#{carId}
+	  </select>
+	  
+	  <!-- 查询车辆隐性损伤信息 -->
+	 <select id="getCarDamage" resultType="cn.dingd.dd.common.entity.CarDamageEntity">
+       select  g.id,g.car_id carId ,g.damage_type damageType,g.type_number typeNumber,g.img_remark imgRemark,t.dict_name recessive from car_damage g LEFT JOIN dd_dict t  on g.recessive=t.dict_value where t.code=8 and g.car_id=#{carId}
+	 </select>
+	 
+	  <!-- 获取车辆显性损伤信息 -->
+	  <select id="getCarDominant" resultType="cn.dingd.dd.common.entity.CarDominantEntity">
+	    SELECT d.id,d.car_id carId,type_number typeNumber,d.damage_type damageType,car_describe carDescribe,xy,img_url imgUrl,sort,img_remark imgRemark,GROUP_CONCAT(c.dict_name SEPARATOR ',') dominant from car_dominant d LEFT JOIN dd_dict c on  find_in_set(c.dict_value,d.dominant) where c.code in(9,10)
+         and car_id=#{carId}  GROUP BY d.xy
+	  </select>
+	  
+	  	 <!-- 获取车辆损伤数 -->
+	 <select id="getCountDominant" resultType="java.lang.Integer">
+	 select COUNT(m.id) as dcount  from t_car_basisinfo c  
+     LEFT JOIN  car_dominant m on c.id=m.car_id     where c.id=#{carId}
+	 </select>
+	  
+</mapper> 

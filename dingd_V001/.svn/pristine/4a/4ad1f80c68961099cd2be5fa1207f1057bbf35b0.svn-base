@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.ManageVersionDao">
+<!-- /**获取版本显示信息*/public VersionEntity getVersion(String version) -->
+	<select id="getVersion" resultType="cn.dingd.dd.common.entity.VersionEntity">
+		SELECT
+		id,
+		version_control as versionControl,
+		value_control as valueControl,
+		update_control as updateControl,
+		noto_control as notoControl,
+		enable_control as enableControl
+		from
+		global_version
+		WHERE
+		version_control = #{version}
+		and
+		enable_control =1
+	</select>
+</mapper> 

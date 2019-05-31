@@ -1,0 +1,61 @@
+package cn.dingd.dd.common.shiro.cache;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.apache.shiro.cache.Cache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cn.dingd.dd.common.util.RedisClient;
+
+public class JedisShiroCacheManager implements ShiroCacheManager {
+	private static final Logger logger = LoggerFactory.getLogger(JedisShiroCacheManager.class);
+
+	private RedisClient redisManager;
+
+	/**
+	 * 维护一个map组，提升获取cache的性能
+	 */
+	@SuppressWarnings("rawtypes")
+	private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<String, Cache>();
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public <k, v> Cache<k, v> getCache(String name) {
+		logger.debug("获取一个缓存对象: " + name);
+		Cache c = caches.get(name);
+		if (c == null) {
+			// 初始化redis
+//			redisManager.init();
+			// 创建一个cache对象
+			c = new JedisShiroCache<k, v>(name, redisManager);
+			// 放入caches集合中
+			caches.put(name, c);
+		}
+		return c;
+	}
+	/**
+	 * 清空缓存
+	 */
+	@Override
+	public void destroy() {
+//		redisManager.init();
+		Set<byte[]> byteKeys = redisManager.keys("shiro-cache:*");
+		if (byteKeys != null && byteKeys.size() > 0) {
+			for (byte[] bs : byteKeys) {
+				redisManager.del(bs);
+			}
+		}
+	}
+
+	public RedisClient getRedisManager() {
+		return redisManager;
+	}
+
+	public void setRedisManager(RedisClient redisManager) {
+		this.redisManager = redisManager;
+	}
+
+}

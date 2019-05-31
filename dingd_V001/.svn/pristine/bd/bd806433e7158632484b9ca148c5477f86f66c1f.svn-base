@@ -1,0 +1,80 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="basePath" value="${pageContext.request.contextPath}"></c:set>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Upload</title>
+	<link rel="stylesheet" href="${basePath}/css/test/common.css">
+	<link rel="stylesheet" href="${basePath}/css/test/webuploader.css">
+	<link rel="stylesheet" href="${basePath}/css/test/diyUpload.css">
+	<link rel="stylesheet" href="${basePath}/css/test/upload.css">
+</head>
+<body>
+	<header>新建车辆</header>
+	<main class="clearfix">
+		<div class="left-box float-l">
+			<form id="uploadFormId" action="CarInfoDom/addCarInfoDom.do" method="post" enctype="multipart/form-data"> 
+				<input type="file" name="mFile" class="form-control" >
+				<input type="submit">
+			</form>
+
+			<div id="box">
+				<div id="img"></div>
+			</div>
+		</div>
+		<div class="rigth-box float-l">
+			<div class="form-group">
+				<span>车辆车系</span>
+				<input class="carCx" type="text">
+			</div>
+			<div class="form-group">
+				<span>首次上牌时间</span>
+				<input class="upTime" id="time" type="text" readonly="true">
+			</div>
+			<div class="form-group">
+				<span>过户次数</span>
+				<input class="ghNum" type="text">
+			</div>
+			<div class="form-group">
+				<span>表显里程</span>
+				<input class="xslc"  type="text">
+			</div>
+			<div class="form-group">
+				<span>使用性质</span>
+				<select class="syxz">
+					<option value="家用">家用</option>
+					<option value="营运">营运</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<span>车辆颜色</span>
+				<input class="carColor" type="text">
+			</div>
+			<div class="form-group">
+				<span>亮点配置</span>
+				<input class="ldpz" type="text">
+			</div>
+			<div class="form-group">
+				<span>车况自述</span>
+				<input class="ckzs" type="text">
+			</div>
+			<div class="form-group">
+				<span>保养情况</span>
+				<input class="byqk" type="text">
+			</div>
+			<div class="form-group">
+				<span>报价</span>
+				<input class="money" type="text">
+			</div>
+			<div class="submit">保存提交</div>
+		</div>
+	</main>
+	<script src="${basePath}/js/test/jquery-2.1.0.min.js"></script>
+	<script src="${basePath}/js/test/jquery.form.js"></script>
+	<script src="${basePath}/js/test/laydate.js"></script>
+	<script src="${basePath}/js/test/webuploader.html5only.min.js"></script>
+	<script src="${basePath}/js/test/diyUpload.js"></script>
+	<script src="${basePath}/js/test/upload.js"></script>
+</body>
+</html>

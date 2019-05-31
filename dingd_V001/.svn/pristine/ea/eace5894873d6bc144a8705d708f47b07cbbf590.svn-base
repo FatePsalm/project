@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.dingd.dd.biz.backgroud.dao.StaffInfoMapper" >
+  <resultMap id="BaseResultMap" type="cn.dingd.dd.biz.common.entity.StaffInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="account" property="account" jdbcType="VARCHAR" />
+    <result column="u_phone" property="uPhone" jdbcType="VARCHAR" />
+    <result column="u_password" property="uPassword" jdbcType="VARCHAR" />
+    <result column="u_name" property="uName" jdbcType="VARCHAR" />
+    <result column="u_sex" property="uSex" jdbcType="BIT" />
+    <result column="u_birthday" property="uBirthday" jdbcType="TIMESTAMP" />
+    <result column="u_age" property="uAge" jdbcType="INTEGER" />
+    <result column="u_card" property="uCard" jdbcType="VARCHAR" />
+    <result column="u_time" property="uTime" jdbcType="TIMESTAMP" />
+    <result column="u_photos" property="uPhotos" jdbcType="VARCHAR" />
+    <result column="u_hand_img" property="uHandImg" jdbcType="VARCHAR" />
+    <result column="card_img_up" property="cardImgUp" jdbcType="VARCHAR" />
+    <result column="card_img_dwon" property="cardImgDwon" jdbcType="VARCHAR" />
+    <result column="u_number" property="uNumber" jdbcType="VARCHAR" />
+    <result column="u_lv" property="uLv" jdbcType="INTEGER" />
+    <result column="u_duty" property="uDuty" jdbcType="INTEGER" />
+    <result column="u_emergency" property="uEmergency" jdbcType="VARCHAR" />
+    <result column="emergency_phone" property="emergencyPhone" jdbcType="VARCHAR" />
+    <result column="signature" property="signature" jdbcType="VARCHAR" />
+    <result column="u_state" property="uState" jdbcType="INTEGER" />
+    <result column="u_address" property="uAddress" jdbcType="VARCHAR" />
+    <result column="u_type" property="uType" jdbcType="INTEGER" />
+    <result column="mailbox" property="mailbox" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, account, u_phone, u_password, u_name, u_sex, u_birthday, u_age, u_card, u_time, 
+    u_photos, u_hand_img, card_img_up, card_img_dwon, u_number, u_lv, u_duty, u_emergency, 
+    emergency_phone, signature, u_state, u_address, u_type, mailbox
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.dingd.dd.biz.common.entity.StaffInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from staff_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from staff_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from staff_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="cn.dingd.dd.biz.common.entity.StaffInfoExample" >
+    delete from staff_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cn.dingd.dd.biz.common.entity.StaffInfo" >
+    insert into staff_info (id, account, u_phone, 
+      u_password, u_name, u_sex, 
+      u_birthday, u_age, u_card, 
+      u_time, u_photos, u_hand_img, 
+      card_img_up, card_img_dwon, u_number, 
+      u_lv, u_duty, u_emergency, 
+      emergency_phone, signature, u_state, 
+      u_address, u_type, mailbox
+      )
+    values (#{id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{uPhone,jdbcType=VARCHAR}, 
+      #{uPassword,jdbcType=VARCHAR}, #{uName,jdbcType=VARCHAR}, #{uSex,jdbcType=BIT}, 
+      #{uBirthday,jdbcType=TIMESTAMP}, #{uAge,jdbcType=INTEGER}, #{uCard,jdbcType=VARCHAR}, 
+      #{uTime,jdbcType=TIMESTAMP}, #{uPhotos,jdbcType=VARCHAR}, #{uHandImg,jdbcType=VARCHAR}, 
+      #{cardImgUp,jdbcType=VARCHAR}, #{cardImgDwon,jdbcType=VARCHAR}, #{uNumber,jdbcType=VARCHAR}, 
+      #{uLv,jdbcType=INTEGER}, #{uDuty,jdbcType=INTEGER}, #{uEmergency,jdbcType=VARCHAR}, 
+      #{emergencyPhone,jdbcType=VARCHAR}, #{signature,jdbcType=VARCHAR}, #{uState,jdbcType=INTEGER}, 
+      #{uAddress,jdbcType=VARCHAR}, #{uType,jdbcType=INTEGER}, #{mailbox,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective"  keyProperty="id" useGeneratedKeys="true" parameterType="cn.dingd.dd.biz.common.entity.StaffInfo" >
+    insert into staff_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+      <if test="uPhone != null" >
+        u_phone,
+      </if>
+      <if test="uPassword != null" >
+        u_password,
+      </if>
+      <if test="uName != null" >
+        u_name,
+      </if>
+      <if test="uSex != null" >
+        u_sex,
+      </if>
+      <if test="uBirthday != null" >
+        u_birthday,
+      </if>
+      <if test="uAge != null" >
+        u_age,
+      </if>
+      <if test="uCard != null" >
+        u_card,
+      </if>
+      <if test="uTime != null" >
+        u_time,
+      </if>
+      <if test="uPhotos != null" >
+        u_photos,
+      </if>
+      <if test="uHandImg != null" >
+        u_hand_img,
+      </if>
+      <if test="cardImgUp != null" >
+        card_img_up,
+      </if>
+      <if test="cardImgDwon != null" >
+        card_img_dwon,
+      </if>
+      <if test="uNumber != null" >
+        u_number,
+      </if>
+      <if test="uLv != null" >
+        u_lv,
+      </if>
+      <if test="uDuty != null" >
+        u_duty,
+      </if>
+      <if test="uEmergency != null" >
+        u_emergency,
+      </if>
+      <if test="emergencyPhone != null" >
+        emergency_phone,
+      </if>
+      <if test="signature != null" >
+        signature,
+      </if>
+      <if test="uState != null" >
+        u_state,
+      </if>
+      <if test="uAddress != null" >
+        u_address,
+      </if>
+      <if test="uType != null" >
+        u_type,
+      </if>
+      <if test="mailbox != null" >
+        mailbox,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="uPhone != null" >
+        #{uPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="uPassword != null" >
+        #{uPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="uName != null" >
+        #{uName,jdbcType=VARCHAR},
+      </if>
+      <if test="uSex != null" >
+        #{uSex,jdbcType=BIT},
+      </if>
+      <if test="uBirthday != null" >
+        #{uBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uAge != null" >
+        #{uAge,jdbcType=INTEGER},
+      </if>
+      <if test="uCard != null" >
+        #{uCard,jdbcType=VARCHAR},
+      </if>
+      <if test="uTime != null" >
+        #{uTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uPhotos != null" >
+        #{uPhotos,jdbcType=VARCHAR},
+      </if>
+      <if test="uHandImg != null" >
+        #{uHandImg,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgUp != null" >
+        #{cardImgUp,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgDwon != null" >
+        #{cardImgDwon,jdbcType=VARCHAR},
+      </if>
+      <if test="uNumber != null" >
+        #{uNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="uLv != null" >
+        #{uLv,jdbcType=INTEGER},
+      </if>
+      <if test="uDuty != null" >
+        #{uDuty,jdbcType=INTEGER},
+      </if>
+      <if test="uEmergency != null" >
+        #{uEmergency,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyPhone != null" >
+        #{emergencyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="signature != null" >
+        #{signature,jdbcType=VARCHAR},
+      </if>
+      <if test="uState != null" >
+        #{uState,jdbcType=INTEGER},
+      </if>
+      <if test="uAddress != null" >
+        #{uAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="uType != null" >
+        #{uType,jdbcType=INTEGER},
+      </if>
+      <if test="mailbox != null" >
+        #{mailbox,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cn.dingd.dd.biz.common.entity.StaffInfoExample" resultType="java.lang.Integer" >
+    select count(*) from staff_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update staff_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.account != null" >
+        account = #{record.account,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uPhone != null" >
+        u_phone = #{record.uPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uPassword != null" >
+        u_password = #{record.uPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uName != null" >
+        u_name = #{record.uName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uSex != null" >
+        u_sex = #{record.uSex,jdbcType=BIT},
+      </if>
+      <if test="record.uBirthday != null" >
+        u_birthday = #{record.uBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.uAge != null" >
+        u_age = #{record.uAge,jdbcType=INTEGER},
+      </if>
+      <if test="record.uCard != null" >
+        u_card = #{record.uCard,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uTime != null" >
+        u_time = #{record.uTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.uPhotos != null" >
+        u_photos = #{record.uPhotos,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uHandImg != null" >
+        u_hand_img = #{record.uHandImg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cardImgUp != null" >
+        card_img_up = #{record.cardImgUp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cardImgDwon != null" >
+        card_img_dwon = #{record.cardImgDwon,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uNumber != null" >
+        u_number = #{record.uNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uLv != null" >
+        u_lv = #{record.uLv,jdbcType=INTEGER},
+      </if>
+      <if test="record.uDuty != null" >
+        u_duty = #{record.uDuty,jdbcType=INTEGER},
+      </if>
+      <if test="record.uEmergency != null" >
+        u_emergency = #{record.uEmergency,jdbcType=VARCHAR},
+      </if>
+      <if test="record.emergencyPhone != null" >
+        emergency_phone = #{record.emergencyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.signature != null" >
+        signature = #{record.signature,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uState != null" >
+        u_state = #{record.uState,jdbcType=INTEGER},
+      </if>
+      <if test="record.uAddress != null" >
+        u_address = #{record.uAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uType != null" >
+        u_type = #{record.uType,jdbcType=INTEGER},
+      </if>
+      <if test="record.mailbox != null" >
+        mailbox = #{record.mailbox,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update staff_info
+    set id = #{record.id,jdbcType=INTEGER},
+      account = #{record.account,jdbcType=VARCHAR},
+      u_phone = #{record.uPhone,jdbcType=VARCHAR},
+      u_password = #{record.uPassword,jdbcType=VARCHAR},
+      u_name = #{record.uName,jdbcType=VARCHAR},
+      u_sex = #{record.uSex,jdbcType=BIT},
+      u_birthday = #{record.uBirthday,jdbcType=TIMESTAMP},
+      u_age = #{record.uAge,jdbcType=INTEGER},
+      u_card = #{record.uCard,jdbcType=VARCHAR},
+      u_time = #{record.uTime,jdbcType=TIMESTAMP},
+      u_photos = #{record.uPhotos,jdbcType=VARCHAR},
+      u_hand_img = #{record.uHandImg,jdbcType=VARCHAR},
+      card_img_up = #{record.cardImgUp,jdbcType=VARCHAR},
+      card_img_dwon = #{record.cardImgDwon,jdbcType=VARCHAR},
+      u_number = #{record.uNumber,jdbcType=VARCHAR},
+      u_lv = #{record.uLv,jdbcType=INTEGER},
+      u_duty = #{record.uDuty,jdbcType=INTEGER},
+      u_emergency = #{record.uEmergency,jdbcType=VARCHAR},
+      emergency_phone = #{record.emergencyPhone,jdbcType=VARCHAR},
+      signature = #{record.signature,jdbcType=VARCHAR},
+      u_state = #{record.uState,jdbcType=INTEGER},
+      u_address = #{record.uAddress,jdbcType=VARCHAR},
+      u_type = #{record.uType,jdbcType=INTEGER},
+      mailbox = #{record.mailbox,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.dingd.dd.biz.common.entity.StaffInfo" >
+    update staff_info
+    <set >
+      <if test="account != null" >
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="uPhone != null" >
+        u_phone = #{uPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="uPassword != null" >
+        u_password = #{uPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="uName != null" >
+        u_name = #{uName,jdbcType=VARCHAR},
+      </if>
+      <if test="uSex != null" >
+        u_sex = #{uSex,jdbcType=BIT},
+      </if>
+      <if test="uBirthday != null" >
+        u_birthday = #{uBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uAge != null" >
+        u_age = #{uAge,jdbcType=INTEGER},
+      </if>
+      <if test="uCard != null" >
+        u_card = #{uCard,jdbcType=VARCHAR},
+      </if>
+      <if test="uTime != null" >
+        u_time = #{uTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uPhotos != null" >
+        u_photos = #{uPhotos,jdbcType=VARCHAR},
+      </if>
+      <if test="uHandImg != null" >
+        u_hand_img = #{uHandImg,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgUp != null" >
+        card_img_up = #{cardImgUp,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgDwon != null" >
+        card_img_dwon = #{cardImgDwon,jdbcType=VARCHAR},
+      </if>
+      <if test="uNumber != null" >
+        u_number = #{uNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="uLv != null" >
+        u_lv = #{uLv,jdbcType=INTEGER},
+      </if>
+      <if test="uDuty != null" >
+        u_duty = #{uDuty,jdbcType=INTEGER},
+      </if>
+      <if test="uEmergency != null" >
+        u_emergency = #{uEmergency,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyPhone != null" >
+        emergency_phone = #{emergencyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="signature != null" >
+        signature = #{signature,jdbcType=VARCHAR},
+      </if>
+      <if test="uState != null" >
+        u_state = #{uState,jdbcType=INTEGER},
+      </if>
+      <if test="uAddress != null" >
+        u_address = #{uAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="uType != null" >
+        u_type = #{uType,jdbcType=INTEGER},
+      </if>
+      <if test="mailbox != null" >
+        mailbox = #{mailbox,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.dingd.dd.biz.common.entity.StaffInfo" >
+    update staff_info
+    set account = #{account,jdbcType=VARCHAR},
+      u_phone = #{uPhone,jdbcType=VARCHAR},
+      u_password = #{uPassword,jdbcType=VARCHAR},
+      u_name = #{uName,jdbcType=VARCHAR},
+      u_sex = #{uSex,jdbcType=BIT},
+      u_birthday = #{uBirthday,jdbcType=TIMESTAMP},
+      u_age = #{uAge,jdbcType=INTEGER},
+      u_card = #{uCard,jdbcType=VARCHAR},
+      u_time = #{uTime,jdbcType=TIMESTAMP},
+      u_photos = #{uPhotos,jdbcType=VARCHAR},
+      u_hand_img = #{uHandImg,jdbcType=VARCHAR},
+      card_img_up = #{cardImgUp,jdbcType=VARCHAR},
+      card_img_dwon = #{cardImgDwon,jdbcType=VARCHAR},
+      u_number = #{uNumber,jdbcType=VARCHAR},
+      u_lv = #{uLv,jdbcType=INTEGER},
+      u_duty = #{uDuty,jdbcType=INTEGER},
+      u_emergency = #{uEmergency,jdbcType=VARCHAR},
+      emergency_phone = #{emergencyPhone,jdbcType=VARCHAR},
+      signature = #{signature,jdbcType=VARCHAR},
+      u_state = #{uState,jdbcType=INTEGER},
+      u_address = #{uAddress,jdbcType=VARCHAR},
+      u_type = #{uType,jdbcType=INTEGER},
+      mailbox = #{mailbox,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据查询参数获取账号信息获取信息 -->
+  <select id="selectByQuaryParam" resultType="cn.dingd.dd.biz.common.view.StaffInfoView" parameterType="java.lang.String">
+	SELECT
+	id,
+	account,
+	mailBox,
+	u_password uPassword,
+	u_phone uPhone,
+	u_name uName,
+	u_sex uSex,
+	u_state uState
+	FROM
+		staff_info 
+	WHERE
+		account is not NULL 
+			<if test="quaryParam != null and quaryParam != '' "  >
+		AND id IN (
+	SELECT
+		staff_id 
+	FROM
+		account_role 
+	WHERE
+		role_id IN (
+	SELECT
+		id 
+	FROM
+		role 
+	WHERE
+		role_name LIKE #{quaryParam})) or u_phone like #{quaryParam} or u_name like #{quaryParam} 
+		  	</if>    	
+  </select>
+  
+  <!-- 根据查询参数获取账号信息获取信息 -->
+  <select id="getRolessByQuaryParam" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select id,role_name roleName,role_desc roleDesc,status from role 
+  	<if test="quaryParam != null" >
+       where role_name like #{quaryParam} or role_desc like #{quaryParam}
+    </if>
+  </select>
+  <!-- 启停账号 -->
+  <update id="disableorEnableAccount">
+  	UPDATE staff_info s1,
+		( SELECT id, CASE `u_state` WHEN 1
+		THEN 0 WHEN 0 THEN 1 ELSE 1 END `state` FROM
+		staff_info WHERE id = #{id} ) s2
+		SET
+		s1.u_state = s2.`state`
+		WHERE
+		s1.id = s2.id
+  </update>
+</mapper>

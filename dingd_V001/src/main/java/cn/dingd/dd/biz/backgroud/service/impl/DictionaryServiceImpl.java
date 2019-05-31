@@ -1,0 +1,180 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import cn.dingd.dd.common.web.PageObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.biz.backgroud.dao.DictionaryDao;
+import cn.dingd.dd.biz.backgroud.service.DictionaryService;
+import cn.dingd.dd.biz.common.entity.DdDictEntity;
+import cn.dingd.dd.common.util.EX;
+
+/**
+ * @author 作者 Name:CaoGang
+ * @version 创建时间：2018年4月23日 下午1:54:30 类说明
+ */
+@Service
+public class DictionaryServiceImpl implements DictionaryService {
+	private Integer Level=0;
+	@Autowired
+	private DictionaryDao dictionaryDao;
+	public List<Map<String,Object>> selectGroup(Integer code){
+		List<Map<String, Object>> maps = null;
+		try {
+			maps = dictionaryDao.selectGroup(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return maps;
+	}
+	/**
+	 * 
+	 * @param collect
+	 *            节点数据
+	 * @param topMenu
+	 *            父节点数据
+	 * @param keySet
+	 *            节点数 生成树形图
+	 */
+	public void resultsTree(Map<Integer, List<DdDictEntity>> collect, List<DdDictEntity> father, Set<Integer> keySet) {
+		for (DdDictEntity ddDictEntity : father) {
+			if (keySet.contains(ddDictEntity.getId())) {
+				ddDictEntity.setChildList(collect.get(ddDictEntity.getId()));
+				resultsTree(collect, ddDictEntity.getChildList(), keySet);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param father
+	 *            父节点集合
+	 * @param arrayList
+	 *            返回平级集合
+	 * @return 生成平级树形图
+	 */
+	public List<DdDictEntity> parsTree(List<DdDictEntity> father, List<DdDictEntity> arrayList) {
+		for (DdDictEntity tree : father) {
+			StringBuffer string = new StringBuffer("|");
+			for (int i = 0; i < Level; i++) {
+				string.append("-");
+			}
+			DdDictEntity dd = new DdDictEntity();
+			if (tree.getParentId() != 0) {
+				dd.setDictName(string + tree.getDictName());
+			} else {
+				dd.setDictName(tree.getDictName());
+			}
+			dd.setId(tree.getId());
+			dd.setDictValue(tree.getDictValue());
+			dd.setDictOrder(tree.getDictOrder());
+			dd.setCode(tree.getCode());
+			dd.setDictDesc(tree.getDictDesc());
+			dd.setStatus(tree.getStatus());
+			dd.setParentId(tree.getParentId());
+			arrayList.add(dd);
+			if (tree.getChildList() != null) {
+				++Level;
+				parsTree(tree.getChildList(), arrayList);
+				--Level;
+			}
+		}
+		return arrayList;
+	}
+
+	@Override
+	public int deleteByPrimaryKey(Integer id) {
+		int deleteByPrimaryKey = 0;
+		try {
+			deleteByPrimaryKey = dictionaryDao.deleteByPrimaryKey(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return deleteByPrimaryKey;
+	}
+
+	@Override
+	public int insert(DdDictEntity record) {
+		int insert = 0;
+		try {
+			insert = dictionaryDao.insert(record);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return insert;
+	}
+
+	@Override
+	public DdDictEntity selectByPrimaryKey(Integer id) {
+		DdDictEntity selectByPrimaryKey = null;
+		try {
+			selectByPrimaryKey = dictionaryDao.selectByPrimaryKey(id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return selectByPrimaryKey;
+	}
+
+	@Override
+	public List<DdDictEntity> selectAll() {
+		List<DdDictEntity> dictionary = null;
+		try {
+			dictionary = dictionaryDao.selectAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		if (dictionary == null) {
+			throw new NullPointerException("数据为空!");
+		}
+		ArrayList<DdDictEntity> arrayList = new ArrayList<DdDictEntity>();//保存平级树形图
+		Map<Integer, List<DdDictEntity>> collect = dictionary.stream()
+				.collect(Collectors.groupingBy(DdDictEntity::getParentId));
+		Set<Integer> keySet = collect.keySet();
+		List<DdDictEntity> father = collect.get(0);// 获取父节点
+		resultsTree(collect, father, keySet);
+		List<DdDictEntity> parsTree = parsTree(father, arrayList);
+		return parsTree;
+	}
+
+	@Override
+	public int updateByPrimaryKey(DdDictEntity record) {
+		int updateByPrimaryKey = 0;
+		try {
+			updateByPrimaryKey = dictionaryDao.updateByPrimaryKey(record);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return updateByPrimaryKey;
+	}
+
+	@Override
+	public Map<String,Object> selectFull(DdDictEntity ddDictEntity,PageObject pageObject) {
+		Map<String,Object> map=new HashMap<>();
+		PageObject pageObject1 = new PageObject();
+		pageObject1.setPageSize(Integer.MAX_VALUE);
+		List<DdDictEntity> selectFull = null;
+		List<DdDictEntity> selectpg = null;
+		try {
+			selectFull = dictionaryDao.selectFull(ddDictEntity,pageObject);
+			selectpg = dictionaryDao.selectFull(ddDictEntity,pageObject1);
+			pageObject.setRowCount(selectpg.size());
+			map.put("list",selectFull);
+			map.put("pageObject",pageObject);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EX.mysqlE();
+		}
+		return map;
+	}
+
+}

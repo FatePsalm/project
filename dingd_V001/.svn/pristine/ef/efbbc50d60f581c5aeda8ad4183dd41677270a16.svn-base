@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.ManageMoneyDao">
+	<!-- /** 管理端-资金管理-查询用户扣款记录条目数 */ public int findDeductionsPageCount(@Param("id")Integer 
+		id,@Param("retrieval")String retrieval); -->
+	<select id="findDeductionsPageCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		auction_order a LEFT JOIN pay_order o ON
+		a.car_id=o.car_id
+		LEFT JOIN
+		t_car_basisinfo t ON a.car_id=t.id
+		<where>
+			a.a_user_id=#{id}
+			and
+			o.m_type=4
+			<if test="retrieval!=null and retrieval!=''">
+				AND(
+				o.m_number like CONCAT
+				("%",#{retrieval},"%")
+				or
+				t.car_number like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /** 管理端-资金管理-查询用户扣款记录 */ public List<Map<String, Object>> findDeductions(@Param("id")Integer 
+		id,@Param("retrieval")String retrieval,@Param("pageObject")PageObject pageObject); -->
+	<select id="findDeductions" resultType="map">
+		SELECT
+		a.abort_time as abortTime,
+		o.m_number as mNumber,
+		t.title,
+		t.car_number as carNumber,
+		o.title as reason,
+		o.m_money
+		FROM
+		auction_order a LEFT JOIN pay_order o ON a.car_id=o.car_id
+		LEFT JOIN
+		t_car_basisinfo t ON a.car_id=t.id
+		<where>
+			a.a_user_id=#{id}
+			and
+			o.m_type=4
+			<if test="retrieval!=null and retrieval!=''">
+				AND(
+				o.m_number like CONCAT
+				("%",#{retrieval},"%")
+				or
+				t.car_number like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+		ORDER BY
+		a.abort_time
+		DESC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<!-- /** 管理端-资金管理-查询用户冻结/解冻记录条目数 */public int findFreezePageCount(@Param("id")Integer 
+		id,@Param("retrieval")String retrieval); -->
+	<select id="findFreezePageCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		auction_order a LEFT JOIN pay_order o ON
+		a.car_id=o.car_id
+		LEFT
+		JOIN t_car_basisinfo t ON a.car_id=t.id
+		<where>
+			a.a_user_id=#{id}
+			and
+			o.m_type=1
+			<if test="retrieval!=null and retrieval!=''">
+				AND(
+				o.m_number like CONCAT
+				("%",#{retrieval},"%")
+				or
+				t.car_number like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /** 管理端-资金管理-查询用户冻结/解冻记录 */public List<Map<String, Object>> findFreeze(Integer 
+		id, String retrieval, PageObject pageObject); -->
+	<select id="findFreeze" resultType="map">
+		SELECT
+		a.order_time as orderTime,
+		o.m_number as mNumber,
+		t.title,
+		t.car_number as carNumber,
+		o.m_money as mMoney,
+		a.pay_time as payTime
+		FROM
+		auction_order a LEFT JOIN pay_order o ON a.car_id=o.car_id
+		LEFT
+		JOIN t_car_basisinfo t ON a.car_id=t.id
+		<where>
+			a.a_user_id=#{id}
+			and
+			o.m_type=1
+			<if test="retrieval!=null and retrieval!=''">
+				AND(
+				o.m_number like CONCAT
+				("%",#{retrieval},"%")
+				or
+				t.car_number like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+		ORDER BY
+		a.order_time
+		DESC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<!-- /** 管理端-资金管理-查询用户提现记录 */ public int findWithdrawalPageCount(@Param("id")Integer 
+		id,@Param("retrieval")String retrieval); -->
+	<select id="findWithdrawalPageCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		payment_info p LEFT JOIN pay_order o ON
+		p.pay_order_id=o.id
+		<where>
+			o.m_type=2
+			and
+			p.a_user_id=#{id}
+			<if test="retrieval!=null and retrieval!=''">
+				AND o.m_number like CONCAT
+				("%",#{retrieval},"%")
+			</if>
+		</where>
+		ORDER BY
+		o.pay_time
+		DESC
+	</select>
+	<!-- /** 管理端-资金管理-查询用户提现记录 */public List<Map<String, Object>> findWithdrawal(Integer 
+		id, String retrieval, PageObject pageObject); -->
+	<select id="findWithdrawal" resultType="map">
+		SELECT
+		o.pay_time as payTime,
+		o.m_number as mNumber,
+		o.m_channel as
+		mChannel,
+		p.money,
+		o.m_state as mState,
+		p.current_balance as
+		currentBalance
+		FROM
+		payment_info p LEFT JOIN pay_order o ON
+		p.pay_order_id=o.id
+		<where>
+			o.m_type=2
+			and
+			p.a_user_id=#{id}
+			<if test="retrieval!=null and retrieval!=''">
+				AND o.m_number like CONCAT
+				("%",#{retrieval},"%")
+			</if>
+		</where>
+		ORDER BY
+		o.pay_time
+		DESC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<!-- /**管理端-资金管理-A端用户提现*/ public float FindBalance(Integer id) -->
+	<select id="FindBalance" resultType="float">
+		SELECT
+		balance
+		FROM
+		capital_account
+		WHERE
+		a_user_id=#{id}
+	</select>
+	<!-- /**管理端-资金管理-更新当前余额提现*/ public int UpdateWithdrawalCurrentBalance(Integer 
+		id) -->
+	<update id="UpdateWithdrawalCurrentBalance">
+		update
+		payment_info p
+		set
+		current_balance=(select
+		balance from capital_account c where c.a_user_id=p.a_user_id)
+		WHERE
+		p.id=#{id}
+	</update>
+	<!-- /**管理端-资金管理-A端用户提现*/ public int AddWithdrawal(PaymentInfoEntity paymentInfoEntity); -->
+	<insert id="AddWithdrawal" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO
+		payment_info (
+		a_user_id,
+		money,
+		create_time,
+		pay_order_id,
+		comments
+		)
+		VALUES
+		(
+		#{auserId},
+		#{money},
+		#{createTime},
+		#{payOrderId},
+		#{comments}
+		)
+	</insert>
+	<!-- /**管理端-资金管理-查询用户充值记录条目数*/ public int FindChargePageCount(String retrieval) -->
+	<select id="FindChargePageCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		recharge_info r LEFT JOIN pay_order p ON
+		r.pay_order_id=p.id
+		<where>
+			r.a_user_id=#{id}
+			<if test="retrieval!=null and retrieval!=''">
+				AND p.m_number like CONCAT
+				("%",#{retrieval},"%")
+			</if>
+		</where>
+	</select>
+	<!-- /**管理端-资金管理-查询用户充值记录*/ public Map<String, Object> FindCharge(String 
+		retrieval,PageObject pageObject) -->
+	<select id="FindCharge" resultType="map">
+		SELECT
+		r.create_time as createTime,
+		p.m_number as mNumber,
+		p.m_channel as
+		mChannel,
+		p.m_money as mMoney,
+		p.m_state as mState,
+		r.current_balance as
+		currentBalance
+		FROM
+		recharge_info r LEFT JOIN pay_order p ON
+		r.pay_order_id=p.id
+		<where>
+			r.a_user_id=#{id}
+			<if test="retrieval!=null and retrieval!=''">
+				AND p.m_number like CONCAT
+				("%",#{retrieval},"%")
+			</if>
+		</where>
+		ORDER BY
+		r.create_time
+		DESC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<!-- /**管理端-资金管理-更新当前余额*/ public int UpdateCurrentBalance(Integer id) ; -->
+	<update id="UpdateCurrentBalance">
+		update
+		recharge_info r
+		set
+		current_balance=(select
+		balance from capital_account c where c.a_user_id=r.a_user_id)
+		WHERE
+		r.id=#{id}
+	</update>
+	<!-- /**管理端-资金管理-支付订单*/ public int AddPayOrder(PayOrderEntity order) -->
+	<insert id="AddPayOrder" useGeneratedKeys="true" keyProperty="id"
+		parameterType="cn.dingd.dd.entity.PayOrderEntity">
+		INSERT
+		INTO
+		pay_order (
+		m_type,
+		m_number,
+		m_time,
+		m_money,
+		m_channel,
+		m_state,
+		pay_time,
+		three_no,
+		a_user_id,
+		title
+		)
+		VALUES
+		(
+		#{mtype},
+		#{mnumber},
+		#{mtime},
+		#{money},
+		#{mchannel},
+		#{mstate},
+		#{payTime},
+		#{threeNo},
+		#{auserId},
+		#{title}
+		)
+	</insert>
+	<!-- /**管理端-资金管理-A端用户充值*/ public int AddMoney(Integer id,Integer money) -->
+	<insert id="AddMoney" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO
+		recharge_info (
+		a_user_id,
+		money,
+		create_time,
+		pay_order_id,
+		comments
+		)
+		VALUES
+		(
+		#{auserId},
+		#{money},
+		#{createTime},
+		#{payOrderId},
+		#{rechargeAccount}
+		)
+	</insert>
+
+	<!-- /**管理端-资金管理-A端客服账户总条数*/ public int FindMoneyPageCount(@Param("retrieval")String 
+		retrieval); -->
+	<select id="FindMoneyPageCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		a_user a LEFT JOIN
+		capital_account c ON
+		a.id=c.a_user_id
+		<where>
+			<if test="retrieval!=null and retrieval!=''">
+				AND
+				(
+				a.u_name like CONCAT
+				("%",#{retrieval},"%")
+				OR
+				a.u_phone like CONCAT
+				("%",#{retrieval},"%")
+				OR a.card like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /**管理端-资金管理-A端客服账户*/ public Map<String, Object> FindMoney() -->
+	<select id="FindMoney" resultType="map">
+		SELECT
+		a.id,
+		a.u_name as uName,
+		a.sex,
+		a.u_phone as uPhone,
+		a.card,
+		c.balance + c.freeze as Money,
+		c.balance,
+		c.freeze
+		FROM
+		a_user a LEFT JOIN
+		capital_account c ON a.id=c.a_user_id
+		<where>
+			<if test="retrieval!=null and retrieval!=''">
+				AND
+				(
+				a.u_name like CONCAT
+				("%",#{retrieval},"%")
+				OR
+				a.u_phone like CONCAT
+				("%",#{retrieval},"%")
+				OR a.card like CONCAT
+				("%",#{retrieval},"%")
+				)
+			</if>
+		</where>
+		limit #{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+</mapper> 

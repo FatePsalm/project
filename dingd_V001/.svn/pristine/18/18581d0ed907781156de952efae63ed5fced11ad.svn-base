@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.ManageAuserDao">
+	<!-- /** 管理端-人员管理-A端用户总数 */ public int FindAuserPageCount(@Param("checkQueryEntity")CheckQueryEntity 
+		checkQueryEntity); -->
+	<select id="FindAuserPageCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		a_user a LEFT
+		JOIN staff_info s ON a.staff_id=s.id
+		<where>
+			<if
+				test="checkQueryEntity.startTime!=null and checkQueryEntity.startTime!=''">
+				and a.register_time&gt;=#{checkQueryEntity.startTime}
+			</if>
+			<if
+				test="checkQueryEntity.overTime!=null and checkQueryEntity.overTime!=''">
+				and a.register_time&lt;=#{checkQueryEntity.overTime}
+			</if>
+			<if
+				test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+				AND
+				(
+				a.u_phone like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR a.u_name like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR a.card like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /** 管理端-人员管理-A端用户 */ public Map<String, Object> FindAuser(CheckQueryEntity 
+		checkQueryEntity, PageObject pageObject) -->
+	<select id="FindAuser" resultType="map">
+		SELECT
+		a.id,
+		a.u_phone as uPhone,
+		a.register_time as registerTime,
+		a.u_name as uName,
+		a.sex,
+		a.card,
+		s.u_name as CommissionerName,
+		s.u_phone
+		as CommissionerUphone,
+		COUNT(o.a_user_id) as COUNT
+		FROM
+		a_user a LEFT
+		JOIN staff_info s ON a.staff_id=s.id
+		LEFT JOIN auction_order o ON
+		a.id=o.a_user_id
+		<where>
+			<if
+				test="checkQueryEntity.startTime!=null and checkQueryEntity.startTime!=''">
+				and a.register_time&gt;=#{checkQueryEntity.startTime}
+			</if>
+			<if
+				test="checkQueryEntity.overTime!=null and checkQueryEntity.overTime!=''">
+				and a.register_time&lt;=#{checkQueryEntity.overTime}
+			</if>
+			<if
+				test="checkQueryEntity.retrieval!=null and checkQueryEntity.retrieval!=''">
+				AND
+				(
+				a.u_phone like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR a.u_name like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				OR a.card like CONCAT
+				("%",#{checkQueryEntity.retrieval},"%")
+				)
+			</if>
+		</where>
+		GROUP BY
+		a.id
+		<if
+			test="checkQueryEntity.createTime!=null and checkQueryEntity.createTime!=''">
+			ORDER BY a.register_time ${checkQueryEntity.createTime}
+		</if>
+		<if
+			test="checkQueryEntity.overTimeSort!=null and checkQueryEntity.overTimeSort!=''">
+			ORDER BY COUNT ${checkQueryEntity.overTimeSort}
+		</if>
+		limit #{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+</mapper> 

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.PayOrderDao">
+	<!--插入支付订单-->
+	<insert id="addPayOrder" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.PayOrderEntity">  
+    insert into pay_order (m_type,m_number,m_time,m_money,m_state,a_user_id,title,three_no,pay_time,m_channel,car_id)   
+    values (#{mtype},#{mnumber},#{mtime},#{money},#{mstate},#{auserId},#{title},#{threeNo},#{payTime},#{mchannel},#{carId})  
+    </insert> 
+	
+	<!--修改支付订单-->
+	<update id="updPayOrder" >  
+      update pay_order  
+      set 
+      <if test="mstate!=null and mstate>0">
+      pay_order.m_state = #{mstate},
+      </if>
+      <if test="payTime!=null and payTime!=''">
+      pay_order.pay_time = #{payTime},
+      </if>
+      <if test="threeNo!=null and threeNo!=''">
+      pay_order.three_no = #{threeNo}
+      </if>
+      where pay_order.id=#{id}
+    </update>
+	
+		
+	<!--插入充值记录_-->
+	<insert id="addRechargeInfo" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.RechargeInfoEntity">  
+    insert into recharge_info (a_user_id,money,create_time,pay_order_id,current_balance)   
+    values (#{auserId},#{money},#{createTime},#{payOrderId},#{currentBalance})  
+    </insert> 
+   
+    <!--插入充值记录_-->
+	<insert id="addEnchashment" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.EnchashmentEntity">  
+    insert into enchashment_info (money,create_time,a_user_id,status)   
+    values (#{money},#{createTime},#{auserId},#{status})  
+    </insert> 
+   
+   <!-- 查询记录 -->
+   <select id="queryPayOrder" resultType="cn.dingd.dd.common.entity.PayOrderEntity">
+    select id,m_type mtype,m_number mnumber,m_time mtime,m_money money,m_state mstate,a_user_id auserId,title,three_no threeNo,pay_time payTime,m_channel mchannel,car_id carId from pay_order where 1=1 
+     <if test="orderNo!=null and orderNo!=''">
+     and  m_number=#{orderNo}
+     </if>
+      <if test="threeNo!=null and threeNo!=''">
+      and three_no=#{threeNo}
+      </if>
+      <if test="userId!=null and userId>0">
+        and a_user_id=#{userId}
+      </if>
+      <if test="type!=null and type>0">
+        and m_type=#{type}
+      </if>
+   </select>
+  
+  
+     <!-- 查询没有完成交易但需要扣款的订单 -->
+   <select id="getPayOrderWithhold" resultType="cn.dingd.dd.common.entity.PayOrderEntity">
+     select d.m_type mtype,d.m_number mnumber,d.m_time mtime,d.m_money money,d.m_state mstate,d.a_user_id auserId,d.title,d.three_no threeNo,d.pay_time payTime,d.m_channel mchannel,d.car_id carId from pay_order d LEFT JOIN auction_order o on d.three_no=o.id where 1=1 
+     <if test="orderNo!=null and orderNo!=''">
+     and  d.m_number=#{orderNo}
+     </if>
+      <if test="threeNo!=null and threeNo!=''">
+      and d.three_no=#{threeNo}
+      </if>
+      <if test="userId!=null and userId>0">
+        and d.a_user_id=#{userId}
+      </if>
+      <if test="type!=null and type>0">
+        and d.m_type=#{type}
+      </if>
+      <if test="auStatus!=null and auStatus>0">
+        and o.order_state=#{auStatus}
+      </if>
+        and o.abort_time&lt;=#{newDate}
+   </select>
+  
+  
+   <!-- 查询异常订单 -->
+   <select id="getExceptionOrder" resultType="cn.dingd.dd.common.entity.ExceptionOrderEntity">
+    select * from exception_order where order_no=#{orderNo}
+   </select>
+   
+   <!-- 添加异常订单 -->
+    <insert id="addExceptionOrder" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.ExceptionOrderEntity">
+       insert into exception_order (order_no,three_no,create_time,status)   
+       values (#{orderNo},#{threeNo},#{createTime},#{status})  
+    </insert>
+    
+    <!--修改异常支付记录-->
+	<update id="updateExceptionOrder" parameterType="cn.dingd.dd.common.entity.ExceptionOrderEntity">  
+      update exception_order  
+      set exception_order.status = #{status}
+      where exception_order.id=#{id}
+    </update>
+   
+    <!--添加资金账户-->
+	<insert id="addCapitalAccountEntity" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.CapitalAccountEntity">  
+    insert into  capital_account(a_user_id,balance,freeze,withdraw)   
+    values (#{auserId},#{balance},#{freeze},#{withdraw})  
+   </insert> 
+   
+    <!--修改资金账户-->
+	<insert id="updCapitalAccountEntity" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.CapitalAccountEntity">  
+     update  capital_account set balance=#{balance},freeze=#{freeze},withdraw=#{withdraw} where id=#{id}  and a_user_id=#{auserId}
+    </insert>
+    
+    <!-- 查询资金账户 -->
+    <select id="getUserCapitalAccount" resultType="cn.dingd.dd.common.entity.CapitalAccountEntity">
+     select id,a_user_id auserId,balance,freeze,withdraw from capital_account where a_user_id=#{userId}
+    </select>
+   
+   
+     <!--添加支付信息-->
+	<insert id="addPaymentInfo" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.PaymentInfoEntity">  
+    insert into  payment_info(a_user_id,money,create_time,pay_order_id,comments,pay_account,current_balance)   values (#{auserId},#{money},#{createTime},#{payOrderId},#{comments},#{payAccount},#{currentBalance})  
+    </insert>
+</mapper> 

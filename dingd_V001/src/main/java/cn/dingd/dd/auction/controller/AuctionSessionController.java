@@ -1,0 +1,473 @@
+package cn.dingd.dd.auction.controller;
+
+import cn.dingd.dd.auction.service.AuctionSessionService;
+import cn.dingd.dd.auction.service.PayOrderService;
+import cn.dingd.dd.common.entity.AuctionSessionEntity;
+import cn.dingd.dd.common.entity.BiddingEntity;
+import cn.dingd.dd.common.entity.CapitalAccountEntity;
+import cn.dingd.dd.common.service.CommonService;
+import cn.dingd.dd.common.util.*;
+import cn.dingd.dd.common.view.AuctionCarMoney;
+import cn.dingd.dd.common.view.ShowAuctionDto;
+import cn.dingd.dd.common.view.TCarBasisInfoEntity;
+import cn.dingd.dd.common.web.JsonResult;
+import cn.dingd.dd.common.web.PageObject;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import java.util.*;
+
+/**
+ * 拍卖
+ * 
+ * @author XCD
+ *
+ */
+@CrossOrigin
+@Controller
+@RequestMapping("/AuctionSession/")
+public class AuctionSessionController {
+
+	@Resource
+	private AuctionSessionService auctionSessionService;
+    @Resource
+	private CommonService commonService;
+	@Resource
+	private PayOrderService payOrderService;
+   
+	/**
+	 * 添加竞价信息
+	 * 
+	 * @param biddingEntity
+	 * @return
+	 */
+	@RequestMapping("addBidding")
+	@ResponseBody
+	public JsonResult addBidding(BiddingEntity biddingEntity) {
+
+		try {
+			if (biddingEntity.getCarId() <= 0) {
+				return new JsonResult(new Exception("车辆信息不能为空！"), 1006);
+			}
+			if (biddingEntity.getAuserId() <= 0) {
+				return new JsonResult(new Exception("用户信息不能为空！"), 1404);
+			}
+			if (biddingEntity.getMoney() <= 0) {
+				return new JsonResult(new Exception("金额不能为空！"), 1004);
+			}
+			if (biddingEntity.getAuctionId() <= 0) {
+				return new JsonResult(new Exception("场次信息不能为空！"), 1005);
+			}
+			auctionSessionService.addBiddingEntity(biddingEntity);
+			return new JsonResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("添加失败!"));
+		}
+
+	}
+
+
+
+	/**
+	 * 获取拍卖场次
+	 * 
+	 * @return
+	 */
+	@RequestMapping("queryAuctionSession")
+	@ResponseBody
+	public JsonResult queryAuctionSession() {
+
+		try {
+			List<AuctionSessionEntity> ls = auctionSessionService.queryAuctionSession();
+			return new JsonResult(ls);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("查询失败!"));
+		}
+	}
+
+	/**
+	 * 查询场次下面的车辆
+	 * 
+	 * @param asid
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("queryAuctionCar")
+	@ResponseBody
+	public JsonResult queryAuctionCar(Integer asid, Integer userId,Integer status,PageObject  pageObject ) {
+
+		try {
+//			if (asid == null) {
+//				return new JsonResult(new Exception("场次不能为空!"), 1003);
+//			}
+			if (pageObject == null) {
+				return new JsonResult(new Exception("分页页数不能为空!"),1005);
+			}
+			if (pageObject.getPageCurrent()<=0) {
+				return new JsonResult(new Exception("当前页数不能为空!"),1006);
+			}
+			if (userId == null) {
+				return new JsonResult(new Exception("用户不能为空!"), 1404);
+			}
+			
+			Map map=new HashMap<>();
+			Date dateStart=new Date();
+			pageObject.setPageSize(10);
+		    int  count= auctionSessionService.queryAuctionCarPage(userId, 0, status, dateStart);
+		    pageObject.setRowCount(count);
+		   List<Map> list= auctionSessionService.queryAuctionCar(0, userId,status,dateStart,pageObject);
+		//   List<Map> lists=new ArrayList<>();
+//		    if(!list.isEmpty()){
+//		    	for(int i=0;i<list.size();i++){
+//		    		if(status==2){
+//				    	   if(((int)list.get(i).get("status"))==2 || ((int)list.get(i).get("status"))==6){
+//				        	   lists.add(list.get(i));
+//				           }
+//		    		}else{
+//		    			  if(((int)list.get(i).get("status"))==6){
+//				        	   lists.add(list.get(i));
+//				           }
+//		    		}
+//		    	}
+//		    	
+//		    }
+		   if(list!=null && !list.isEmpty()){
+			   for(int i=0;i<list.size();i++){
+				   list.get(i).put("mileage", NumberUtil.div(Float.valueOf(list.get(i).get("mileage") + ""), Variable.Mileage));
+	       	   }
+		   }
+		    map.put("auctionCar",  list);
+		 if(status==2){
+			    Map getCar=auctionSessionService.getAuctionCarTime(0,status);
+			    if(getCar!=null && getCar.get("hour")!=null){
+			      map.put("hour",getCar.get("hour"));
+			      map.put("carCount", getCar.get("carCount"));
+			    }else{
+			    	  map.put("hour",null);
+				      map.put("carCount", null);
+			    }
+		 }
+		 if(map.size()>=1){
+			    map.put("pageObject", pageObject);
+				return new JsonResult(map);
+		 }else{
+				return new JsonResult(null);
+		 }
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("查询失败!"));
+		}
+	}
+
+	/**
+	 * 获取车辆详情信息
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("queryTCarinfo")
+	@ResponseBody
+	public JsonResult queryTCarinfo(Integer carId,Integer asid,Integer userId) {
+		
+		try {
+			if(userId==null){
+				return new JsonResult(new Exception("用户信息不能为空!"), 1404);
+			}
+			if(carId==null){
+				return new JsonResult(new Exception("车辆信息不能为空!"), 1004);
+			}
+			if(asid==null){
+				return new JsonResult(new Exception("场次信息不能为空!"), 1003);
+			}
+			TCarBasisInfoEntity basisInfoEntity = auctionSessionService.queryTCarinfo(asid,carId,userId);
+			if(basisInfoEntity!=null){
+				Constant.biddingMoney=basisInfoEntity.getCarMoney();//最大竞价
+				basisInfoEntity.setMileage(NumberUtil.div(basisInfoEntity.getMileage(), Variable.Mileage));
+			}
+			Map map=new HashMap<>();
+			map.put("carInfo", basisInfoEntity);
+			CapitalAccountEntity accountEntity=payOrderService.getUserCapitalAccount(userId);		
+			map.put("limits", 0);
+			float bl=Constant.PLEDGE;//最少保证金
+			if(accountEntity!=null){
+				if(accountEntity.getBalance()>=bl){
+					map.put("limits", 1);
+				}
+			}
+			List ls=new ArrayList<>();
+			ls.add(7);
+			ls.add(1);
+			ls.add(2);
+			List dits=commonService.GetImgInfo(ls);//车辆损伤图片
+			map.put("dicts", dits);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(e);
+		}
+	}
+
+	/**
+	 * 获取隐性损伤信息
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("queryCarDamageEntity")
+	@ResponseBody
+	public JsonResult queryCarDamageEntity(Integer carId) {
+		try {
+			List ls=auctionSessionService.getCarDamage(carId);
+			List codes = new ArrayList<>();
+			codes.add(4);
+			codes.add(5);
+			codes.add(6);
+			List dits = commonService.GetImgInfo(codes);
+			Map map = new HashMap<>();
+			map.put("carDamge", ls);
+			map.put("dict", dits);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败"),1003);
+		}
+	}
+	/**
+	 * 获取显性损伤
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("getCarDominant")
+	@ResponseBody
+	public JsonResult getCarDominant(Integer carId){
+		try {
+			List ls = auctionSessionService.getCarDominant(carId);
+			List codes = new ArrayList<>();
+			codes.add(4);
+			codes.add(5);
+			codes.add(3);
+			List dits = commonService.GetImgInfo(codes);
+			Map map = new HashMap<>();
+			map.put("carDamge", ls);
+			map.put("dict", dits);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败"),1003);
+		}
+	}
+
+	/**
+	 * 获取订单
+	 * @param carId
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("getAuctionOrder")
+	@ResponseBody
+	public JsonResult getAuctionOrder(Integer userId,PageObject pageObject){
+		try {
+			if (pageObject == null) {
+				return new JsonResult(new Exception("分页页数不能为空!"),1005);
+			}
+			if (pageObject.getPageCurrent() <= 0 ) {
+				return new JsonResult(new Exception("当前页数不能为空!"),1004);
+			}
+			pageObject.setPageSize(10);
+			pageObject.setRowCount(auctionSessionService.getAuctionOrderPage(userId));
+			List<Map> ls= auctionSessionService.getAuctionOrderEntities(userId,pageObject);
+		    Map map=new HashMap<>();
+		    map.put("orders", ls);
+		    map.put("pageObject", pageObject);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(e);
+		}
+	}
+	/**
+	 * 拍卖
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes", })
+	@RequestMapping("startAuctionCar")
+	@ResponseBody
+	public  JsonResult startAuctionCar(String auserId) {
+		try {
+			   if(!StringUtils.isNotNullStr(auserId) || !NumberUtil.isNumber(auserId)){
+				   return new JsonResult(new Exception("参数错误！"));
+			   }
+			   if(!Constant.map.containsKey("carMoney")){
+				   return new JsonResult(new Exception("场次还没未开拍！"));
+			   }
+			   Map map = Constant.result_Map;
+			   if(!map.containsKey("auctionMoney")){//判断是否有人加价
+				map = new HashMap<>();
+				map.put("list", RedisClient.getRedisList("AuctionCarMoney", AuctionCarMoney.class));
+				map.put("moneyTime", Constant.tempTime);//总时间
+				map.put("pmTime",Constant.pm);
+				map.put("light", 0);
+				map.put("bidding", 0);
+				int serviceCharge=Constant.SERVICEMONEY;
+				if(((float) Constant.map.get("carMoney"))>Constant.STANDARD){
+						serviceCharge=(int) (((float) Constant.map.get("carMoney"))*Constant.RATE);
+				}
+				map.put("serviceCharge", serviceCharge);//服务费
+				map.put("carMoney",Constant.map.get("carMoney"));//车辆起拍价格
+			   }else{
+				   map.put("pmTime",Constant.pm);
+				   int userId=Integer.parseInt(auserId);
+				   if(userId!=(int)Constant.map.get("auserId")){
+						map.put("bidding", 0);
+				   }else{
+						map.put("bidding", 1);
+				   }
+			   }
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败！"),1003);
+		}
+	}
+	
+	/**
+	 * 根据车辆id找车辆状态
+	 * @param carId
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping("getAuctionCarStatus")
+	@ResponseBody
+	public JsonResult getAuctionCarStatus(String carId,String userId){
+		try {
+			  if(!StringUtils.isNotNullStr(userId) || !NumberUtil.isNumber(userId)){
+				   return new JsonResult(new Exception("参数错误！"));
+			   }
+			  if(!StringUtils.isNotNullStr(carId) || !NumberUtil.isNumber(carId)){
+				  return new JsonResult(new Exception("参数错误！"));
+			  }
+			Map map=new HashMap<>();
+			int status = auctionSessionService.getAuctionCarStatus(Integer.parseInt(carId));
+			map.put("status", status);
+			CapitalAccountEntity accountEntity=payOrderService.getUserCapitalAccount(Integer.parseInt(userId));
+			map.put("limits", 0);
+			float bl=Constant.PLEDGE;//最少保证金
+			if(accountEntity!=null){
+				if(accountEntity.getBalance()>=bl){
+					map.put("limits", 1);
+				}
+			}
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败"),1001);
+		}
+	
+	}
+	
+	/**
+	 * 获取车辆的其他图片
+	 * @param carId
+	 * @return
+	 */
+	@RequestMapping("getRestsPicture")
+	@ResponseBody
+	public JsonResult getRestsPicture(Integer carId){
+		try {
+			if (carId == null || carId <= 0) {
+				return new JsonResult(new Exception("没有车辆信息！"), 1003);
+			}
+			return new JsonResult(auctionSessionService.getRestsPicture(carId));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(new Exception("获取失败"));
+		}
+	}
+	
+	
+	/**
+	 * 获取车辆信息
+	 * @param carId
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping("getCarInfoID")
+	@ResponseBody
+	public JsonResult getCarInfoID(Integer carId){
+		try {
+			if (carId == null || carId <= 0) {
+				return new JsonResult(new Exception("参数错误！"), 1003);
+			}
+			TCarBasisInfoEntity basisInfoEntity = auctionSessionService.getTCarBasisInfoID(carId);
+			if(basisInfoEntity!=null){
+				basisInfoEntity.setMileage(NumberUtil.div(basisInfoEntity.getMileage(), Variable.Mileage));
+			}
+			Map map = new HashMap<>();
+			map.put("carInfo", basisInfoEntity);
+			List ls = new ArrayList<>();
+			ls.add(7);
+			ls.add(1);
+			ls.add(2);
+			List dits = commonService.GetImgInfo(ls);//车辆损伤图片
+			map.put("dicts", dits);
+			return new JsonResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResult(e,1003);
+		}
+	}
+	
+	/**
+	 * 预留启动场次
+	 * @return
+	 */
+	@RequestMapping("staAuc")
+	@ResponseBody
+	public JsonResult staAuc(Integer id){
+		try {
+			auctionSessionService.getAuctionCar(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new JsonResult(1);
+	}
+	
+	/**
+	 * 拍卖屏幕展示
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@RequestMapping("showAuction")
+	@ResponseBody
+	public JsonResult showAuction() {
+		 Map map = Constant.result_Map;
+		 ShowAuctionDto carInfo = null;
+		 try {
+			 carInfo = auctionSessionService.getCarInfo(); 
+			 if(!map.containsKey("auctionMoney")){//判断是否有人加价
+			 map = new HashMap<>();
+			 int serviceCharge=Constant.SERVICEMONEY;
+			 Float carMoney = Constant.map.get("carMoney")==null?0:(float) Constant.map.get("carMoney");
+			 if(carMoney!=null && carMoney >Constant.STANDARD){
+				serviceCharge=(int) (carMoney*Constant.RATE);
+				Integer.parseInt(carInfo.getAskingPrice());
+				}
+			 if (carMoney == 0 && Integer.parseInt(carInfo.getAskingPrice())!= 0 && Integer.parseInt(carInfo.getAskingPrice())>Constant.STANDARD) {
+				 serviceCharge=(int) (Integer.parseInt(carInfo.getAskingPrice())*Constant.RATE);
+			 }
+			 map.put("serviceCharge", serviceCharge);//服务费
+			 
+			 map.put("carMoney",carInfo.getAskingPrice());//车辆起拍价格
+			 }
+			 map.put("carInfo",carInfo );
+			 }catch (Exception e) {
+				 e.printStackTrace();
+				 return new JsonResult(new Exception("获取信息失败"));
+		}
+		return new JsonResult(map);
+	}
+}

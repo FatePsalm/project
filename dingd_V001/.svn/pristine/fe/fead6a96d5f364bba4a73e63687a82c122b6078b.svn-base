@@ -1,0 +1,224 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.biz.backgroud.dao.AccountInfoMapper;
+import cn.dingd.dd.biz.backgroud.dao.AccountRoleMapper;
+import cn.dingd.dd.biz.backgroud.dao.MenuInfoMapper;
+import cn.dingd.dd.biz.backgroud.service.AccountInfoService;
+import cn.dingd.dd.biz.common.entity.AccountInfo;
+import cn.dingd.dd.biz.common.entity.AccountInfoExample;
+import cn.dingd.dd.biz.common.entity.AccountInfoExample.Criteria;
+import cn.dingd.dd.biz.common.entity.AccountRole;
+import cn.dingd.dd.biz.common.entity.MenuInfo;
+import cn.dingd.dd.biz.common.view.AccountInfoView;
+import cn.dingd.dd.biz.common.view.AccountRoleView;
+import cn.dingd.dd.common.util.MD5Util;
+import cn.dingd.dd.common.util.StringUtils;
+
+/**
+* @author ZC
+* @date 2018��4��19������6:00:55
+*/
+@Service
+public class AccountInfoServiceImpl implements AccountInfoService{
+	
+	@Value("#{configProperties['salt']}")
+	private String salt;
+	
+	@Autowired
+	private AccountInfoMapper accountInfoMapper;
+	
+	@Autowired
+	private MenuInfoMapper menutInfoMapper;
+	
+	@Autowired
+	private AccountRoleMapper accountRoleMapper;
+	
+	/**
+	 * 根据账户查询账户信息
+	 */
+	@Override
+	public AccountInfo getAccountInfo(String accountName) {
+		try {
+			AccountInfoExample accountInfoExample = new AccountInfoExample();
+			Criteria createCriteria = accountInfoExample.createCriteria();
+			createCriteria.andAccountEqualTo(accountName);
+			List<AccountInfo> selectByExample = accountInfoMapper.selectByExample(accountInfoExample);
+			if (selectByExample!=null&&selectByExample.size()==1) {
+				return selectByExample.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+
+	/**
+	 * 获取用户数据权限
+	 */
+	@Override
+	public List<MenuInfo> permissionIdList(Integer accountId) {
+		if (accountId==null) {
+			throw new NullPointerException("用户id为空");
+		}
+		/*MenuInfoExample menuInfoExample = new MenuInfoExample();
+		cn.dingd.dd.biz.entity.MenuInfoExample.Criteria createCriteria = menuInfoExample.createCriteria();
+		List<Integer> permissionIds = accountInfoMapper.getPermissionIds(account);
+		createCriteria.andIdIn(permissionIds);
+		createCriteria.andMenuTypeEqualTo(1);*/
+		List<MenuInfo> menuInfos = menutInfoMapper.getMenuInfosByAccount(accountId);
+		Map<Integer, List<MenuInfo>> collect = menuInfos.stream().collect(Collectors.groupingBy(MenuInfo::getParentId));
+		List<MenuInfo> menus = 	collect.get(0);
+		menus.sort((o1,o2)-> o1.getSort()-o2.getSort());
+		Set<Integer> keySet = collect.keySet();
+		recursionSetChildren(menus, keySet, collect);
+		return menus;
+	}
+	
+	/**
+	 * 获取所有账户信息
+	 */
+	@Override
+	public List<AccountInfoView> getAllAccounts(String quaryParam) {
+		List<AccountInfoView> accountInfoViews = null;
+		List<AccountRoleView> accountRoleTemp = accountInfoMapper.accountRoleTemp();
+		Map<Integer, List<AccountRoleView>> collect = accountRoleTemp.stream().collect(Collectors.groupingBy(AccountRoleView::getAccountId));
+		if (!StringUtils.isNotNullApp(quaryParam)) {
+			accountInfoViews = accountInfoMapper.getAccounts();
+		}else {
+		 accountInfoViews = accountInfoMapper.getAccountsByQuaryParam(quaryParam);
+		}
+		for (AccountInfoView accountInfoView : accountInfoViews) {
+			List<AccountRoleView> list = collect.get(accountInfoView.getId());
+			String roleName = "";
+			for (AccountRoleView accountRoleView : list) {
+				roleName =roleName+accountRoleView.getRoleName()+"; ";
+			}
+			accountInfoView.setRoleName(roleName.substring(0, roleName.lastIndexOf("; ")));
+			accountInfoView.setPassword("******");
+		}
+		return accountInfoViews;
+	}
+	
+	/**
+	 * 获取账号信息
+	 */
+	@Override
+	public AccountInfoView getAccountByAccountId(Integer accountId) {
+		AccountInfoView accountInfoView = new AccountInfoView();
+		AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(accountId);
+		List<AccountRoleView> accountRoleTemp = accountInfoMapper.accountRoleTemp();
+		Map<Integer, List<AccountRoleView>> collect = accountRoleTemp.stream().collect(Collectors.groupingBy(AccountRoleView::getAccountId));
+		List<AccountRoleView> list = collect.get(accountInfo.getId());
+		String roleName = "";
+		for (AccountRoleView accountRoleView : list) {
+			roleName =roleName+accountRoleView.getRoleName()+"; ";
+		}
+		accountInfoView.setRoleName(roleName.substring(0, roleName.lastIndexOf("; ")));
+		accountInfoView.setId(accountInfo.getId());
+		accountInfoView.setAccount(accountInfo.getAccount());
+		accountInfoView.setName(accountInfo.getName());
+		accountInfoView.setPassword("******");
+		accountInfoView.setPhone(accountInfo.getPhone());
+		accountInfoView.setMailbox(accountInfo.getMailbox());
+		return accountInfoView;
+	}
+
+	
+	/**
+	 * 新增账号
+	 */
+	@Override
+	public void addAccount(AccountInfoView accountInfo) {
+		accountInfo.setPassword(MD5Util.shiroMd5Salt(accountInfo.getPassword(), salt));
+		Integer addNewAccount = accountInfoMapper.addNewAccount(accountInfo);
+		if (addNewAccount==1) {
+			String[] split = accountInfo.getRoleName().split(",");
+			List<AccountRole> accountRoles = new ArrayList<>();
+			for (int i = 0; i < split.length; i++) {
+				AccountRole accountRole = new AccountRole(accountInfo.getId(),Integer.valueOf(split[i]));
+				accountRoles.add(accountRole);
+			}
+			accountRoleMapper.addAccountRoles(accountRoles);
+		}
+	}
+	
+	/**
+	 * 编辑账号
+	 */
+	@Override
+	public void updateAccount(AccountInfoView accountInfo) {
+		accountInfo.setPassword(MD5Util.shiroMd5Salt(accountInfo.getPassword(), salt));
+		Integer addNewAccount = accountInfoMapper.updateAccount(accountInfo);
+		if (addNewAccount==1) {
+			String[] split = accountInfo.getRoleName().split(",");
+			List<AccountRole> accountRoles = new ArrayList<>();
+			for (int i = 0; i < split.length; i++) {
+				AccountRole accountRole = new AccountRole(accountInfo.getId(),Integer.valueOf(split[i]));
+				accountRoles.add(accountRole);
+			}
+			accountRoleMapper.addAccountRoles(accountRoles);
+		}
+	}
+	
+	/**
+	 * 禁用或启用账号
+	 */
+	@Override
+	public void disableorEnableAccount(Integer account ,Integer flag) {
+		AccountInfo accountInfo = new AccountInfo();
+		accountInfo.setId(account);
+		accountInfo.setFlag(flag);
+		accountInfoMapper.updateByPrimaryKeySelective(accountInfo);
+	}
+
+	public static void recursionSetChildren(List<MenuInfo> menuList,Set<Integer> keySet,Map<Integer,
+			List<MenuInfo>> collect) {
+		for (MenuInfo menuInfo : menuList) {
+			if (keySet.contains(menuInfo.getId())) {
+				menuInfo.setChildren(collect.get(menuInfo.getId()));
+				menuInfo.getChildren().sort((o1,o2) -> o1.getSort()-o2.getSort());
+				recursionSetChildren(menuInfo.getChildren(),keySet,collect);
+			}
+		}
+	}
+
+	@Override
+	public Boolean AccountIsExist(String account) {
+		AccountInfoExample accountInfoExample = new AccountInfoExample();
+		Criteria createCriteria = accountInfoExample.createCriteria();
+		createCriteria.andAccountEqualTo(account);
+		List<AccountInfo> AccountInfo = accountInfoMapper.selectByExample(accountInfoExample);
+		if (AccountInfo!=null) {
+			return true;
+		}
+		return false;
+	}
+	
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+

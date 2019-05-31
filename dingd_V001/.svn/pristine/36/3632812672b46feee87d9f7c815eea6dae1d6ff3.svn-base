@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.SecondsDao">
+	<!-- /** 拍卖-秒杀-根据车辆id查找详细 */ public SecondKillBill findCarId(Integer carId); -->
+	<select id="findCarId" resultType="cn.dingd.dd.entity.SecondKillBill">
+		SELECT
+		id,
+		car_money as
+		carMoney,
+		server_money as serverMoney,
+		start_time as startTime,
+		create_time as createTime
+		FROM
+		seconds_kill
+		WHERE
+		DATE(start_time)= curdate()
+		and
+		car_id=#{carId}
+		LIMIT
+		1
+	</select>
+	<!-- /** 拍卖-秒杀-查询秒杀信息 */ public SecondKillBill findCarSeconds(@Param("carId")Integer 
+		carId); -->
+	<select id="findCarSeconds" resultType="cn.dingd.dd.entity.SecondKillBill">
+		SELECT
+		car_money as
+		carMoney,
+		server_money as serverMoney,
+		start_time as startTime,
+		create_time as createTime,
+		car_id as carId
+		FROM
+		seconds_kill
+		WHERE
+		car_id=#{carId}
+		and
+		DATE_ADD(start_time,INTERVAL 1 MINUTE)
+		> NOW()
+	</select>
+	<!-- /** 拍卖-秒杀-查询车辆详细 */ public Map<String, Object> findCarInfo(); -->
+	<select id="findCarInfo" resultType="cn.dingd.dd.view.TCarBasisInfoEntity"
+		resultMap="carbaInfoResultMap">
+		SELECT
+		s.*,
+		p.url,
+		p.dd_dict_id,
+		p.img_type
+		FROM
+		(
+		SELECT
+		c.*,
+		count( e.dominant ) AS dcount,
+		COUNT( CASE WHEN recessive > 1 THEN
+		recessive ELSE NULL END ) AS rcount
+		FROM
+		t_car_basisinfo c
+		LEFT JOIN
+		car_damage e ON c.id = e.car_id
+		WHERE
+		c.id = #{carId}
+		and
+		c.car_state in(2,6)
+		) s left JOIN
+		car_picture p on s.id=p.car_id
+	</select>
+	<resultMap type="cn.dingd.dd.view.TCarBasisInfoEntity" id="carbaInfoResultMap">
+		<id column="id" property="id" />
+		<result column="check_bill_id" property="checkBillId" />
+		<result column="master_type" property="masterType" />
+		<result column="master" property="master" />
+		<result column="card" property="card" />
+		<result column="check_bill_id" property="checkBillId" />
+		<result column="t_address" property="tAddress" />
+		<result column="phone" property="phone" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="zone" property="zone" />
+		<result column="detail" property="detail" />
+		<result column="enterprise" property="enterprise" />
+		<result column="etp_card" property="etpCard" />
+		<result column="car_number" property="carNumber" />
+		<result column="vin_number" property="vinNumber" />
+		<result column="power_number" property="powerNumber" />
+		<result column="car_type" property="carType" />
+		<result column="car_use_type" property="carUseType" />
+		<result column="re_time" property="reTime" />
+		<result column="year_time" property="yearTime" />
+		<result column="change_number" property="changeNumber" />
+		<result column="change_time" property="changeTime" />
+		<result column="change_money" property="changeMoney" />
+		<result column="paper" property="paper" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="power_type" property="powerType" />
+		<result column="power_kw" property="powerKw" />
+		<result column="motor_power" property="motorPower" />
+		<result column="displacement" property="displacement" />
+		<result column="turbo" property="turbo" />
+		<result column="transmission" property="transmission" />
+		<result column="skylight" property="skylight" />
+		<result column="color" property="color" />
+		<result column="key_s" property="keys" />
+		<result column="manufacture" property="manufacture" />
+		<result column="mileage" property="mileage" />
+		<result column="consistent" property="consistent" />
+		<result column="insurance_time" property="insuranceTime" />
+		<result column="business" property="business" />
+		<result column="b_money" property="bMoney" />
+		<result column="b_over_time" property="bOverTime" />
+		<result column="acoustics" property="acoustics" />
+		<result column="acoustics_remark" property="acousticsRemark" />
+		<result column="skylight_check" property="skylightCheck" />
+		<result column="skylight_remark" property="skylightRemark" />
+		<result column="door" property="door" />
+		<result column="door_remark" property="doorRemark" />
+		<result column="lighting" property="lighting" />
+		<result column="lighting_remark" property="lightingRemark" />
+		<result column="electric" property="electric" />
+		<result column="electric_remark" property="electricRemark" />
+		<result column="hot" property="hot" />
+		<result column="hot_remark" property="hotRemark" />
+		<result column="steering" property="steering" />
+		<result column="steering_remark" property="steeringRemark" />
+		<result column="safety" property="safety" />
+		<result column="safety_remark" property="safetyRemark" />
+		<result column="airbag" property="airbag" />
+		<result column="airbag_remark" property="airbagRemark" />
+		<result column="parking" property="parking" />
+		<result column="parking_remark" property="parkingRemark" />
+		<result column="booster" property="booster" />
+		<result column="booster_remark" property="boosterRemark" />
+		<result column="start" property="start" />
+		<result column="start_remark" property="startRemark" />
+		<result column="cooling" property="cooling" />
+		<result column="cooling_remark" property="coolingRemark" />
+		<result column="jack" property="jack" />
+		<result column="jack_remark" property="jackRemark" />
+		<result column="spare" property="spare" />
+		<result column="spare_remark" property="spareRemark" />
+		<result column="attrition" property="attrition" />
+		<result column="attrition_remark" property="attritionRemark" />
+		<result column="tools" property="tools" />
+		<result column="tools_remark" property="toolsRemark" />
+		<result column="extinguisher" property="extinguisher" />
+		<result column="extinguisher_remark" property="extinguisherRemark" />
+		<result column="placard" property="placard" />
+		<result column="placard_remark" property="placardRemark" />
+		<result column="stall" property="stall" />
+		<result column="stall_remark" property="stallRemark" />
+		<result column="speed" property="speed" />
+		<result column="speed_remark" property="speedRemark" />
+		<result column="burning" property="burning" />
+		<result column="burning_remark" property="burningRemark" />
+		<result column="damping" property="damping" />
+		<result column="damping_remark" property="dampingRemark" />
+		<result column="clutch" property="clutch" />
+		<result column="clutch_remark" property="clutchRemark" />
+		<result column="muffler" property="muffler" />
+		<result column="muffler_remark" property="mufflerRemark" />
+		<result column="pacard" property="pacard" />
+		<result column="pacardRemark" property="pacardRemark" />
+		<result column="pacardRemark" property="pacardRemark" />
+		<result column="suspension" property="suspension" />
+		<result column="suspension_remark" property="suspensionRemark" />
+		<result column="synthesise" property="synthesise" />
+		<result column="condition_id" property="conditionId" />
+		<result column="maintenance" property="maintenance" />
+		<result column="a_or_b" property="aOrB" />
+		<result column="remarks" property="remarks" />
+		<result column="effluent_standard" property="effluentStandard" />
+		<result column="car_state" property="carState" />
+		<result column="mortgage" property="mortgage" />
+		<result column="priority_level" property="priorityLevel" />
+		<result column="asking_price" property="askingPrice" />
+		<result column="freezing_time" property="freezingTime" />
+		<!-- <result column="remove_time" property="removeRime"/> -->
+		<result column="title" property="title" />
+		<result column="create_time" property="createTime" />
+		<result column="mortgage_period" property="mortgagePeriod" />
+		<result column="isbid" property="isbid" />
+		<result column="dcount" property="dcount" />
+		<result column="rcount" property="rcount" />
+		<result column="pcount" property="pcount" />
+		<collection property="imgList" ofType="cn.dingd.dd.entity.CarPictureEntity"
+			javaType="java.util.List" column="car_id" fetchType="lazy">
+			<result column="url" property="url" />
+			<result column="dd_dict_id" property="ddDictId" />
+			<result column="img_type" property="imgType" />
+		</collection>
+	</resultMap>
+	<!-- /** 拍卖-秒杀-获取车辆列表 */public List<Map<String, Object>> SecondsList() -->
+	<select id="SecondsList" resultType="map">
+		SELECT
+		t.id,
+		t.remarks,
+		t.re_time AS reTime,
+		t.mileage,
+		t.effluent_standard AS effluentStandard,
+		t.car_state
+		status,
+		u.url,
+		t.car_name AS carname,
+		t.cars AS cars,
+		t.car_model AS
+		carModel,
+		t.car_number AS carNumber,
+		s.car_money as
+		carMony,
+		s.server_money as serverMoney,
+		s.start_time as startTime,
+		NOW()
+		as currentTime
+		FROM
+		seconds_kill s LEFT JOIN t_car_basisinfo t
+		ON
+		s.car_id=t.id
+		LEFT JOIN
+		car_picture u ON t.id = u.car_id
+		AND u.img_type
+		=
+		1
+		AND u.dd_dict_id = 13
+		WHERE
+		(t.car_state=2 or t.car_state=6 )and
+		DATE(start_time)= curdate()
+		ORDER BY
+		s.start_time
+		ASC
+	</select>
+</mapper> 

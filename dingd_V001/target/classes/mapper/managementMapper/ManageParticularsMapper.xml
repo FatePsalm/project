@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.ManageParticularsDao">
+	<!-- /** 管理端-车辆详细-车辆详细 */ public Map FindDetailed(Integer id) -->
+	<select id="FindDetailed" resultType="map">
+		SELECT
+		o.id as oid,
+		t.id as tid,
+		p.id as pid,
+		o.order_state as orderState,
+		p.url,
+		o.order_num as orderNum,
+		t.car_number as carNumber,
+		t.car_name as carName,
+		t.cars,
+		t.car_model as carModel,
+		b.person,
+		b.telephone,
+		t.retention_money as retentionMoney,
+		a.u_name as uName ,
+		a.u_phone as uPhone,
+		o.achieve_money as achieveMoney,
+		o.abort_time as abortTime,
+		o.total_money as totalMoney,
+		o.order_time as orderTime
+		FROM
+		auction_order o LEFT JOIN t_car_basisinfo t ON o.car_id=t.id
+		LEFT JOIN car_picture p ON t.id=p.car_id and img_type=1 and dd_dict_id=9
+		LEFT JOIN check_bill b ON t.check_bill_id=b.id
+		LEFT JOIN a_user a ON o.a_user_id=a.id
+		WHERE
+		o.car_id=#{id} and o.order_state&lt;=3
+	</select>
+	<!-- /** 管理端-车辆详细-电器及附件 */ public Map FindAttachment(@Param("id")Integer 
+		id) ; -->
+	<select id="FindAttachment" resultType="map">
+		SELECT
+		acoustics as
+		acoustics ,
+		acoustics_remark as acousticsRemark ,
+		skylight_check as
+		skylight_check ,
+		skylight_remark as skylightRemark ,
+		door as door ,
+		door_remark as doorRemark ,
+		lighting as lighting ,
+		lighting_remark as
+		lightingRemark ,
+		electric as electric ,
+		electric_remark as
+		electricRemark ,
+		hot as hot ,
+		hot_remark as hotRemark ,
+		steering as
+		steering ,
+		steering_remark as steeringRemark ,
+		safety as safety ,
+		safety_remark as safetyRemark ,
+		airbag as airbag ,
+		airbag_remark as
+		airbagRemark ,
+		parking as parking ,
+		parking_remark as parkingRemark ,
+		booster as booster ,
+		booster_remark as boosterRemark ,
+		start as start ,
+		start_remark as startRemark ,
+		cooling as cooling ,
+		cooling_remark as
+		coolingRemark ,
+		jack as jack ,
+		jack_remark as jackRemark ,
+		spare as spare
+		,
+		spare_remark as spareRemark ,
+		attrition as attrition ,
+		attrition_remark as attritionRemark ,
+		tools as tools ,
+		tools_remark as
+		toolsRemark ,
+		extinguisher as extinguisher ,
+		extinguisher_remark as
+		extinguisherRemark ,
+		placard as placard ,
+		placard_remark as
+		placardRemark ,
+		stall as stall ,
+		stall_remark as stallRemark ,
+		speed as
+		speed ,
+		speed_remark as speedRemark ,
+		burning as burning ,
+		burning_remark as burningRemark ,
+		damping as damping ,
+		damping_remark as
+		dampingRemark ,
+		clutch as clutch ,
+		clutch_remark as clutchRemark ,
+		muffler as muffler ,
+		muffler_remark as mufflerRemark ,
+		suspension as
+		suspension ,
+		suspension_remark as suspensionRemark
+		FROM
+		t_car_basisinfo
+		WHERE
+		id=#{id}
+	</select>
+	<!-- /** 管理端-车辆详细-显性损伤 -单图*/ public Map<String, Object> FindDominant(Integer 
+		id,Integer code,Integer damageType); -->
+	<select id="FindDominant" resultMap="FindDominantMap">
+		SELECT
+		d.id as did,
+		d.dict_name,
+		d.dict_value,
+		d.dict_order,
+		d.code,
+		d.dict_desc,
+		c.damage_type,
+		c.type_number,
+		c.dominant,
+		c.car_describe,
+		c.xy,
+		c.img_url,
+		c.img_remark
+		FROM
+		dd_dict d LEFT JOIN(
+		SELECT
+		*
+		FROM
+		car_dominant
+		WHERE
+		car_id=#{id} and damage_type=#{damageType} GROUP BY type_number) c ON
+		d.dict_value=c.type_number
+		WHERE
+		d.`code`=#{code}
+		ORDER BY
+		d.dict_order
+	</select>
+	<resultMap type="map" id="FindDominantMap">
+		<id column="did" property="id" />
+		<id column="dict_name" property="dictName" />
+		<id column="dict_value" property="dictValue" />
+		<id column="dict_order" property="dictOrder" />
+		<id column="code" property="code" />
+		<id column="dict_desc" property="dictDesc" />
+		<id column="damage_type" property="damageType" />
+		<id column="type_number" property="typeNumber" />
+		<id column="dominant" property="dominant" />
+		<id column="car_describe" property="carDescribe" />
+		<id column="xy" property="xy" />
+		<id column="img_url" property="imgUrl" />
+		<id column="img_remark" property="imgRemark" />
+	</resultMap>
+	
+<!-- 管理端显性损伤 -多图  -->	
+	<select id="FindDominant2" resultMap="dominantMap">
+	SELECT
+		d.id as did,
+		d.dict_name,
+		d.dict_value,
+		d.dict_order,
+		d.code,
+		d.dict_desc,
+		c.id,
+		c.car_id,
+		c.damage_type,
+		c.type_number,
+		c.dominant,
+		c.car_describe,
+		c.xy,
+		c.img_url,
+		c.img_remark,
+		c.sort
+		FROM
+		dd_dict d LEFT JOIN(
+		SELECT
+		*
+		FROM
+		car_dominant
+		WHERE
+		car_id=#{id} and damage_type=#{damageType} ) c ON
+		d.dict_value=c.type_number
+		WHERE
+		d.`code`=#{code}
+		ORDER BY
+		d.dict_order , c.sort
+	</select>
+	<resultMap type="cn.dingd.dd.common.view.CarDamageDto" id="dominantMap">
+		<id column="did" property="id" />
+		<result column="dict_name" property="dictName" />
+		<result column="dict_value" property="dictValue" />
+		<result column="dict_order" property="dictOrder" />
+		<result column="code" property="code" />
+		<result column="dict_desc" property="dictDesc" />
+		<collection property="carDominantEntities" ofType="cn.dingd.dd.common.entity.CarDominantEntity">
+			<id column="id" property="id"/>
+			<result column="car_id" property="carId" />
+			<result column="damage_type" property="damageType" />
+			<result column="type_number" property="typeNumber" />
+			<result column="dominant" property="dominant" />
+			<result column="sort" property="sort" />
+			<result column="car_describe" property="carDescribe" />
+			<result column="xy" property="xy" />
+			<result column="img_url" property="imgUrl" />
+			<result column="img_remark" property="imgRemark" />
+		</collection>
+	</resultMap>
+	
+	<!-- 管理端查找隐形损伤接口 -->
+	<select id="FindRecessive" resultMap="recessiveMap">
+		SELECT
+		d.id as did,
+		d.dict_name,
+		d.dict_value,
+		d.dict_order,
+		d.code,
+		d.dict_desc,
+		c.damage_type,
+		c.type_number,
+		c.recessive,
+		c.img_remark
+		FROM
+		dd_dict d LEFT JOIN(
+		SELECT
+		*
+		FROM
+		car_damage
+		WHERE
+		car_id=#{id} and damage_type=#{damageType}) c ON
+		d.dict_value=c.type_number
+		WHERE
+		d.`code`=#{code}
+		ORDER BY
+		d.dict_order
+	</select>
+	<resultMap type="map" id="recessiveMap">
+		<id column="did" property="id" />
+		<id column="dict_name" property="dictName" />
+		<id column="dict_value" property="dictValue" />
+		<id column="dict_order" property="dictOrder" />
+		<id column="code" property="code" />
+		<id column="dict_desc" property="dictDesc" />
+		<id column="damage_type" property="damageType" />
+		<id column="type_number" property="typeNumber" />
+		<id column="recessive" property="recessive" />
+		<id column="img_remark" property="imgRemark" />
+	</resultMap>
+	
+
+	<!-- /** 管理端-车辆详细-过户资料 */ public List<Map> FindRecord(@Param("id")Integer 
+		id); -->
+	<select id="FindRecord" resultMap="FindRecordMap">
+		SELECT
+		r.region,
+		p.type_number,
+		p.url
+		FROM
+		record r LEFT JOIN record_picture p ON r.id=p.record_id
+		WHERE
+		r.car_id=#{id}
+	</select>
+	<resultMap type="map" id="FindRecordMap">
+		<id column="region" property="region" />
+		<id column="type_number" property="typeNumber" />
+		<id column="url" property="url" />
+	</resultMap>
+	<!-- /** 管理端-车辆详细-车辆特写*/ public List<Map> FindPicture(@Param("id")Integer 
+		id); -->
+	<select id="FindPicture" resultMap="FindPictureMap">
+		SELECT
+		c.id as cid,
+		d.dict_order,
+		d.dict_name,
+		c.url
+		FROM
+		car_picture c LEFT
+		JOIN dd_dict d ON c.img_type=d.`code` and
+		c.dd_dict_id=d.dict_value
+		WHERE
+		<if test="imgType==7">
+			(img_type=#{imgType} or img_type=2)
+		</if>
+		<if test="imgType!=7">
+			img_type=#{imgType}
+		</if>
+		and car_id=#{id}
+		ORDER BY
+		d.dict_order
+		ASC
+	</select>
+	<resultMap type="map" id="FindPictureMap">
+		<id column="cid" property="id" />
+		<id column="dict_order" property="dictOrder" />
+		<id column="dict_name" property="dictName" />
+		<id column="url" property="url" />
+	</resultMap>
+	<!-- /** 管理端-车辆详细-流拍信息 */ public Map FindAuction(@Param("id")int id) -->
+	<select id="FindAuction" resultType="map">
+		SELECT
+		c.id as cid,
+		t.id as
+		tid,
+		s.id as sid,
+		r.id as rid,
+		b.id as bid,
+		s.auction_over as auctionOver,
+		t.retention_money as retentionMoney,
+		t.asking_price as askingPrice,
+		(
+		CASE
+		WHEN max(b.money) is NULL THEN max( r.auction_money )
+		WHEN max(
+		r.auction_money ) is NULL THEN max(b.money)
+		WHEN max(b.money)
+		&gt;=max(r.auction_money) THEN max( b.money ) ELSE max(
+		r.auction_money )
+		END ) MaxMoney
+		FROM
+		auction_car c LEFT JOIN
+		t_car_basisinfo t ON c.car_id=t.id
+		LEFT JOIN
+		auction_session s ON
+		c.auction_id=s.id
+		LEFT JOIN auction_record r ON
+		c.auction_id=r.auction_id and c.car_id=r.car_id
+		LEFT JOIN bidding b On
+		c.auction_id=b.auction_id and c.car_id=b.car_id
+		WHERE
+		c.car_id=#{id} and
+		s.auction_state=3
+		GROUP BY
+		s.id
+	</select>
+	<!-- /** 管理端-车辆详细-车主信息/联系人信息/检测师信息 */ public Map FindCarPerson(int id) -->
+	<select id="FindCarPerson" resultType="cn.dingd.dd.common.entity.TCarBasisInfoEntity"
+		resultMap="CarPersonMap">
+		SELECT
+		t.id as tid,
+		p.id as pid,
+		t.master_type,
+		t.master,
+		t.phone,
+		t.card,
+		t.province,
+		t.city,
+		t.zone,
+		t.detail,
+		t.enterprise,
+		p.url,
+		b.person,
+		b.telephone,
+		s.u_name,
+		s.u_phone
+		FROM
+		t_car_basisinfo t LEFT JOIN
+		check_bill b ON t.check_bill_id=b.id
+		LEFT
+		JOIN staff_info s ON
+		b.staff_id=s.id
+		LEFT JOIN car_picture p ON
+		p.car_id=t.id and
+		p.img_type=7 and dd_dict_id=1
+		WHERE
+		t.id=#{id}
+	</select>
+	<resultMap type="map" id="CarPersonMap">
+		<id column="tid" property="id" />
+		<id column="master_type" property="masterType" />
+		<id column="master" property="master" />
+		<id column="phone" property="phone" />
+		<id column="card" property="card" />
+		<id column="province" property="province" />
+		<id column="city" property="city" />
+		<id column="zone" property="zone" />
+		<id column="detail" property="detail" />
+		<id column="enterprise" property="enterprise" />
+		<id column="person" property="person" />
+		<id column="telephone" property="telephone" />
+		<id column="u_name" property="uName" />
+		<id column="u_phone" property="uPhone" />
+		<collection property="imgList" ofType="cn.dingd.dd.common.entity.CarPictureEntity"
+			javaType="java.util.List" column="car_id" fetchType="lazy">
+			<id column="pid" property="id" />
+			<result property="url" column="url" />
+		</collection>
+	</resultMap>
+	<!-- /**管理端-车辆详细-车辆基本信息*/public TCarBasisInfoEntity CarInfo(TCarBasisInfoEntity 
+		tCarBasisInfoEntity); -->
+	<select id="CarInfo" parameterType="cn.dingd.dd.common.entity.TCarBasisInfoEntity"
+		resultType="cn.dingd.dd.common.entity.TCarBasisInfoEntity">
+		SELECT
+		id,
+		change_number as changeNumber,
+		change_time as
+		changeTime,
+		change_money as changeMoney,
+		paper,
+		mileage,
+		consistent,
+		insurance_time as insuranceTime,
+		b_over_time as bOverTime,
+		b_money as
+		bMoney,
+		car_name as carName,
+		cars,
+		car_model as carModel,
+		power_type as
+		powerType,
+		power_kw as powerKw,
+		motor_power as motorPower,
+		displacement,
+		turbo,
+		transmission,
+		skylight,
+		color,
+		key_s as 'keys',
+		manufacture
+		FROM
+		t_car_basisinfo
+		WHERE
+		id=#{id}
+	</select>
+
+</mapper> 

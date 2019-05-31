@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.CommonDao">
+	<!-- /** 获取车辆状态 */ public int findCarState(Integer carId); -->
+	<select id="findCarState" resultType="java.lang.Integer">
+		SELECT
+		car_state
+		FROM
+		t_car_basisinfo
+		WHERE
+		id=#{carId}
+	</select>
+	<!-- /**A端账户充值修改资金表*/ public int subtractionBalance(@Param("id")Integer 
+		id,@Param("money")Integer money); -->
+	<update id="subtractionBalance">
+		update
+		capital_account
+		set
+		balance=balance - #{money}
+		where a_user_id = #{id}
+	</update>
+	<!-- /**A端账户充值修改资金表*/ public int UpdateBalance(String money); -->
+	<update id="UpdateBalance">
+		update
+		capital_account
+		set
+		balance=balance + #{money}
+		where a_user_id = #{id}
+	</update>
+	<!-- /**查询当日开始场次第一条数据*/ public List<AuctionSessionEntity> firstFieldAll() -->
+	<select id="firstFieldAll" resultType="cn.dingd.dd.entity.AuctionSessionEntity">
+		SELECT
+		id,
+		auction_num as
+		auctionNum,
+		auction_state as auctionState,
+		principal as
+		principal,
+		auction_date as auctionDate,
+		auction_start as auctionStart,
+		auction_over as auctionOver
+		FROM
+		auction_session
+		WHERE
+		auction_state=1 and
+		auction_start&gt;NOW()
+		ORDER BY
+		auction_start
+		ASC
+	</select>
+	<!-- /**检查建档时重复提交*/public int checkOrderRepetition(@Param("carId")int carId) 
+		; -->
+	<select id="checkOrderRepetition" resultType="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM
+		record
+		WHERE
+		car_id=#{carId}
+	</select>
+	<!-- /**修改拍卖订单状态*/ public int UpdateOrder(@Param("id")int id,@Param("state")int 
+		state,@Param("remarks")String remarks); -->
+	<update id="UpdateOrder">
+		UPDATE
+		auction_order
+		Set
+		order_state=#{state}
+		<!-- 付款更新状态和时间 -->
+		<if test="state==2">
+			, pay_time=NOW()
+		</if>
+		<!-- 撤销需要更新时间和状态 -->
+		<if test="state==4 ">
+			, cancel_time=NOW()
+			, remarks=#{remarks}
+		</if>
+		WHERE
+		id=#{id}
+	</update>
+	<!-- /**修改场次状态*/ public int UpdateFirstField(int id) -->
+	<update id="UpdateFirstField">
+		UPDATE
+		auction_session
+		SET
+		auction_state=#{state}
+		WHERE
+		id=#{id}
+	</update>
+	<!-- 查询当日开始场次第一条数据 -->
+	<select id="firstField" resultType="cn.dingd.dd.entity.AuctionSessionEntity">
+		SELECT
+		id,
+		auction_num as
+		auctionNum,
+		auction_state as auctionState,
+		principal as
+		principal,
+		auction_date as auctionDate,
+		auction_start as auctionStart,
+		auction_over as auctionOver
+		FROM
+		auction_session
+		WHERE
+		auction_state=1 and
+		auction_start&gt;=NOW() and date(auction_start)=CURDATE()
+		ORDER BY
+		auction_start
+		ASC
+		LIMIT 1
+	</select>
+	<!-- /**统计车辆流拍次数*/ public List<Map> statisticalCars() -->
+	<select id="statisticalCars" resultType="map">
+		SELECT
+		car_id as
+		carId,
+		COUNT( car_id ) as count
+		FROM
+		auction_car
+		GROUP BY
+		car_id
+	</select>
+	<!-- /**修改车辆状态*/public int UpdateCarState(TCarBasisInfoEntity tCarBasisInfoEntity) -->
+	<update id="UpdateCarState" useGeneratedKeys="true" keyProperty="id"
+		parameterType="cn.dingd.dd.entity.TCarBasisInfoEntity">
+		UPDATE
+		t_car_basisinfo
+		SET
+		car_state=#{carState}
+		<!-- 冻结时间 -->
+		<if test="carState==4">
+			, freezing_time=NOW()
+		</if>
+		<!-- 下架时间 -->
+		<if test="carState==5">
+			, remove_time=NOW()
+		</if>
+		where
+		id=#{id}
+	</update>
+	<select id="UserNameCheck" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		select count(account) from a_user where account=#{account}
+	</select>
+	<select id="FindSmsTemplate" parameterType="java.lang.Integer"
+		resultType="cn.dingd.dd.entity.VerificationCode">
+		select * from message_template where id=#{id}
+	</select>
+	<select id="ARecommendCheck" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		select count(u_phone) from staff_info where
+		u_phone=#{Recommend}
+	</select>
+	<select id="isExist" parameterType="java.lang.String"
+		resultType="cn.dingd.dd.entity.StaffInfoEntity">
+		select
+		id,
+		u_phone as uPhone ,
+		u_password as uPassword ,
+		u_name as uName ,
+		u_sex as uSex ,
+		u_birthday as uBirthday ,
+		u_age as uAge
+		,
+		u_card as uCard ,
+		u_time as uTime ,
+		u_photos as uPhotos ,
+		u_hand_img as
+		uHandImg ,
+		card_img_up as cardImgUp ,
+		card_img_dwon as cardImgDwon ,
+		u_number as uNumber ,
+		u_lv as uLv ,
+		u_duty as uDuty ,
+		u_emergency as
+		uEmergency ,
+		emergency_phone as emergencyPhone ,
+		signature as signature
+		,
+		u_state as uState ,
+		u_type as uType,
+		u_address as uAddress
+
+		from staff_info where
+		u_phone=#{username} and u_state=1
+	</select>
+
+	<!-- /**城市ID查询下属地区*/ -->
+	<select id="GetAreaId" parameterType="cn.dingd.dd.entity.CityMapEntiyt"
+		resultType="cn.dingd.dd.entity.CityMapEntiyt">
+		select
+		common_district_id as commonDistrictId,
+		common_district_name as commonDistrictName,
+		province_id as provinceId,
+		province_state as provinceState,
+		city_id as cityId,
+		city_state as
+		cityState
+		from
+		common_district
+		WHERE
+		city_id=#{cityId}
+		order by
+		convert(commonDistrictName USING gbk) asc
+	</select>
+	<!-- /**查询检测单图片属性*/ -->
+	<select id="GetImgInfo" resultType="cn.dingd.dd.entity.CarDictionaryEntity">
+		SELECT
+		id,
+		code,
+		dict_name as
+		dictName,
+		dict_value as dictValue,
+		dict_order
+		as
+		dictOrder,
+		dict_desc as
+		dictDesc
+		FROM
+		dd_dict
+		WHERE CODE in
+		<foreach item="item" index="index" collection="codes" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY dict_order asc
+	</select>
+	<!-- 获取需要执行的订单 -->
+	<select id="getAuctionOrders" resultType="cn.dingd.dd.entity.AuctionOrderEntity">
+		select d.id,d.car_id
+		carId,d.order_state orderState,d.achieve_money
+		achieveMoney,d.invoice,d.a_user_id auserId,d.remarks,d.auction_id
+		auctionId,d.total_money totalMoney,d.order_time orderTime,d.abort_time
+		abortTime from
+		auction_order d where d.order_state=#{status} and
+		d.abort_time&gt;#{abortTime}
+
+	</select>
+
+</mapper> 	

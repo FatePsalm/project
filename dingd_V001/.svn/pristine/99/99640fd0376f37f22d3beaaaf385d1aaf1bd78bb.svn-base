@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.dao.ManageAuctionsDao">
+	<!-- /** 查询拍卖纪录条数 */public int FindAuctionsRowCount(AuctionCarEntity auctionCarEntity) -->
+	<select id="FindAuctionsRowCount" resultType="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM(
+		select
+		d.auction_time as
+		time,a.u_name,a.u_phone,d.auction_money as money,1
+		as type
+		from
+		auction_record d LEFT JOIN a_user a on a.id=d.a_user_id
+		where
+		d.car_id=#{auctionCarEntity.carId}
+		and
+		d.auction_id=#{auctionCarEntity.auctionId}
+		union all
+		select
+		g.biding_time as time,r.u_name,r.u_phone,g.money,2 as type from
+		bidding g LEFT JOIN a_user r on r.id=g.a_user_id where
+		g.car_id=#{auctionCarEntity.carId}
+		and
+		g.auction_id=#{auctionCarEntity.auctionId}) sun
+	</select>
+	<!-- /**拍卖-发布管理-场次ID-查询场次开始时间*/ public Date FindFieldTime(int field) -->
+	<select id="FindFieldTime" parameterType="java.lang.Integer"
+		resultType="java.util.Date">
+		SELECT
+		auction_start
+		FROM
+		auction_session
+		WHERE
+		id=#{field}
+	</select>
+	<!-- /**拍卖-发布管理-场次ID-查询场次当前车辆分页条数*/ public int FindFieldCarsIdRowCount(AuctionCarEntity 
+		auctionCarEntity) -->
+	<select id="FindFieldCarsIdRowCount" parameterType="cn.dingd.dd.entity.AuctionCarEntity"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM auction_car WHERE
+		auction_id=#{auctionId}
+	</select>
+
+	<!-- /**拍卖-发布管理-场次ID-查询场次当前车辆*/public List<Map> FindFieldCarsId(AuctionCarEntity 
+		auctionCarEntity,PageObject pageObject) -->
+	<select id="FindFieldCarsId" resultType="map" resultMap="resultFindFieldCarsId">
+		SELECT
+		a.id as aid,
+		t.id as tid,
+		a.auction_id,
+		t.car_state,
+		t.car_number,
+		t.car_name,
+		t.cars,
+		t.car_model,
+		t.retention_money,
+		t.asking_price,
+		t.master,
+		t.phone,
+		MAX(r.auction_money) as auctionMoneyMAX,
+		MAX(b.money)
+		as moneyMAX,
+		a.sort,
+		p.url
+		FROM
+		auction_car a
+		LEFT JOIN t_car_basisinfo t
+		ON
+		a.car_id =
+		t.id
+		LEFT JOIN car_picture p ON t.id=p.car_id and
+		img_type=1 and dd_dict_id=9
+		LEFT JOIN auction_record r ON t.id=r.car_id
+		and
+		r.auction_id=#{auctionCarEntity.auctionId}
+		LEFT JOIN bidding b ON
+		t.id=b.car_id and
+		b.auction_id=#{auctionCarEntity.auctionId}
+		GROUP BY
+		a.id
+		HAVING (t.car_state= 2 or t.car_state=7 or t.car_state=6) and
+		a.auction_id=#{auctionCarEntity.auctionId}
+		ORDER BY a.sort ASC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<resultMap type="map" id="resultFindFieldCarsId">
+		<result column="auction_id" property="auctionId" />
+		<result column="car_state" property="carState" />
+		<result column="car_number" property="carNumber" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="retention_money" property="retentionMoney" />
+		<result column="asking_price" property="askingPrice" />
+		<result column="master" property="master" />
+		<result column="phone" property="phone" />
+		<result column="auctionMoneyMAX" property="auctionMoneyMAX" />
+		<result column="moneyMAX" property="moneyMAX" />
+	</resultMap>
+	<!-- /**拍卖-发布管理-添加车辆-查询场次车辆*/public List<Map> FindFieldCars(AuctionCarEntity 
+		auctionCarEntity) -->
+	<select id="FindFieldCars" resultType="map" resultMap="resultFindFieldCars">
+		SELECT
+		a.id as aid,
+		t.id as tid,
+		b.id as bid,
+		b.over_time,
+		t.retention_money,
+		t.asking_price,
+		t.car_name,
+		t.cars,
+		t.car_model,
+		a.auction_id,
+		a.sort
+		FROM
+		auction_car a LEFT JOIN t_car_basisinfo t
+		ON a.car_id=t.id
+		LEFT JOIN
+		check_bill b ON t.check_bill_id=b.id
+		WHERE
+		a.auction_id =#{auctionId}
+		ORDER
+		BY
+		a.sort ASC
+	</select>
+	<resultMap type="map" id="resultFindFieldCars">
+		<id column="id" property="id" />
+		<result column="auction_id" property="auctionId" />
+		<result column="over_time" property="overTime" />
+		<result column="retention_money" property="retentionMoney" />
+		<result column="asking_price	" property="askingPrice" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="asking_price" property="askingPrice" />
+	</resultMap>
+	<!-- /**拍卖-发布管理-添加车辆-添加场次的对应车辆*/ public int AddFieldCars(AuctionCarEntity 
+		auctionCarEntity) -->
+	<insert id="AddFieldCars" parameterType="cn.dingd.dd.entity.AuctionCarEntity">
+		INSERT
+		INTO
+		auction_car
+		(
+		auction_id,
+		car_id,
+		sort
+		) VALUES(
+		#{auctionId},
+		#{carId},
+		#{sort}
+		)
+	</insert>
+	<!-- /**拍卖-发布管理-添加车辆-删除场次的对应车辆*/ public int DeleteFieldCars(AuctionCarEntity 
+		auctionCarEntity) -->
+	<delete id="DeleteFieldCars" parameterType="cn.dingd.dd.entity.AuctionCarEntity">
+		DELETE
+		FROM
+		auction_car
+		WHERE
+		auction_id=#{auctionId} and car_id=#{carId}
+	</delete>
+	<!-- /**拍卖-发布管理-添加车辆-修改起拍价*/ public int UpdatePrice(TCarBasisInfoEntity 
+		tCarBasisInfoEntity) -->
+	<update id="UpdatePrice" parameterType="cn.dingd.dd.entity.TCarBasisInfoEntity">
+		UPDATE
+		t_car_basisinfo
+		SET
+		asking_price =#{askingPrice}*10000
+		where
+		id=#{id}
+	</update>
+	<!-- /**拍卖-发布管理-添加车辆-查询车辆列表*/public List<Map> FindCars(AuctionCarEntity 
+		auctionCarEntity) -->
+	<select id="FindCars" resultType="map" resultMap="resultFindCars">
+		SELECT
+		t.id as
+		tid,
+		b.id as bid,
+		b.over_time,
+		t.retention_money,
+		t.asking_price,
+		t.car_name,
+		t.cars,
+		t.car_model
+		FROM
+		t_car_basisinfo t
+		LEFT JOIN check_bill
+		b ON b.id = t.check_bill_id
+		WHERE
+		t.car_state=1 and b.check_status=3
+		ORDER BY
+		b.over_time ASC
+	</select>
+	<resultMap type="map" id="resultFindCars">
+		<result column="over_time" property="overTime" />
+		<result column="retention_money" property="retentionMoney" />
+		<result column="asking_price	" property="askingPrice" />
+		<result column="car_name" property="carName" />
+		<result column="cars" property="cars" />
+		<result column="car_model" property="carModel" />
+		<result column="car_state" property="carState" />
+		<result column="check_status" property="checkStatus" />
+	</resultMap>
+	<!-- /**查询拍卖纪录*/ public List<Map> FindAuctions(AuctionCarEntity auctionCarEntity) -->
+	<select id="FindAuctions" resultType="map" resultMap="resultAuctions">
+		select
+		d.auction_time as time,a.u_name,a.u_phone,d.auction_money as money,1
+		as type
+		from auction_record d LEFT JOIN a_user a on a.id=d.a_user_id
+		where
+		d.car_id=#{auctionCarEntity.carId}
+		and
+		d.auction_id=#{auctionCarEntity.auctionId}
+		union all
+		select
+		g.biding_time as time,r.u_name,r.u_phone,g.money,2 as type from
+		bidding g LEFT JOIN a_user r on r.id=g.a_user_id where
+		g.car_id=#{auctionCarEntity.carId}
+		and
+		g.auction_id=#{auctionCarEntity.auctionId}
+		ORDER BY money DESC
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+	<resultMap type="map" id="resultAuctions">
+		<id column="id" property="id" />
+		<result column="u_name" property="uName" />
+		<result column="u_phone" property="uPhone" />
+	</resultMap>
+	<!-- /**查询拍卖场次*/ List<Map> FindField(AuctionSessionEntity auctionSessionEntity) -->
+	<select id="FindField" resultType="map" resultMap="resultField">
+		<!-- SELECT s.id, s.auction_date, s.auction_start, s.auction_state, t.car_number, 
+			t.car_name, t.cars, t.car_model, COUNT(c.car_id)-1 as count, t.retention_money, 
+			MAX(r.auction_money) as auctionMoney, t.master, t.phone FROM auction_car 
+			c LEFT JOIN auction_session s ON s.id=c.auction_id LEFT JOIN t_car_basisinfo 
+			t ON c.car_id=t.id LEFT JOIN auction_record r ON c.car_id=r.car_id and c.auction_id=r.auction_id 
+			GROUP BY c.car_id HAVING s.auction_start LIKE CONCAT (#{str},"%") -->
+		SELECT
+		id,
+		auction_start,
+		auction_num
+		FROM
+		auction_session
+		WHERE
+		auction_date
+		LIKE CONCAT
+		(#{str},"%")
+		ORDER BY auction_start ASC
+	</select>
+	<resultMap type="map" id="resultField">
+		<id column="id" property="id" />
+		<result column="auction_start" property="auctionStart" />
+		<result column="auction_num" property="auctionNum" />
+	</resultMap>
+	<!-- <resultMap type="map" id="resultField"> <id column="id" property="id" 
+		/> <result column="auction_start" property="auctionStart" /> <result column="auction_state" 
+		property="auctionState" /> <result column="auction_date" property="auctionDate" 
+		/> <result column="retention_money" property="retentionMoney" /> <result 
+		column="car_number" property="carNumber" /> <result column="car_name" property="carName" 
+		/> <result column="cars" property="cars" /> <result column="car_model" property="carModel" 
+		/> </resultMap> -->
+	<!-- /**新建拍卖场次*/public int NewField(AuctionSessionEntity auctionSessionEntity) -->
+	<insert id="NewField" useGeneratedKeys="true" keyProperty="id"
+		parameterType="cn.dingd.dd.entity.AuctionSessionEntity">
+		INSERT INTO auction_session
+		(
+		auction_num,
+		auction_state,
+		principal,
+		auction_date,
+		auction_start,
+		auction_over
+		) VALUES (
+		#{auctionNum},
+		#{auctionState},
+		#{principal},
+		#{auctionDate},
+		#{auctionStart},
+		#{auctionOver}
+		)
+	</insert>
+
+</mapper> 

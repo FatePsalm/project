@@ -1,0 +1,74 @@
+package cn.dingd.dd.biz.backgroud.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.dingd.dd.biz.common.entity.AccountInfo;
+import cn.dingd.dd.biz.common.entity.AccountInfoExample;
+import cn.dingd.dd.biz.common.view.AccountInfoView;
+import cn.dingd.dd.biz.common.view.AccountRoleView;
+
+public interface AccountInfoMapper {
+    int countByExample(AccountInfoExample example);
+
+    int deleteByExample(AccountInfoExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(AccountInfo record);
+
+    int insertSelective(AccountInfo record);
+
+    List<AccountInfo> selectByExample(AccountInfoExample example);
+
+    AccountInfo selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") AccountInfo record, @Param("example") AccountInfoExample example);
+
+    int updateByExample(@Param("record") AccountInfo record, @Param("example") AccountInfoExample example);
+
+    int updateByPrimaryKeySelective(AccountInfo record);
+
+    int updateByPrimaryKey(AccountInfo record);
+    /**
+     * 根据账号名称查询账号信息
+     * @param accountName
+     * @return
+     */
+	AccountInfo getByAccount(String accountName);
+	
+	List<Integer> getPermissionIds(Integer account);
+	/**
+	 * 获取视图展示的所有账号信息
+	 * @return
+	 */
+	List<AccountInfoView> getAccounts();
+	
+	/**
+	 * 获取账号和角色对应关系
+	 * @return
+	 */
+	List<AccountRoleView> accountRoleTemp();
+	
+	/**
+	 * 根据角色，账号查询账户信息
+	 * @param quaryParam
+	 * @return
+	 */
+	List<AccountInfoView> getAccountsByQuaryParam(String quaryParam);
+
+	/**
+	 *新增账号
+	 * @param accountInfo
+	 */
+	Integer addNewAccount(AccountInfoView accountInfo);
+	
+	/**
+	 * 编辑账号
+	 * @param accountInfo
+	 * @return
+	 */
+	Integer updateAccount(AccountInfoView accountInfo);
+	
+}

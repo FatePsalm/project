@@ -1,0 +1,94 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.biz.backgroud.dao.DataRangeMapper;
+import cn.dingd.dd.biz.backgroud.service.BizCommonService;
+import cn.dingd.dd.biz.backgroud.service.StaffService;
+import cn.dingd.dd.biz.common.entity.DataRange;
+import cn.dingd.dd.biz.common.entity.DataRangeExample;
+import cn.dingd.dd.biz.common.entity.OrganizationInfo;
+
+/**
+* @author ZC
+* @date 2018年4月28日上午11:28:50
+*/
+@Service
+public class BizCommonServiceImpl implements BizCommonService{
+	
+	@Autowired
+	private DataRangeMapper dataRangeMapper;
+	
+	@Autowired
+	private StaffService staffService;
+	
+	/**
+	 * 数据范围id对应的员工id
+	 */
+	@Override
+	public List<Integer> staffIdsInDataRange(List<Integer> orgIds) {
+		DataRangeExample dataRangeExample = new DataRangeExample();
+		dataRangeExample.createCriteria().andOrgIdIn(orgIds);
+		List<DataRange> dataRanges = dataRangeMapper.selectByExample(dataRangeExample);
+		List<Integer> staffIds = dataRanges.stream().map(DataRange::getStaffId).distinct().collect(Collectors.toList());
+		return staffIds;
+	}
+	
+	/**
+	 * 是否为区域负责人
+	 */
+	@Override
+	public Boolean isAreaManager(Integer orgId,Integer staffId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * 员工对应的数据范围id
+	 */
+	@Override
+	public List<Integer> orgIdsInStaff(Integer staffId) {
+		//
+		DataRangeExample dataRangeExample = new DataRangeExample();
+		dataRangeExample.createCriteria().andStaffIdEqualTo(staffId);
+		//员工对应的数据范围id集合
+		List<DataRange> selectByExample = dataRangeMapper.selectByExample(dataRangeExample);
+		//员工对应的数据范围id集合
+		List<Integer> orgIds = selectByExample.stream().map(DataRange::getOrgId).collect(Collectors.toList());
+		List<Integer> orgIdsInStaff = new ArrayList<>();
+		//数据范围集合
+		List<OrganizationInfo> dataRange = staffService.dataRange();
+		Map<Integer, List<OrganizationInfo>> collect = dataRange.stream().collect(Collectors.groupingBy(OrganizationInfo::getParentId));
+		Set<Integer> keySet = collect.keySet();
+		for (Integer integer : orgIds) {
+			if (isAreaManager(integer,staffId)) {
+				//循环组织id
+				recursionAddId(collect, keySet, orgIdsInStaff, orgIds);
+			}else {
+				orgIdsInStaff.add(integer);
+			}
+		}
+		return staffIdsInDataRange(orgIdsInStaff);
+	}
+	
+	public void recursionAddId(Map<Integer, List<OrganizationInfo>> collect,Set<Integer> keySet,
+			List<Integer> orgIdsInStaff,List<Integer> orgIds) {
+		for (Integer integer : orgIds) {
+			//如果有子集
+			if (keySet.contains(integer)) {
+				List<Integer> orgList = collect.get(integer).stream().map(OrganizationInfo::getId).collect(Collectors.toList());
+				orgIdsInStaff.addAll(orgList);
+				recursionAddId(collect, keySet, orgIdsInStaff, orgList);
+			}else {
+				orgIdsInStaff.add(integer);
+			}
+		}
+	}
+}

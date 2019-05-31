@@ -1,0 +1,44 @@
+package cn.dingd.dd.biz.common.entity;/**
+ * @author ZC
+ * @date 2018年4月20日 上午10:26:44
+ */
+public class AccountRole {
+    private Integer id;
+
+    private Integer staffId;
+
+    private Integer roleId;
+
+    public AccountRole() {
+		
+	}
+    public AccountRole(Integer staffId, Integer roleId) {
+		super();
+		this.staffId = staffId;
+		this.roleId = roleId;
+	}
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(Integer staffId) {
+        this.staffId = staffId;
+    }
+
+    public Integer getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
+    }
+}

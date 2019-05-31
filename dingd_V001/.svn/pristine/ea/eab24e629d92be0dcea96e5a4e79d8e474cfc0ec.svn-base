@@ -1,0 +1,115 @@
+package cn.dingd.dd.biz.backgroud.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.dingd.dd.biz.backgroud.dao.MenuInfoMapper;
+import cn.dingd.dd.biz.backgroud.dao.MenuRoleMapper;
+import cn.dingd.dd.biz.backgroud.dao.RoleMapper;
+import cn.dingd.dd.biz.backgroud.service.RoleManageService;
+import cn.dingd.dd.biz.common.entity.MenuInfo;
+import cn.dingd.dd.biz.common.entity.MenuInfoExample;
+import cn.dingd.dd.biz.common.entity.MenuRole;
+import cn.dingd.dd.biz.common.entity.Role;
+import cn.dingd.dd.biz.common.entity.RoleExample;
+import cn.dingd.dd.biz.common.view.RoleView;
+
+/**
+* @author ZC
+* @date 2018年4月23日上午11:31:15
+*/
+@Service
+public class RoleManageServiceImpl implements RoleManageService{
+
+	@Autowired
+	private RoleMapper roleMapper;
+	
+	@Autowired
+	private MenuInfoMapper menuInfoMapper;
+	
+	@Autowired
+	private MenuRoleMapper menuRoleMapper;
+	
+	@Override
+	public void addRole(RoleView role) {
+		Integer integer = roleMapper.addNewRole(role);
+		if (integer==1) {
+			List<MenuRole> menuRoles = new ArrayList<>();
+			String[] permissionList = role.getPermissionList().split(",");
+			for (int i = 0; i < permissionList.length; i++) {
+				MenuRole menuRole = new MenuRole();
+				menuRole.setMenuId(Integer.valueOf(permissionList[i]));
+				menuRole.setRoleId(role.getId());
+				menuRoles.add(menuRole);
+			}
+			menuRoleMapper.addMenuRoleList(menuRoles);
+		}
+	}
+	
+	@Override
+	public void updateRole(RoleView role) {
+		Role record = new Role();
+		record.setId(role.getId());
+		record.setRoleName(role.getRoleName());
+		record.setRoleDesc(role.getRoleDesc());
+		int integer = roleMapper.updateByPrimaryKey(record);
+		if (integer==1) {
+			List<MenuRole> menuRoles = new ArrayList<>();
+			String[] permissionList = role.getPermissionList().split(",");
+			for (int i = 0; i < permissionList.length; i++) {
+				MenuRole menuRole = new MenuRole();
+				menuRole.setMenuId(Integer.valueOf(permissionList[i]));
+				menuRole.setRoleId(role.getId());
+				menuRoles.add(menuRole);
+			}
+			menuRoleMapper.addMenuRoleList(menuRoles);
+		}
+		
+	}
+	
+	@Override
+	public List<MenuInfo> menuList() {
+		MenuInfoExample menuInfoExample = new MenuInfoExample();
+		menuInfoExample.createCriteria().andStatusEqualTo(0);
+		List<MenuInfo> menuInfos = menuInfoMapper.selectByExample(menuInfoExample);
+		Map<Integer, List<MenuInfo>> collect = menuInfos.stream().collect(Collectors.groupingBy(MenuInfo::getParentId));
+		List<MenuInfo> menus = 	collect.get(0);
+		menus.sort((o1,o2)-> o1.getSort()-o2.getSort());
+		Set<Integer> keySet = collect.keySet();
+		AccountInfoServiceImpl.recursionSetChildren(menus, keySet, collect);
+		return menus;
+	}
+	
+	@Override
+	public List<Role> roles(String quaryParam) {
+		if ("".equals(quaryParam.trim())) {
+			quaryParam = null;
+		}
+		return roleMapper.getRolessByQuaryParam(quaryParam);
+	}
+
+	@Override
+	public void removeRole(Integer roleId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Boolean roleIsExist(String roleName) {
+		RoleExample roleExample = new RoleExample();
+		roleExample.createCriteria().andRoleNameEqualTo(roleName);
+		List<Role> selectByExample = roleMapper.selectByExample(roleExample);
+		if (selectByExample!=null&&selectByExample.size()>1) {
+			return true;
+		}
+		return false;
+	}
+
+	
+}

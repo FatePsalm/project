@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.management.dao.ManageStaffDao">
+	<!-- /** 管理端-人员管理-员工列表分页信息 */ public int FindStaffListRowCount(@Param("staffInfoEntity")StaffInfoEntity 
+		staffInfoEntity,@Param("sort")String srot) ; -->
+	<select id="FindStaffListRowCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		staff_info
+		<where>
+			<if test="staffInfoEntity.uDuty>=1">
+				u_duty=#{staffInfoEntity.uDuty}
+			</if>
+			<if test="staffInfoEntity.uSex!=null">
+				and u_sex=#{staffInfoEntity.uSex}
+			</if>
+			<if test="staffInfoEntity.Fuzzy!=null and staffInfoEntity.Fuzzy!=''">
+				AND
+				(
+				u_name like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_number like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_phone
+				like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_card like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				)
+			</if>
+		</where>
+	</select>
+	<!-- /** 管理端-人员管理-根据ID查找员工电话 */public String FindStaffId(@Param("id")Integer 
+		id); -->
+	<select id="FindStaffId" resultType="int">
+		SELECT
+		id
+		FROM
+		staff_info
+		WHERE
+		u_phone=#{phone}
+	</select>
+	<!-- /** 管理端-人员管理-根据ID删除员工图片 */ public int DeleteStaffImg(Integer id); -->
+	<delete id="DeleteStaffImg">
+		delete from staff_picture where staff_id=#{id}
+	</delete>
+	<!-- /** 管理端-人员管理-根据ID修改员工信息 */ public int UpdateStaff(StaffInfoEntity staffInfoEntity) -->
+	<update id="UpdateStaff">
+		update staff_info
+		set
+		<if test="staffInfoEntity.uPhone!=null and staffInfoEntity.uPhone!=''">
+			u_phone = #{staffInfoEntity.uPhone},
+		</if>
+		<if test="staffInfoEntity.uTime!=null and staffInfoEntity.uTime!=''">
+			u_time = #{staffInfoEntity.uTime},
+		</if>
+		<if test="staffInfoEntity.uHeadImg!=null and staffInfoEntity.uHeadImg!=''">
+			u_hand_img = #{staffInfoEntity.uHeadImg},
+		</if>
+		<if
+			test="staffInfoEntity.cardImgUp!=null and staffInfoEntity.cardImgUp!=''">
+			card_img_up = #{staffInfoEntity.cardImgUp},
+		</if>
+		<if
+			test="staffInfoEntity.cardImgDwon!=null and staffInfoEntity.cardImgDwon!=''">
+			card_img_dwon= #{staffInfoEntity.cardImgDwon},
+		</if>
+		u_duty = #{staffInfoEntity.uDuty}
+		where id = #{staffInfoEntity.id}
+	</update>
+	<!-- /** 管理端-人员管理-根据ID查找用户 */ public Map<String, Object> FindStaff(@Param("id")Integer 
+		id) -->
+	<select id="FindStaff" resultType="map" resultMap="StaffMap">
+		SELECT
+		s.id as
+		sid,
+		p.id as pid,
+		s.u_hand_img,
+		s.u_name,
+		s.u_card,
+		s.u_phone,
+		s.u_sex,
+		s.u_birthday,
+		s.u_time,
+		s.u_duty,
+		s.card_img_up,
+		s.card_img_dwon,
+		p.show_srot,
+		p.url
+		FROM
+		staff_info s LEFT JOIN staff_picture p ON
+		s.id=p.staff_id
+		WHERE
+		s.id=#{id}
+	</select>
+	<resultMap type="map" id="StaffMap">
+		<id column="sid" property="id" />
+		<result column="u_hand_img" property="uHandImg" />
+		<result column="u_name" property="uName" />
+		<result column="u_card" property="uCard" />
+		<result column="u_phone" property="uPhone" />
+		<result column="u_sex" property="uSex" />
+		<result column="u_birthday" property="uBirthday" />
+		<result column="u_time" property="uTime" />
+		<result column="u_duty" property="uDuty" />
+		<result column="card_img_up" property="cardImgUp" />
+		<result column="card_img_dwon" property="cardImgDwon" />
+		<collection property="imgList"
+			ofType="cn.dingd.dd.common.entity.StaffPictureEntity" javaType="java.util.List"
+			column="staffId" fetchType="lazy">
+			<id column="pid" property="id" />
+			<result column="url" property="url" />
+			<result column="show_srot" property="showSrot" />
+		</collection>
+	</resultMap>
+	<!-- /** 管理端-人员管理-查询员工是否存在 */ public int FindStaffPhone(String phone) -->
+	<select id="FindStaffPhone" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		staff_info
+		WHERE
+		u_phone=#{phone}
+	</select>
+	<!-- /** 管理端-人员管理-添加员工图片 */ public int AddStaffImg(@Param("list")List<StaffPictureEntity> 
+		list) -->
+	<insert id="AddStaffImg" parameterType="java.util.List">
+		INSERT INTO staff_picture(
+		staff_id ,
+		url ,
+		priture,
+		show_srot,
+		create_time
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.staffId},
+			#{item.url},
+			#{item.priture},
+			#{item.showSrot},
+			NOW()
+			)
+		</foreach>
+	</insert>
+	<!-- /** 管理端-人员管理-查询最后个员工号 */ public String FindStaffNumber() -->
+	<select id="FindStaffNumber" resultType="String">
+		SELECT
+		u_number
+		FROM
+		staff_info
+		ORDER BY
+		u_number
+		DESC
+		LIMIT 1
+	</select>
+	<!-- /** 管理端-人员管理-添加员工 */ public int AddStaff(StaffInfoEntity staffInfoEntity) -->
+	<insert id="AddStaff" useGeneratedKeys="true" keyProperty="id"
+		parameterType="cn.dingd.dd.common.entity.StaffInfoEntity">
+		INSERT INTO staff_info
+		(
+		u_phone ,
+		u_name ,
+		u_sex ,
+		u_birthday ,
+		u_card ,
+		u_time ,
+		u_hand_img ,
+		card_img_up ,
+		card_img_dwon ,
+		u_number ,
+		u_duty ,
+		u_state
+		)
+		VALUES (
+		#{uPhone} ,
+		#{uName} ,
+		#{uSex} ,
+		#{uBirthday} ,
+		#{uCard} ,
+		#{uTime} ,
+		#{uHeadImg} ,
+		#{cardImgUp} ,
+		#{cardImgDwon} ,
+		#{uNumber} ,
+		#{uDuty} ,
+		1
+		)
+	</insert>
+	<!-- /** 管理端-人员管理-员工列表 */ public List<Map<String, Object>> FindStaffList(StaffInfoEntity 
+		staffInfoEntity,PageObject pageObject) -->
+	<select id="FindStaffList" resultType="map">
+		SELECT
+		id,
+		u_number as uNumber,
+		u_name as uName,
+		u_sex as uSex,
+		u_phone as
+		uPhone,
+		u_time as uTime,
+		u_duty as uDuty
+		FROM
+		staff_info
+		<where>
+			<if test="staffInfoEntity.uDuty>=1">
+				u_duty=#{staffInfoEntity.uDuty}
+			</if>
+			<if test="staffInfoEntity.uSex!=null">
+				and u_sex=#{staffInfoEntity.uSex}
+			</if>
+			<if test="staffInfoEntity.Fuzzy!=null and staffInfoEntity.Fuzzy!=''">
+				AND
+				(
+				u_name like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_number like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_phone
+				like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				OR
+				u_card like CONCAT
+				("%",#{staffInfoEntity.Fuzzy},"%")
+				)
+			</if>
+		</where>
+		<if test="sort!=null and sort!=''">
+			ORDER BY u_time ${sort}
+		</if>
+		limit
+		#{pageObject.startIndex},#{pageObject.pageSize}
+	</select>
+</mapper> 

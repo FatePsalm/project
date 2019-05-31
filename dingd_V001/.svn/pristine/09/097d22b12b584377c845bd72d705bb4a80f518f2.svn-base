@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.biz.backgroud.dao.SjOderMapper">
+	<!--public Map<String, Object> selectCarZH(Integer carID)-->
+	<select id="selectCarZH" resultType="map">
+		SELECT
+		id,
+		synthesise,
+		condition_id,
+		maintenance,
+		remarks,
+		retention_money
+		FROM t_car_basisinfo
+		where
+		id=#{carId}
+	</select>
+	<!--public List<CheckBillEntity> selectIdALL(Integer id) -->
+	<select id="selectIdALL"
+			resultType="cn.dingd.dd.common.entity.CheckBillEntity">
+		SELECT
+		id,
+		check_account as checkAccount,
+		check_status as checkStatus,
+		person,
+		gender,
+		telephone,
+		create_person as createPerson,
+		stores,
+		address,
+		province,
+		city,
+		area,
+		cars,
+		car_name as carName,
+		car_model as carModel,
+		car_type as carType,
+		car_number as carNumber,
+		car_create_time as carCreateTime,
+		retention_money as retentionMoney,
+		create_time as createTime,
+		appointment_time as appointmentTime,
+		cancel_time as cancelTime,
+		allotus_time as allotusTime,
+		response_time as responseTime,
+		upload_time as uploadTime,
+		over_time as overTime,
+		remark,
+		staff_id as staffId,
+		check_type as checkType,
+		mileage
+		FROM
+		check_bill
+		WHERE
+		create_person=#{id}
+	</select>
+	<!--public Map<String, Object> selectId(Integer id) -->
+	<select id="selectId" resultType="map">
+		SELECT
+		c.id,
+		c.create_person as createPerson,
+		c.check_account as checkAccount,
+		c.create_time as createTime,
+		c.check_type as checkType,
+		c.check_status as checkStatus,
+		c.cars,
+		c.car_name as carName,
+		c.car_model as carModel,
+		c.car_create_time as carCreateTime,
+		c.mileage,
+		c.telephone,
+		c.person,
+		c.address,
+		s.u_name as JcUame,
+		s.u_phone as JcUphone
+		FROM check_bill c LEFT JOIN staff_info s on c.staff_id=s.id
+		where
+		c.id=#{id}
+		and
+		c.check_type is not null
+	</select>
+	<!-- public List<Map<String, Object>> selectFind(CheckBillEntity checkBillEntity) -->
+	<select id="selectFind" resultType="map">
+		SELECT
+		c.id,
+		c.check_account as checkAccount,
+		c.create_time as createTime,
+		c.telephone as telephone,
+		c.cars ,
+		c.car_name as carName,
+		c.car_model as carModel,
+		c.car_create_time as carCreateTime,
+		c.mileage,
+		c.check_type as checkType,
+		c.check_status as checkStatus,
+		c.create_person as createPerson,
+		t.id as carId
+		FROM check_bill c LEFT JOIN t_car_basisinfo t ON c.id=t.check_bill_id
+		<where>
+			c.check_type=#{checkBillEntity.checkType}
+			<if test="checkBillEntity.find!=null and checkBillEntity.find!=''">
+				and(
+				c.check_account like CONCAT
+				("%",#{checkBillEntity.find},"%")
+				OR c.telephone like
+				CONCAT
+				("%",#{checkBillEntity.find},"%"))
+			</if>
+			<if test="s!=null and s!=''">
+				and c.staff_id in(#{s})
+			</if>
+		</where>
+	</select>
+	<!--StaffInfoEntity selectStaffId(Integer id) -->
+	<select id="selectStaffId"
+			resultType="cn.dingd.dd.common.entity.StaffInfoEntity">
+		SELECT
+		id,
+		u_name as uName,
+		u_phone as uPhone
+		FROM staff_info
+		WHERE
+		id=#{id}
+	</select>
+	<!--AUserEntity selectAuseId(Integer id); -->
+	<select id="selectAuseId"
+			resultType="cn.dingd.dd.common.entity.AUserEntity">
+		SELECT
+		id,
+		u_name as uName,
+		u_phone as uPhone
+		FROM a_user
+		WHERE
+		id=#{id}
+	</select>
+</mapper> 

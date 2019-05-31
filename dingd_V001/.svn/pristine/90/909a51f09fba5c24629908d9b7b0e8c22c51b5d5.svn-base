@@ -1,0 +1,65 @@
+package cn.dingd.dd.biz.backgroud.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import cn.dingd.dd.common.util.CF;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import cn.dingd.dd.biz.backgroud.service.SjOderService;
+import cn.dingd.dd.common.entity.CheckBillEntity;
+import cn.dingd.dd.common.web.JsonResult;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * 作者:CG
+ * 时间:2018年4月26日
+ * 作用:商家订单
+ */
+@CrossOrigin
+@RestController
+@Controller
+@RequestMapping("/sjdd/")
+public class SjOderController {
+    @Autowired
+    private SjOderService sjOderService;
+
+    /**
+     * 时间: 2018/4/28 16:08
+     * 功能描述:根据商家ID查询商家所有订单
+     */
+    @RequestMapping("selectIdALL")
+    public JsonResult selectIdALL(Integer id) {
+        if (CF.isNum(id))
+            throw new NullPointerException("商家ID为NULL!");
+        List<CheckBillEntity> checkBillEntities = sjOderService.selectIdALL(id);
+        return new JsonResult(checkBillEntities);
+    }
+
+    /**
+     * 时间: 2018/4/28 14:22
+     * 功能描述:检测订单详细
+     */
+    @RequestMapping("selectId")
+    public JsonResult selectId(Integer id) {
+        if (CF.isNum(id))
+            throw new NullPointerException("查询订单ID为NULL!");
+        Map<String, Object> stringObjectMap = sjOderService.selectId(id);
+        return new JsonResult(stringObjectMap);
+    }
+
+    /**
+     * 时间: 2018/4/27 16:32
+     * 功能描述:查询商家端订单
+     */
+    @RequestMapping("selectFind")
+    public JsonResult selectFind(CheckBillEntity checkBillEntity) {
+        if (CF.isNum(checkBillEntity.getCheckType()))
+            throw new NullPointerException("订单来源为NULL!");
+        List<Map<String, Object>> selectFind = sjOderService.selectFind(checkBillEntity);
+        return new JsonResult(selectFind);
+    }
+}

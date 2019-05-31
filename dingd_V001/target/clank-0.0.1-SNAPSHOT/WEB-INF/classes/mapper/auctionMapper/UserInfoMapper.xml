@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dingd.dd.auction.dao.UserInfoDao">
+	  <!-- 登录查询用户信息 -->
+  <select id="getAUserEntity" resultType="map" resultMap="auserMap">
+      select s.u_phone staff,grade,type,a.id,a.account,a.u_name uname,a.u_phone uphone,a.head_img headImg  from a_user a LEFT JOIN staff_info s on a.staff_id=s.id where a.account=#{account}
+  </select>
+  
+    <resultMap type="map" id="auserMap">
+    <id column="id" property="id" />
+	<result column="account" property="account" />
+	<result column="u_name" property="uname" />
+	<result column="u_phone" property="uphone" />
+	<result column="grade" property="grade" />
+	<result column="type" property="type" />
+	
+<!-- 	<result column="sign" property="sign" />
+    <result column="age" property="age" />
+    <result column="credit" property="credit" />
+	<result column="integration" property="integration" />
+	<result column="dealers_id" property="dealersId" />
+	<result column="card" property="card" />
+	<result column="sex" property="sex" />
+	<result column="dealers_name" property="dealersName" />
+	<result column="business_num" property="businessNum" />
+	<result column="legal_person" property="legalPerson" />
+	<result column="brought_account" property="broughtAccount" />
+	<result column="opening_bank" property="openingBank" />
+	<result column="lcense_img" property="lcenseImg" />
+	<result column="buyer_num" property="buyerNum" /> -->
+	
+	<result column="head_img" property="headImg" />
+  </resultMap>
+  
+  
+  	  <!-- 查询用户信息 -->
+  <select id="getAUserEntityId" resultType="int">
+      select id  from a_user where  account=#{account}
+  </select>
+  
+  <!--插入用户信息-->
+	<insert id="aUserRegistration" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.AUserEntity">  
+    insert into a_user (account,nickname,password,register_time,recommend,flag,u_phone,sex)   
+    values (#{account},#{nickname},#{password},#{registerTime},#{recommend},#{flag},#{uPhone},#{sex})  
+    </insert> 
+    
+    	  <!-- 查询用户信息及资金信息 -->
+  <select id="queryUserinfo" resultMap="resultQuf">
+     SELECT a.id,a.nickname,a.head_img headImg,o.u_phone uphone,o.u_name,t.balance,t.freeze,t.withdraw,a.u_phone phone from  a_user a LEFT JOIN
+     staff_info o on a.staff_id=o.id LEFT JOIN capital_account t on a.id=t.a_user_id where a.id=#{userId}
+  </select>
+  
+  <resultMap type="map" id="resultQuf">
+          <id column="id" property="id"/>
+          <result column="nickname" property="nickname"/>
+          <result column="head_img" property="headImg"/>
+          <result column="u_phone" property="uphone"/>
+          <result column="u_name" property="uname"/>
+          <result column="balance" property="balance"/>
+          <result column="freeze" property="freeze"/>
+          <result column="withdraw" property="withdraw"/>
+  </resultMap>
+  
+  
+    <!-- 查询用信息 -->
+  <select id="queryUserEntity" resultType="cn.dingd.dd.common.entity.AUserEntity">
+     select * from a_user where id=#{id}
+  </select>
+    
+    <!--  查询用户资金使用信息-->
+  <select id="getUserCapitlAccount" resultType="map" resultMap="resultCap">
+   select * from (select p.id,p.money,p.create_time,p.comments,r.m_type,r.m_number number,p.current_balance currentBalance from payment_info p LEFT JOIN pay_order r on p.pay_order_id=r.id 
+   where p.a_user_id=#{userId}
+   UNION
+   select o.id,o.money,o.create_time,o.comments,r.m_type,r.m_number number,o.current_balance currentBalance from recharge_info  o  LEFT JOIN pay_order r on r.id=o.pay_order_id  
+   where o.a_user_id=#{userId}) tmp order by create_time desc
+   limit #{pageObject.startIndex},#{pageObject.pageSize} 
+  </select>
+  
+ <resultMap type="map" id="resultCap">
+          <id column="id" property="id"/>
+          <result column="money" property="money"/>
+          <result column="create_time" property="createTime"/>
+          <result column="comments" property="comments"/>
+          <result column="m_type" property="mtype"/>
+          <result column="m_number" property="number"/>
+  </resultMap>
+  
+  
+  <!-- 查询资金明细 -->
+   <select id="getAUserInfo" resultType="map">
+     select l.id,l.balance,l.freeze,l.withdraw,SUM(case when d.m_type=4 then y.money else 0 end) money  
+     from capital_account l LEFT JOIN payment_info y on l.a_user_id=y.a_user_id LEFT JOIN pay_order d on y.pay_order_id=d.id where l.a_user_id=#{userId}
+  </select>
+  
+  
+     <!-- 根据账户查询用信息 -->
+  <select id="geAUserEntity" resultType="cn.dingd.dd.common.entity.AUserEntity">
+     select * from a_user where account=#{account}
+  </select>
+    <!-- 添加资金账户 -->
+    <insert id="saveCapitalAccount" useGeneratedKeys="true" keyProperty="id" parameterType="cn.dingd.dd.common.entity.CapitalAccountEntity">  
+    insert into capital_account(a_user_id,balance,freeze,withdraw)   
+    values (#{auserId},#{balance},#{freeze},#{withdraw})  
+    </insert> 
+  
+    <!-- 查询用户条数 -->
+    <select id="getUserInfoPage" resultType="Integer">
+	   select count(*) count from (select p.id from payment_info p LEFT JOIN pay_order r on p.pay_order_id=r.id 
+	   where p.a_user_id=#{userId}
+	   UNION
+	   select o.id from recharge_info  o  LEFT JOIN pay_order r on r.id=o.pay_order_id  
+	   where o.a_user_id=#{userId}) tmp 
+  </select>
+  
+</mapper> 

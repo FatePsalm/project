@@ -1,0 +1,64 @@
+package cn.dingd.dd.biz.backgroud.service;
+
+import java.util.List;
+
+import cn.dingd.dd.biz.common.entity.AccountInfo;
+import cn.dingd.dd.biz.common.entity.AccountRole;
+import cn.dingd.dd.biz.common.entity.MenuInfo;
+import cn.dingd.dd.biz.common.view.AccountInfoView;
+
+/**
+* @author ZC
+* @date 2018年4月19日下午5:59:02
+*/
+public interface AccountInfoService {
+	
+	/**
+	 * 根据账号名称，获取账户信息
+	 * @param accountName
+	 * @return
+	 */
+	AccountInfo getAccountInfo(String accountName);
+	
+	/**
+	 * 获取用户对应的菜单
+	 * @param account
+	 * @return
+	 */
+	public List<MenuInfo> permissionIdList(Integer accountId);
+	
+	/**
+	 *添加一个管理账户
+	 */
+	public void addAccount(AccountInfoView accountInfo);
+	
+	/**
+	 * 禁用或启用账号
+	 * @param flag
+	 * @return
+	 */
+	public void disableorEnableAccount(Integer account ,Integer flag);
+	
+	/**
+	 * 跟新账号
+	 * @param accountInfo
+	 * @return
+	 */
+	public void updateAccount(AccountInfoView accountInfo);
+	
+	List<AccountInfoView> getAllAccounts(String quaryParam);
+	
+	/**
+	 * 根据账号id获取账号信息
+	 * @param accountId
+	 * @return
+	 */
+	AccountInfoView getAccountByAccountId(Integer accountId);
+	
+	/**
+	 * 检验账号是否存在
+	 * @param account
+	 * @return true 存在；false 不存在
+	 */
+	Boolean AccountIsExist(String account);
+}
